@@ -249,4 +249,47 @@ pub fn zero_crossing_rate(
 ```
 - Output shape: `[1, n_frames]`.
 
+### 2.15 `multichannel_stft` / `multichannel_mel` / `multichannel_mfcc`
+Parallel independent feature extraction for multi-channel audio buffers.
+
+```moonbit
+pub fn multichannel_stft(
+  buffer : MultiChannelAudioBuffer,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[Array[FeatureMatrix], MelError]
+
+pub fn multichannel_mel(
+  buffer : MultiChannelAudioBuffer,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[Array[FeatureMatrix], MelError]
+
+pub fn multichannel_mfcc(
+  buffer : MultiChannelAudioBuffer,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[Array[FeatureMatrix], MelError]
+```
+- Returns an array of FeatureMatrix instances, one per channel.
+
+### 2.16 `interchannel_level_difference` (ILD) / `interchannel_phase_difference` (IPD)
+Spatial acoustic descriptors for stereo / multi-mic arrays.
+
+```moonbit
+pub fn interchannel_level_difference(
+  buffer : MultiChannelAudioBuffer,
+  ch1 : Int,
+  ch2 : Int,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[FeatureMatrix, MelError]
+
+pub fn interchannel_phase_difference(
+  buffer : MultiChannelAudioBuffer,
+  ch1 : Int,
+  ch2 : Int,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[FeatureMatrix, MelError]
+```
+- ILD shape: `[n_bins, n_frames]`, in decibels (dB).
+- IPD shape: `[n_bins, n_frames]`, in radians `[-PI, PI]`, evaluated from complex cross-spectrum angle.
+
+
 

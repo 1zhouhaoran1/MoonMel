@@ -27,6 +27,10 @@ pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelErr
 
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
+pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
 pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
@@ -34,6 +38,12 @@ pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @typ
 pub fn mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn mfcc(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn multichannel_mel(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
+
+pub fn multichannel_mfcc(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
+
+pub fn multichannel_stft(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
 
 pub fn pad_reflect(Array[Double], Int) -> Array[Double]
 
@@ -77,6 +87,8 @@ pub using @types {type MelError}
 pub using @types {type MelNorm}
 
 pub using @types {type MelScale}
+
+pub using @types {type MultiChannelAudioBuffer}
 
 pub using @streaming {type StreamingExtractor}
 

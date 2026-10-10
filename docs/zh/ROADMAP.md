@@ -29,7 +29,7 @@
 - [x] **流式特征提取 (Streaming Audio)**：支持定长滑动窗口实时在线增量特征抽取（StreamingExtractor）。
 - [x] **实时麦克风输入接入**：在 Playground 中接入 Web Audio API 实时录音流与动态频谱渲染。
 - [x] **频域声学描述符 (Spectral Descriptors)**：谱质心 (Centroid)、谱滚降 (Rolloff)、谱平坦度 (Flatness) 与时域过零率 (ZCR)。
-- [ ] **多声道与多通道谱支持**：支持独立多声道特征并行抽取。
+- [x] **多声道与多通道谱支持**：支持独立多声道特征并行抽取与空间声学特征（ILD / IPD）。
 
 ---
 

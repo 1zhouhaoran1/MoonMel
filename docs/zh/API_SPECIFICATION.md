@@ -249,4 +249,47 @@ pub fn zero_crossing_rate(
 ```
 - 输出形状：`[1, n_frames]`。
 
+### 2.15 `multichannel_stft` / `multichannel_mel` / `multichannel_mfcc`
+多声道音频特征并行独立抽取。
+
+```moonbit
+pub fn multichannel_stft(
+  buffer : MultiChannelAudioBuffer,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[Array[FeatureMatrix], MelError]
+
+pub fn multichannel_mel(
+  buffer : MultiChannelAudioBuffer,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[Array[FeatureMatrix], MelError]
+
+pub fn multichannel_mfcc(
+  buffer : MultiChannelAudioBuffer,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[Array[FeatureMatrix], MelError]
+```
+- 返回数组长度与输入声道数严格一致，每个声道独立对应一个 `FeatureMatrix`。
+
+### 2.16 `interchannel_level_difference` (ILD) / `interchannel_phase_difference` (IPD)
+双声道/多麦克风空间声学特征（声级差与相位差）。
+
+```moonbit
+pub fn interchannel_level_difference(
+  buffer : MultiChannelAudioBuffer,
+  ch1 : Int,
+  ch2 : Int,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[FeatureMatrix, MelError]
+
+pub fn interchannel_phase_difference(
+  buffer : MultiChannelAudioBuffer,
+  ch1 : Int,
+  ch2 : Int,
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[FeatureMatrix, MelError]
+```
+- ILD 输出形状：`[n_bins, n_frames]`，单位分贝（dB）。
+- IPD 输出形状：`[n_bins, n_frames]`，取值范围 `[-PI, PI]` 弧度，通过复数互谱相位角求得。
+
+
 

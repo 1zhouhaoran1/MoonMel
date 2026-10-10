@@ -209,3 +209,29 @@ test "facade_spectral_features" {
   assert_true(centroid.n_cols > 0)
   assert_true(rolloff.n_cols > 0)
 }
+
+///|
+test "facade_multichannel_pipeline" {
+  let ch0 = Array::make(2048, 0.3)
+  let ch1 = Array::make(2048, 0.6)
+  let multi = @moonmel.MultiChannelAudioBuffer::new([ch0, ch1], 16000).unwrap()
+  assert_eq(multi.num_channels(), 2)
+
+  let cfg = {
+    ..@moonmel.FeatureConfig::default(),
+    n_fft: 512,
+    hop_length: 256,
+    win_length: 512,
+    n_mels: 20,
+    n_mfcc: 13,
+  }
+
+  let mels = @moonmel.multichannel_mel(multi, config=cfg).unwrap()
+  assert_eq(mels.length(), 2)
+  assert_eq(mels[0].n_rows, 20)
+
+  let ild = @moonmel.interchannel_level_difference(multi, 1, 0, config=cfg).unwrap()
+  assert_eq(ild.n_rows, 257)
+  let ipd = @moonmel.interchannel_phase_difference(multi, 0, 1, config=cfg).unwrap()
+  assert_eq(ipd.n_rows, 257)
+}

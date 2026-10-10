@@ -95,6 +95,17 @@ pub(all) enum MelScale {
   Htk
 } derive(Eq, @debug.Debug)
 
+pub(all) struct MultiChannelAudioBuffer {
+  channels : Array[Array[Double]]
+  sample_rate : Int
+} derive(@debug.Debug)
+pub fn MultiChannelAudioBuffer::channel(Self, Int) -> Result[AudioBuffer, MelError]
+pub fn MultiChannelAudioBuffer::duration(Self) -> Double
+pub fn MultiChannelAudioBuffer::length(Self) -> Int
+pub fn MultiChannelAudioBuffer::new(Array[Array[Double]], Int) -> Result[Self, MelError]
+pub fn MultiChannelAudioBuffer::num_channels(Self) -> Int
+pub fn MultiChannelAudioBuffer::to_mono(Self) -> AudioBuffer
+
 pub(all) enum WindowType {
   PeriodicHann
   SymmetricHann

@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/multichannel"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn multichannel_mel(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
+
+pub fn multichannel_mfcc(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
+
+pub fn multichannel_stft(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

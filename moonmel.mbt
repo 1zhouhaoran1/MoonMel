@@ -2,6 +2,9 @@
 pub type AudioBuffer = @types.AudioBuffer
 
 ///|
+pub type MultiChannelAudioBuffer = @types.MultiChannelAudioBuffer
+
+///|
 pub type FeatureConfig = @types.FeatureConfig
 
 ///|
@@ -256,4 +259,53 @@ pub fn zero_crossing_rate(
   center? : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @spectral.zero_crossing_rate(audio, frame_length~, hop_length~, center~)
+}
+
+///|
+/// Re-export multi-channel STFT extraction.
+pub fn multichannel_stft(
+  buffer : @types.MultiChannelAudioBuffer,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
+  @multichannel.multichannel_stft(buffer, config~)
+}
+
+///|
+/// Re-export multi-channel Mel spectrogram extraction.
+pub fn multichannel_mel(
+  buffer : @types.MultiChannelAudioBuffer,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
+  @multichannel.multichannel_mel(buffer, config~)
+}
+
+///|
+/// Re-export multi-channel MFCC extraction.
+pub fn multichannel_mfcc(
+  buffer : @types.MultiChannelAudioBuffer,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
+  @multichannel.multichannel_mfcc(buffer, config~)
+}
+
+///|
+/// Re-export Inter-channel Level Difference (ILD).
+pub fn interchannel_level_difference(
+  buffer : @types.MultiChannelAudioBuffer,
+  ch1 : Int,
+  ch2 : Int,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @multichannel.interchannel_level_difference(buffer, ch1, ch2, config~)
+}
+
+///|
+/// Re-export Inter-channel Phase Difference (IPD).
+pub fn interchannel_phase_difference(
+  buffer : @types.MultiChannelAudioBuffer,
+  ch1 : Int,
+  ch2 : Int,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @multichannel.interchannel_phase_difference(buffer, ch1, ch2, config~)
 }

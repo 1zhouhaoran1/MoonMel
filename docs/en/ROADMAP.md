@@ -29,7 +29,7 @@ This document tracks planned milestones and feature expansions for MoonMel.
 - [x] **Streaming Feature Extraction**: Rolling-buffer streaming extraction for live audio (StreamingExtractor).
 - [x] **Live Microphone Input**: Real-time microphone capture via Web Audio API with animated spectrogram.
 - [x] **Spectral Descriptors**: Spectral Centroid, Spectral Rolloff, Spectral Flatness, and Zero-Crossing Rate (ZCR).
-- [ ] **Multi-Channel Extraction**: Parallel processing for multichannel arrays.
+- [x] **Multi-Channel Extraction**: Parallel processing for multichannel arrays and spatial acoustics (ILD & IPD).
 
 ---
 
