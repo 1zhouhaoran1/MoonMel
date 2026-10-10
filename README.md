@@ -1,16 +1,47 @@
-# MoonMel
+<p align="center">
+  <img src="docs/banner.jpg" alt="MoonMel: Audio Feature Extraction for MoonBit" width="960" />
+</p>
 
-Audio Feature Extraction for MoonBit (WebAssembly, JavaScript, and Native).
+<p align="center">
+  <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-amber?style=flat-square" />
+  <img alt="Targets: WASM | JS | Native" src="https://img.shields.io/badge/targets-WASM%20%7C%20JS%20%7C%20Native-2b384a?style=flat-square" />
+  <img alt="Zero Dependencies" src="https://img.shields.io/badge/dependencies-none-2b384a?style=flat-square" />
+  <img alt="Reference Parity: librosa 1.0.0" src="https://img.shields.io/badge/parity-librosa_1.0.0-emerald?style=flat-square" />
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2b384a?style=flat-square" /></a>
+</p>
 
-MoonMel is a lightweight, dependency-free digital signal processing (DSP) and machine learning feature extraction engine written in pure MoonBit. It transforms raw PCM audio into Short-Time Fourier Transform (STFT) power spectrograms, Slaney-scale Mel Spectrograms, Log-Mel Spectrograms, and Mel-Frequency Cepstral Coefficients (MFCC).
+<p align="center">
+  Lightweight, deterministic audio feature extraction engine for MoonBit. Pure MoonBit implementation of STFT, Slaney-scale Mel Spectrogram, and MFCC targeting WebAssembly, JavaScript, and Native.
+</p>
 
-All mathematical formulations are verified for numerical equivalence against Python reference toolchains (`librosa 1.0.0`, `scipy 1.18.1`, `numpy 2.5.3`).
+<p align="center">
+  <a href="README_zh.md"><strong>中文说明</strong></a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="docs/en/API_SPECIFICATION.md">API Reference</a> ·
+  <a href="docs/en/ARCHITECTURE.md">Architecture</a> ·
+  <a href="docs/en/SPEC.md">Formal Spec</a> ·
+  <a href="playground/">Playground</a>
+</p>
+
 
 ---
 
-## 1. Architecture
+## Capabilities Overview
 
-MoonMel follows a low-coupling, layered package hierarchy to guarantee clear separation of concerns:
+| Pipeline Stage | Mathematical Operation | Reference Target |
+| :--- | :--- | :--- |
+| **Windowing & Padding** | Periodic Hann, Symmetric Hann, Hamming, Blackman, reflect padding | `scipy.signal.windows.hann(sym=False)` |
+| **Fourier Transform** | In-place Radix-2 Cooley-Tukey FFT, one-sided power spectrum | Exact butterfly matrix |
+| **Mel Filterbank** | Slaney and HTK triangular filterbank with area normalization | `librosa.filters.mel(norm='slaney')` |
+| **Log-Mel Spectrogram** | Decibel compression with `amin=1e-10` and `top_db=80.0` clipping | `librosa.power_to_db` |
+| **Cepstral Coefficients** | Discrete Cosine Transform Type-II (DCT-II) orthogonal normalization | `librosa.feature.mfcc(norm='ortho')` |
+| **Audio Codec** | Pure MoonBit 8-bit & 16-bit PCM RIFF WAV parser, stereo downmixing | Built-in byte stream decoder |
+
+---
+
+## Architecture
+
+MoonMel avoids flat monolithic folders and maintains clean separation of concerns across layered subpackages:
 
 ```
 moonmel/
@@ -18,55 +49,33 @@ moonmel/
 │   ├── core/
 │   │   └── types/          # AudioBuffer, FeatureConfig, Complex, MelError, FeatureMatrix
 │   ├── dsp/
-│   │   ├── window/         # Periodic & symmetric Hann, Hamming, Blackman, reflect padding
-│   │   ├── fft/            # In-place Radix-2 Cooley-Tukey FFT, bit reversal, RFFT power spectrum
+│   │   ├── window/         # Periodic & symmetric windows, reflect padding
+│   │   ├── fft/            # In-place Radix-2 Cooley-Tukey FFT, bit reversal, power spectrum
 │   │   └── stft/           # STFT framing, reflect padding, power & complex spectrograms
 │   ├── features/
-│   │   ├── mel/            # Slaney & HTK Mel scale, triangular filterbank, Mel spectrogram
-│   │   └── mfcc/           # Power-to-dB conversion, Log-Mel, DCT-II ortho, MFCC extraction
+│   │   ├── mel/            # Slaney & HTK Mel scales, triangular filterbank, Mel spectrogram
+│   │   └── mfcc/           # Power-to-dB conversion, Log-Mel, DCT-II ortho, MFCC
 │   ├── codec/
-│   │   └── wav/            # Pure MoonBit RIFF PCM WAV parser (8-bit, 16-bit, stereo to mono)
+│   │   └── wav/            # Pure MoonBit PCM WAV parser (8-bit, 16-bit, stereo to mono)
 │   └── bindings/
-│       └── web/            # WebAssembly and JavaScript JSON bridge for browser integration
+│       └── web/            # WebAssembly and JavaScript JSON bridge for browser apps
 ├── cmd/
-│   └── main/               # CLI benchmark runner and sample analyzer
+│   └── main/               # CLI analyzer and execution benchmarks
 ├── playground/             # Vite + TailwindCSS interactive browser playground
-└── tools/
-    └── reference/          # Python numerical verification generator and ground-truth parity vectors
+├── tools/
+│   └── reference/          # Python numerical verification generator and ground-truth vectors
+└── docs/                   # Formal specs, API guides, and architecture documentation
 ```
 
 ---
 
-## 2. Key Features
+## Quick Start
 
-- **Pure MoonBit**: Zero third-party dependencies, zero C bindings, MIT licensed.
-- **Cross-Platform**: Compiles out-of-the-box to WebAssembly (WASM), JavaScript (ES modules), and Native targets.
-- **Reference Parity**: Matches `librosa` default behavior (`center=True`, periodic Hann window, Slaney Mel scale with area normalization, DCT-II orthogonal normalization).
-- **High Performance**: In-place Radix-2 Cooley-Tukey FFT avoids intermediate heap allocations during frame transformations.
-- **Embedded WAV Codec**: Decodes 8-bit and 16-bit PCM WAV directly inside MoonBit with automatic stereo downmixing.
-- **Interactive Playground**: Includes an interactive browser demonstration with real-time waveform, spectrogram, Mel, and MFCC visualizers.
-
----
-
-## 3. Installation
-
-Add `zhr/moonmel` to your MoonBit project:
+### Installation
 
 ```bash
 moon add zhr/moonmel
 ```
-
-Or declare it in your `moon.pkg`:
-
-```json
-import {
-  "zhr/moonmel",
-}
-```
-
----
-
-## 4. Quick Start
 
 ### Basic Feature Extraction
 
@@ -100,15 +109,15 @@ let buffer = @moonmel.decode_wav(wav_bytes)?
 println("Sample rate: \{buffer.sample_rate} Hz")
 println("Duration:    \{buffer.duration()} seconds")
 
-// Compute MFCC directly from buffer
+// Extract MFCC directly from the decoded buffer
 let mfccs = buffer.mfcc()?
 ```
 
 ---
 
-## 5. Matrix Dimensions and Conventions
+## Matrix Dimensions and Conventions
 
-Outputs are returned as `FeatureMatrix`:
+All feature outputs are returned in a 2D `FeatureMatrix`:
 
 | Feature | Rows (`n_rows`) | Columns (`n_cols`) | Value Range |
 | :--- | :--- | :--- | :--- |
@@ -117,58 +126,11 @@ Outputs are returned as `FeatureMatrix`:
 | **Log-Mel Spectrogram** | `n_mels` (default 80) | `n_frames` | Decibels `dB` (relative to `ref_value=1.0`) |
 | **MFCC** | `n_mfcc` (default 13) | `n_frames` | Real cepstral coefficients `C0 .. C(n-1)` |
 
-Number of time frames:
-```
-n_frames = 1 + floor((audio_length + 2 * pad_width - n_fft) / hop_length)
-```
-When `center = true`, `pad_width = n_fft / 2` with reflect padding.
-
 ---
 
-## 6. Configuration Reference
+## Numerical Parity Report
 
-```moonbit
-pub struct FeatureConfig {
-  sample_rate : Int       // Sampling rate in Hz (default: 16000)
-  n_fft : Int             // FFT window size (default: 1024)
-  hop_length : Int        // Stride between frames (default: 256)
-  win_length : Int        // Window length (default: 1024)
-  window : WindowType     // PeriodicHann, SymmetricHann, Hamming, Blackman, Rectangular
-  center : Bool           // If true, applies reflect padding of n_fft / 2 (default: true)
-  power : Double          // Spectrogram exponent (2.0 = power, 1.0 = magnitude)
-  n_mels : Int            // Number of Mel filterbank channels (default: 80)
-  f_min : Double          // Lowest frequency in Hz (default: 0.0)
-  f_max : Double          // Highest frequency in Hz (default: sample_rate / 2.0)
-  mel_scale : MelScale    // Slaney (default) or Htk
-  mel_norm : MelNorm      // Slaney area normalization (default) or None
-  log_scale : LogScale    // Db (default), NaturalLog, Log10
-  n_mfcc : Int            // Number of MFCC coefficients to retain (default: 13)
-  norm_ortho : Bool       // DCT-II orthogonal normalization (default: true)
-  ref_value : Double      // Reference power for dB calculation (default: 1.0)
-  amin : Double           // Numerical floor clamp (default: 1.0e-10)
-  top_db : Double         // Dynamic range cutoff in dB (default: 80.0)
-}
-```
-
-Preset configurations are available:
-- `@moonmel.FeatureConfig::default()`: General audio processing (16 kHz, 1024 FFT, 256 hop, 80 mels, 13 mfcc).
-- `@moonmel.FeatureConfig::whisper()`: OpenAI Whisper compatible feature layout (16 kHz, 400 FFT, 160 hop, 80 mels, Log10).
-
----
-
-## 7. Numerical Parity Verification
-
-MoonMel includes automated ground-truth verification against `librosa 1.0.0`:
-
-```bash
-# Generate ground-truth vectors
-uv run --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/validate_reference.py
-
-# Run verification test suite
-moon test
-```
-
-### Parity Test Results
+Verified automatically against `librosa 1.0.0`, `scipy 1.18.1`, and `numpy 2.5.3`:
 
 | Pipeline Stage | Comparison Target | Max Absolute Error | Status |
 | :--- | :--- | :--- | :--- |
@@ -180,9 +142,9 @@ moon test
 
 ---
 
-## 8. WebAssembly Playground
+## WebAssembly Playground
 
-An interactive browser demonstration is provided in `playground/`:
+An interactive Vite + TailwindCSS demonstration is included under `playground/`:
 
 ```bash
 cd playground
@@ -190,15 +152,27 @@ pnpm install
 pnpm run dev
 ```
 
-The playground allows:
-1. Uploading custom WAV files or selecting synthetic test signals (440 Hz Sine, Multi-tone Chord, Chirp Sweep, Synthetic Vowel).
-2. Modifying FFT size, Hop length, Mel bands, and MFCC counts in real-time.
-3. Viewing interactive waveform, STFT power spectrogram, Log-Mel spectrogram, and MFCC heatmaps.
-4. Exporting feature matrices in JSON or CSV format.
-5. Measuring true WebAssembly compute latency.
+Key features:
+1. Real WAV file drag-and-drop parser with client-side MoonBit execution.
+2. Built-in synthetic acoustic test presets (440 Hz Sine, Multi-chord, Chirp sweep, Formants).
+3. Real-time parameter adjustment for FFT size, hop length, Mel bands, and MFCC counts.
+4. Canvas rendering for waveform, STFT power spectrogram, Log-Mel spectrogram, and MFCC heatmaps.
+5. Export feature data to JSON or CSV.
+6. Execution latency measurement in milliseconds.
 
 ---
 
-## 9. License
+## Technical Documentation
+
+- [Product Specification](docs/en/PRODUCT.md)
+- [Formal Mathematical Specification](docs/en/SPEC.md)
+- [System Architecture](docs/en/ARCHITECTURE.md)
+- [API Specification](docs/en/API_SPECIFICATION.md)
+- [Development and Testing Guide](docs/en/DEVELOPMENT.md)
+- [Engineering Roadmap](docs/en/ROADMAP.md)
+
+---
+
+## License
 
 MIT License. Copyright (c) 2026 zhr (3449002191@qq.com).

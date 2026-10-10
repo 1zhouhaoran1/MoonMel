@@ -1,74 +1,82 @@
-# MoonMel — MoonBit 原生音频特征提取库
+<p align="center">
+  <img src="docs/banner.jpg" alt="MoonMel: Audio Feature Extraction for MoonBit" width="960" />
+</p>
 
-基于 MoonBit 的跨平台音频数字信号处理（DSP）与机器学习特征提取引擎，支持 WebAssembly、JavaScript 以及 Native 平台。
+<p align="center">
+  <img alt="版本 0.1.0" src="https://img.shields.io/badge/版本-0.1.0-amber?style=flat-square" />
+  <img alt="运行目标: WASM | JS | Native" src="https://img.shields.io/badge/运行目标-WASM%20%7C%20JS%20%7C%20Native-2b384a?style=flat-square" />
+  <img alt="零外部依赖" src="https://img.shields.io/badge/依赖-纯原生零依赖-2b384a?style=flat-square" />
+  <img alt="数值对齐: librosa 1.0.0" src="https://img.shields.io/badge/数值真值对齐-librosa_1.0.0-emerald?style=flat-square" />
+  <a href="LICENSE"><img alt="许可证: MIT" src="https://img.shields.io/badge/许可证-MIT-2b384a?style=flat-square" /></a>
+</p>
 
-MoonMel 采用纯 MoonBit 编写，不依赖任何第三方 C 库或外部运行时，能够将 PCM 单声道音频转换成短时傅里叶变换（STFT）功率谱、Slaney 标度 Mel 频谱图、Log-Mel 频谱图以及 MFCC 倒谱系数。
+<p align="center">
+  基于纯 MoonBit 实现的轻量级、确定性音频数字信号处理（DSP）与机器学习特征提取引擎，支持 WebAssembly、JavaScript 与 Native 运行时。
+</p>
 
-所有算法公式均通过 Python 标准库（`librosa 1.0.0`、`scipy 1.18.1`、`numpy 2.5.3`）进行数值对齐与真值验证。
+<p align="center">
+  <a href="README.md"><strong>English Version</strong></a> ·
+  <a href="#快速上手">快速上手</a> ·
+  <a href="docs/zh/API_SPECIFICATION.md">接口说明</a> ·
+  <a href="docs/zh/ARCHITECTURE.md">架构设计</a> ·
+  <a href="docs/zh/SPEC.md">形式化规范</a> ·
+  <a href="playground/">在线演示</a>
+</p>
 
 ---
 
-## 1. 系统架构与分层设计
+## 核心能力矩阵
 
-项目遵循低耦合、多层级的设计原则，各包职责独立：
+| 阶段 | 核心算法与数学变换 | 对齐标准 |
+| :--- | :--- | :--- |
+| **时域处理** | Periodic Hann、Symmetric Hann、Hamming、Blackman 窗函数，两端镜像反射填充 | `scipy.signal.windows.hann(sym=False)` |
+| **傅里叶变换** | 原地 Radix-2 Cooley-Tukey FFT 蝶形算法，单边功率谱输出 | 连续频域正交投影 |
+| **Mel 滤波器组** | Slaney 与 HTK 刻度三角滤波器组，支持面积归一化 | `librosa.filters.mel(norm='slaney')` |
+| **对数压缩** | 分贝标度转换（dB），支持 `amin=1e-10` 与 `top_db=80.0` 截断保护 | `librosa.power_to_db` |
+| **倒谱提取** | 离散余弦变换（DCT-II）正交归一化，MFCC 特征提取 | `librosa.feature.mfcc(norm='ortho')` |
+| **音频解码** | 纯 MoonBit 实现的 RIFF 8-bit / 16-bit PCM WAV 解析器，声道自动下混 | 原生字节流解析 |
+
+---
+
+## 模块分层与解耦架构
+
+MoonMel 拒绝扁平单目录，坚持按职责清晰解耦：
 
 ```
 moonmel/
 ├── src/
 │   ├── core/
-│   │   └── types/          # 核心音频数据结构、FeatureConfig、Complex 复数、MelError、FeatureMatrix
+│   │   └── types/          # 核心音频容器、FeatureConfig、Complex、MelError、FeatureMatrix
 │   ├── dsp/
-│   │   ├── window/         # 周期性与对称性窗函数（Hann、Hamming、Blackman）及反射填充
-│   │   ├── fft/            # 原地 Radix-2 Cooley-Tukey 快速傅里叶变换、位反转置换、单边功率谱
+│   │   ├── window/         # 周期性与对称性窗函数、反射填充
+│   │   ├── fft/            # 原地 Radix-2 Cooley-Tukey FFT、位反转置换、单边功率谱
 │   │   └── stft/           # 短时傅里叶变换分帧、加窗、单边复数谱与功率谱
 │   ├── features/
-│   │   ├── mel/            # Slaney 与 HTK Mel 刻度映射、三角滤波器组构建、Mel 谱投影
-│   │   └── mfcc/           # 功率转分贝（dB）、对数压缩、DCT-II 正交变换、MFCC 系数提取
+│   │   ├── mel/            # Slaney 与 HTK Mel 刻度、三角滤波器组、Mel 谱投影
+│   │   └── mfcc/           # 功率转分贝（dB）、Log-Mel、DCT-II 正交变换、MFCC
 │   ├── codec/
-│   │   └── wav/            # 纯 MoonBit 实现的 RIFF PCM WAV 解码器（支持 8 位、16 位及立体声混单声道）
+│   │   └── wav/            # 纯 MoonBit PCM WAV 解码器（8-bit、16-bit，双声道转单声道）
 │   └── bindings/
-│       └── web/            # 浏览器与 Playground 调用的 WebAssembly / JavaScript JSON 桥接层
+│       └── web/            # 供浏览器与前端调用的 WebAssembly / JavaScript JSON 桥接层
 ├── cmd/
-│   └── main/               # CLI 性能基准测试与命令行分析工具
-├── playground/             # Vite + TailwindCSS 交互式浏览器演练场
-└── tools/
-    └── reference/          # Python 权威真值生成与数值对齐测试脚本
+│   └── main/               # CLI 性能基准测试与命令行特征分析工具
+├── playground/             # 基于 Vite + TailwindCSS 的浏览器可视化演练场
+├── tools/
+│   └── reference/          # Python 权威真值生成与数值对齐测试脚本
+└── docs/                   # 形式化技术规范、接口文档与系统设计说明
 ```
 
 ---
 
-## 2. 核心特性
+## 快速上手
 
-- **纯原生实现**：100% 纯 MoonBit 实现，无外部 C 依赖，零安全与平台移植负担，采用宽松的 MIT 许可证。
-- **跨平台编译**：开箱即用支持 WebAssembly（WASM）、JavaScript（ESM 模块）与 Native 编译目标。
-- **数值高保真**：严格对齐 `librosa` 默认约定（`center=True` 反射填充、周期性 Hann 窗、Slaney 面积归一化 Mel 滤波器组、DCT-II 正交归一化）。
-- **零内存抖动**：核心 FFT 算法采用原地 Cooley-Tukey 蝶形运算，分帧计算时避免多余数组拷贝与堆内存分配。
-- **内置 WAV 解码**：可直接解析标准 PCM WAV 格式文件字节流，多声道自动下混为单声道。
-- **开箱即用 Playground**：提供可视化调试站点，支持真实 WAV 上传、波形渲染、频谱图热力图及特征数据导出。
-
----
-
-## 3. 安装与引入
-
-在您的 MoonBit 项目中引入：
+### 安装与引入
 
 ```bash
 moon add zhr/moonmel
 ```
 
-或在 `moon.pkg` 中声明导入：
-
-```json
-import {
-  "zhr/moonmel",
-}
-```
-
----
-
-## 4. 快速上手
-
-### 基础特征提取流程
+### 基础特征提取代码
 
 ```moonbit
 let samples : Array[Double] = [ /* 单声道 PCM 浮点音频采样，幅值 [-1.0, 1.0] */ ]
@@ -97,82 +105,31 @@ println("MFCC 维度:   \{mfccs.n_rows} 阶数 x \{mfccs.n_cols} 帧")
 let wav_bytes : Array[Byte] = [ /* 读取的 WAV 二进制数据 */ ]
 let buffer = @moonmel.decode_wav(wav_bytes)?
 
-println("音频采样率: \{buffer.sample_rate} Hz")
-println("音频时长:   \{buffer.duration()} 秒")
+println("采样率: \{buffer.sample_rate} Hz")
+println("时长:   \{buffer.duration()} 秒")
 
-// 直接从 AudioBuffer 提取特征
+// 直接从解码后的 AudioBuffer 提取 MFCC
 let mfccs = buffer.mfcc()?
 ```
 
 ---
 
-## 5. 矩阵维度与输出约定
+## 输出矩阵维度约定
 
-特征结果统一由 `FeatureMatrix` 承载：
+特征统一封装于 `FeatureMatrix` 二维结构中：
 
-| 特征类型 | 行数（`n_rows`） | 列数（`n_cols`） | 数值物理意义 |
+| 特征类型 | 行数（`n_rows`） | 列数（`n_cols`） | 取值范围与物理含义 |
 | :--- | :--- | :--- | :--- |
 | **STFT 频谱图** | `n_fft / 2 + 1`（默认 513） | `n_frames` | 线性功率 `|X|^2`（非负） |
 | **Mel 频谱图** | `n_mels`（默认 80） | `n_frames` | 滤波器组加权能量（非负） |
 | **Log-Mel 频谱图** | `n_mels`（默认 80） | `n_frames` | 分贝值 `dB`（相对基准 `ref_value=1.0`） |
 | **MFCC 倒谱系数** | `n_mfcc`（默认 13） | `n_frames` | 实数倒谱系数 `C0 .. C(n-1)` |
 
-时间帧数计算公式：
-```
-n_frames = 1 + floor((audio_length + 2 * pad_width - n_fft) / hop_length)
-```
-当配置 `center = true` 时，`pad_width = n_fft / 2`，采用两端镜像对称填充。
-
 ---
 
-## 6. 参数配置说明
+## 数值精度验证报告
 
-```moonbit
-pub struct FeatureConfig {
-  sample_rate : Int       // 音频采样率（默认：16000 Hz）
-  n_fft : Int             // 傅里叶变换窗口点数（默认：1024）
-  hop_length : Int        // 帧移步长（默认：256）
-  win_length : Int        // 窗口长度（默认：1024）
-  window : WindowType     // 窗函数：PeriodicHann, SymmetricHann, Hamming, Blackman, Rectangular
-  center : Bool           // 是否在两端反射填充 n_fft / 2（默认：true）
-  power : Double          // 频谱指数（2.0 为功率谱，1.0 为幅度谱）
-  n_mels : Int            // Mel 滤波器通道数（默认：80）
-  f_min : Double          // 滤波器最低截止频率（默认：0.0 Hz）
-  f_max : Double          // 滤波器最高截止频率（默认：sample_rate / 2.0）
-  mel_scale : MelScale    // Mel 公式：Slaney（默认）或 Htk
-  mel_norm : MelNorm      // 归一化方式：Slaney 面积归一化（默认）或 None
-  log_scale : LogScale    // 对数压缩模式：Db（默认）、NaturalLog、Log10
-  n_mfcc : Int            // 保留的 MFCC 阶数（默认：13）
-  norm_ortho : Bool       // DCT-II 正交归一化（默认：true）
-  ref_value : Double      // dB 转换的基准功率（默认：1.0）
-  amin : Double           // 数值保护下界（默认：1.0e-10）
-  top_db : Double         // 动态范围截断阈值（默认：80.0 dB）
-}
-```
-
-预设方案：
-- `@moonmel.FeatureConfig::default()`：常规语音与音频分析通用配置（16 kHz，1024 点 FFT，256 步长，80 通道 Mel，13 阶 MFCC）。
-- `@moonmel.FeatureConfig::whisper()`：兼容 OpenAI Whisper ASR 前端特征格式（16 kHz，400 点 FFT，160 步长，80 通道 Mel，Log10 压缩）。
-
----
-
-## 7. 数值验证与基准测试
-
-运行数值验证与测试集：
-
-```bash
-# 生成 Python 真值基准数据
-uv run --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/validate_reference.py
-
-# 运行 MoonBit 全套测试
-moon test
-
-# 运行 JavaScript 与 WebAssembly 跨后端测试
-moon test --target js
-moon test --target wasm
-```
-
-### 数值对齐结果
+与 Python `librosa 1.0.0`、`scipy 1.18.1`、`numpy 2.5.3` 官方真值全自动化严格比对：
 
 | 验证项 | 对比基准 | 最大绝对误差 | 验证结论 |
 | :--- | :--- | :--- | :--- |
@@ -184,9 +141,9 @@ moon test --target wasm
 
 ---
 
-## 8. WebAssembly 演示站点
+## WebAssembly 交互式演练场
 
-演示前端代码位于 `playground/` 目录：
+前端演示位于 `playground/` 目录：
 
 ```bash
 cd playground
@@ -194,15 +151,27 @@ pnpm install
 pnpm run dev
 ```
 
-功能亮点：
-1. 本地解析真实 WAV 文件或合成标准音频测试信号（440 Hz 单频正弦波、三频和弦、扫频信号、合成元音）。
-2. 在线实时调节 FFT 大小、帧移、Mel 频带数及 MFCC 阶数。
-3. 纯浏览器端渲染高清晰度波形图、STFT 功率谱热力图、Mel 频谱图及 MFCC 倒谱矩阵。
-4. 鼠标悬停实时查看各帧各阶系数值，支持导出为 JSON 及 CSV 格式。
-5. 实时显示 MoonBit 算法在浏览器端的执行毫秒耗时。
+特性包含：
+1. 本地直接拖拽加载真实 WAV 文件并解析。
+2. 内置合成音频预设（440 Hz 单频正弦波、三和弦、扫频 Chirp、合成元音）。
+3. 实时调节 FFT 大小、帧移步长、Mel 通道数及 MFCC 阶数。
+4. 高清 Canvas 绘制波形图、STFT 功率谱图、Log-Mel 谱图及 MFCC 热力图。
+5. 一键导出 JSON 与 CSV 格式矩阵数据。
+6. 实时测量纯 MoonBit 算法在浏览器端的执行毫秒耗时。
 
 ---
 
-## 9. 开源许可证
+## 详细技术文档导航
+
+- [产品规格说明书 (Product Specification)](docs/zh/PRODUCT.md)
+- [形式化技术规范 (Formal Specification)](docs/zh/SPEC.md)
+- [系统架构设计 (Architecture)](docs/zh/ARCHITECTURE.md)
+- [API 详细接口手册 (API Specification)](docs/zh/API_SPECIFICATION.md)
+- [开发者指南与测试 (Development Guide)](docs/zh/DEVELOPMENT.md)
+- [项目演进路线图 (Roadmap)](docs/zh/ROADMAP.md)
+
+---
+
+## 开源许可证
 
 本项目基于 MIT License 开源。版权所有 (c) 2026 zhr (3449002191@qq.com)。
