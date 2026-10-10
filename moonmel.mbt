@@ -164,6 +164,39 @@ pub fn create_window(kind : @types.WindowType, n : Int) -> Array[Double] {
 }
 
 ///|
+/// Re-export audio resampler (windowed-sinc bandlimited by default).
+pub fn resample(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+  filter_size? : Int = 16,
+) -> Result[Array[Double], @types.MelError] {
+  @resample.resample_sinc(samples, orig_sr, target_sr, filter_size~)
+}
+
+///|
+/// Re-export linear interpolation audio resampler.
+pub fn resample_linear(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+) -> Result[Array[Double], @types.MelError] {
+  @resample.resample_linear(samples, orig_sr, target_sr)
+}
+
+///|
+/// Re-export streaming extractor type alias.
+pub type StreamingExtractor = @streaming.StreamingExtractor
+
+///|
+/// Re-export constructor for StreamingExtractor.
+pub fn create_streaming_extractor(
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[@streaming.StreamingExtractor, @types.MelError] {
+  @streaming.StreamingExtractor::new(config~)
+}
+
+///|
 /// Re-export Reflect padding.
 pub fn pad_reflect(samples : Array[Double], pad_width : Int) -> Array[Double] {
   @window.pad_reflect(samples, pad_width)

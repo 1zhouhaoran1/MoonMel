@@ -77,13 +77,20 @@
           </div>
         </div>
 
-        <!-- Audio Playback Preview -->
-        <div class="pt-2 border-t border-studio-800/80 flex items-center justify-between">
-          <button id="btn-play-audio" class="text-xs px-3 py-1.5 rounded bg-accent-copper/20 hover:bg-accent-copper/30 text-accent-warm border border-accent-copper/40 transition flex items-center space-x-1.5">
+        <!-- Audio Playback Preview & Live Mic -->
+        <div class="pt-2 border-t border-studio-800/80 flex items-center justify-between gap-2">
+          <button id="btn-play-audio" class="text-xs px-3 py-1.5 rounded bg-accent-copper/20 hover:bg-accent-copper/30 text-accent-warm border border-accent-copper/40 transition flex items-center space-x-1.5 flex-1 justify-center">
             <span id="play-icon">▶</span>
-            <span id="play-text">Play Audio</span>
+            <span id="play-text">Play</span>
           </button>
-          <span id="audio-meta" class="text-[11px] font-mono text-studio-400">1.00s @ 16000Hz</span>
+          <button id="btn-mic-stream" class="text-xs px-3 py-1.5 rounded bg-studio-850 hover:bg-studio-800 text-slate-300 border border-studio-700 transition flex items-center space-x-1.5 flex-1 justify-center">
+            <span id="mic-icon">🎙️</span>
+            <span id="mic-text">Live Mic</span>
+          </button>
+        </div>
+        <div class="flex justify-between items-center text-[11px] font-mono text-studio-400">
+          <span id="audio-meta">1.00s @ 16000Hz</span>
+          <span id="mic-status" class="hidden text-amber-400 font-semibold animate-pulse">● STREAMING</span>
         </div>
       </div>
 

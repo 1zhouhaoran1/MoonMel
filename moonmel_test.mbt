@@ -164,3 +164,30 @@ test "facade_rms_and_energy" {
     assert_true((r - 1.5).abs() < 1.0e-10)
   }
 }
+
+///|
+test "facade_resampling" {
+  let sig = Array::make(4800, 1.0)
+  let down = @moonmel.resample(sig, 48000, 16000).unwrap()
+  let lin = @moonmel.resample_linear(sig, 48000, 16000).unwrap()
+  assert_eq(down.length(), 1600)
+  assert_eq(lin.length(), 1600)
+}
+
+///|
+test "facade_streaming_pipeline" {
+  let cfg = {
+    ..@moonmel.FeatureConfig::default(),
+    n_fft: 512,
+    hop_length: 256,
+    win_length: 512,
+    n_mels: 20,
+    n_mfcc: 13,
+  }
+  let ext = @moonmel.create_streaming_extractor(config=cfg).unwrap()
+  ext.push_samples(Array::make(512, 0.5))
+  assert_eq(ext.available_frames(), 1)
+  let mel = ext.pop_mel_frames()
+  assert_eq(mel.n_rows, 20)
+  assert_eq(mel.n_cols, 1)
+}

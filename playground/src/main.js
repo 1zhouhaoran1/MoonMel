@@ -454,6 +454,89 @@ document.addEventListener('DOMContentLoaded', () => {
     URL.revokeObjectURL(url);
   });
 
+  // Live Microphone Streaming
+  const btnMic = document.getElementById('btn-mic-stream');
+  const micStatus = document.getElementById('mic-status');
+  const micIcon = document.getElementById('mic-icon');
+  const micText = document.getElementById('mic-text');
+
+  let isStreamingMic = false;
+  let micStream = null;
+  let micAudioCtx = null;
+  let micNode = null;
+  let liveBuffer = [];
+
+  btnMic.addEventListener('click', async () => {
+    if (isStreamingMic) {
+      // Stop streaming
+      isStreamingMic = false;
+      if (micStream) {
+        micStream.getTracks().forEach((t) => t.stop());
+        micStream = null;
+      }
+      if (micNode) {
+        micNode.disconnect();
+        micNode = null;
+      }
+      if (micAudioCtx) {
+        await micAudioCtx.close();
+        micAudioCtx = null;
+      }
+      btnMic.classList.remove('bg-rose-900/60', 'text-rose-200', 'border-rose-500');
+      btnMic.classList.add('bg-studio-850', 'text-slate-300', 'border-studio-700');
+      micText.textContent = 'Live Mic';
+      micIcon.textContent = '🎙️';
+      micStatus.classList.add('hidden');
+      return;
+    }
+
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true },
+      });
+      micAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = micAudioCtx.createMediaStreamSource(micStream);
+
+      micNode = micAudioCtx.createScriptProcessor(2048, 1, 1);
+      liveBuffer = [];
+
+      let lastUpdateTime = Date.now();
+      micNode.onaudioprocess = (e) => {
+        if (!isStreamingMic) return;
+        const inputData = e.inputBuffer.getChannelData(0);
+        for (let i = 0; i < inputData.length; i++) {
+          liveBuffer.push(inputData[i]);
+        }
+        const maxLen = micAudioCtx.sampleRate;
+        if (liveBuffer.length > maxLen) {
+          liveBuffer = liveBuffer.slice(liveBuffer.length - maxLen);
+        }
+
+        const now = Date.now();
+        if (now - lastUpdateTime > 70 && liveBuffer.length >= 1024) {
+          lastUpdateTime = now;
+          currentSamples = liveBuffer.slice();
+          sampleRate = micAudioCtx.sampleRate;
+          document.getElementById('audio-meta').textContent = `${(currentSamples.length / sampleRate).toFixed(2)}s @ ${sampleRate}Hz`;
+          runExtraction();
+        }
+      };
+
+      source.connect(micNode);
+      micNode.connect(micAudioCtx.destination);
+
+      isStreamingMic = true;
+      btnMic.classList.remove('bg-studio-850', 'text-slate-300', 'border-studio-700');
+      btnMic.classList.add('bg-rose-900/60', 'text-rose-200', 'border-rose-500');
+      micText.textContent = 'Stop Mic';
+      micIcon.textContent = '⏹️';
+      micStatus.classList.remove('hidden');
+    } catch (err) {
+      console.error('Microphone access denied or unavailable:', err);
+      alert('Could not access microphone: ' + err.message);
+    }
+  });
+
   // Handle Window Resize
   window.addEventListener('resize', () => {
     if (lastResult) {

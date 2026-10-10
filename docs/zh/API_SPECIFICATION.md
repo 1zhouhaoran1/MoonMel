@@ -165,3 +165,39 @@ pub fn compute_energy(
 ) -> Result[FeatureMatrix, MelError]
 ```
 - 输出形状：`[1, n_frames]`。
+
+### 2.9 `resample` / `resample_linear`
+高保真音频重采样（Windowed-Sinc 抗混叠滤波与快速线性插值）。
+
+```moonbit
+pub fn resample(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+  filter_size? : Int = 16
+) -> Result[Array[Double], MelError]
+
+pub fn resample_linear(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int
+) -> Result[Array[Double], MelError]
+```
+- 默认采用加窗 Sinc 频带受限插值算法，降采样自动施加 Nyquist 低通抗混叠滤波。
+
+### 2.10 `StreamingExtractor`
+基于环形缓冲与预分配中间态的实时流式特征提取器。
+
+```moonbit
+pub fn create_streaming_extractor(
+  config? : FeatureConfig
+) -> Result[StreamingExtractor, MelError]
+
+pub fn StreamingExtractor::push_samples(self : StreamingExtractor, chunk : Array[Double]) -> Unit
+pub fn StreamingExtractor::available_frames(self : StreamingExtractor) -> Int
+pub fn StreamingExtractor::pop_mel_frames(self : StreamingExtractor) -> FeatureMatrix
+pub fn StreamingExtractor::pop_mfcc_frames(self : StreamingExtractor) -> FeatureMatrix
+pub fn StreamingExtractor::reset(self : StreamingExtractor) -> Unit
+```
+- 零额外堆分配，内部重用 FFT 与功率谱缓冲区，支持边采集边分帧输出。
+

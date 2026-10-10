@@ -25,9 +25,10 @@
 - [x] **Delta 与 Delta-Delta 一阶/二阶差分特征**：增强语音时序动态特征建模。
 - [x] **预加重高通滤波器 (Pre-emphasis / De-emphasis)**：高频补偿增强（$y[n] = x[n] - \alpha x[n-1]$）与逆滤波重建。
 - [x] **帧能量与 RMS 均方根能量 (Root Mean Square Energy)**：时域与频域分帧能量抽取。
+- [x] **高保真音频重采样器 (Audio Resampling)**：支持 44.1k/48k 转 16k 语音标准采样率（Sinc 抗混叠滤波与线性插值）。
+- [x] **流式特征提取 (Streaming Audio)**：支持定长滑动窗口实时在线增量特征抽取（StreamingExtractor）。
+- [x] **实时麦克风输入接入**：在 Playground 中接入 Web Audio API 实时录音流与动态频谱渲染。
 - [ ] **多声道与多通道谱支持**：支持独立多声道特征并行抽取。
-- [ ] **流式特征提取 (Streaming Audio)**：支持定长滑动窗口实时在线增量特征抽取。
-- [ ] **实时麦克风输入接入**：在 Playground 中接入 Web Audio API AudioWorklet 实时录音特征抽取。
 
 ---
 

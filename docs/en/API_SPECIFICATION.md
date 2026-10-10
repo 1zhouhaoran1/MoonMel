@@ -165,3 +165,39 @@ pub fn compute_energy(
 ) -> Result[FeatureMatrix, MelError]
 ```
 - Output shape: `[1, n_frames]`.
+
+### 2.9 `resample` / `resample_linear`
+High-fidelity audio resampling (Windowed-Sinc bandlimited interpolation & fast linear interpolation).
+
+```moonbit
+pub fn resample(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+  filter_size? : Int = 16
+) -> Result[Array[Double], MelError]
+
+pub fn resample_linear(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int
+) -> Result[Array[Double], MelError]
+```
+- Applies windowed-sinc interpolation with automatic Nyquist antialiasing low-pass filtering.
+
+### 2.10 `StreamingExtractor`
+Zero-allocation rolling buffer streaming feature extractor for live audio feeds.
+
+```moonbit
+pub fn create_streaming_extractor(
+  config? : FeatureConfig
+) -> Result[StreamingExtractor, MelError]
+
+pub fn StreamingExtractor::push_samples(self : StreamingExtractor, chunk : Array[Double]) -> Unit
+pub fn StreamingExtractor::available_frames(self : StreamingExtractor) -> Int
+pub fn StreamingExtractor::pop_mel_frames(self : StreamingExtractor) -> FeatureMatrix
+pub fn StreamingExtractor::pop_mfcc_frames(self : StreamingExtractor) -> FeatureMatrix
+pub fn StreamingExtractor::reset(self : StreamingExtractor) -> Unit
+```
+- Reuses internal FFT, power spectrum, and filterbank buffers; emits frames incrementally.
+

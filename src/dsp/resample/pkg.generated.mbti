@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/dsp/resample"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+
+pub fn resample_sinc(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

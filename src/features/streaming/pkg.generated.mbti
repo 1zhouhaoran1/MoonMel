@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/streaming"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct StreamingExtractor {
+  config : @types.FeatureConfig
+  window : Array[Double]
+  filterbank : @types.FeatureMatrix
+  mut buffer : Array[Double]
+  fft_re : Array[Double]
+  fft_im : Array[Double]
+  spec_buffer : Array[Double]
+}
+pub fn StreamingExtractor::available_frames(Self) -> Int
+pub fn StreamingExtractor::new(config? : @types.FeatureConfig) -> Result[Self, @types.MelError]
+pub fn StreamingExtractor::pop_mel_frames(Self) -> @types.FeatureMatrix
+pub fn StreamingExtractor::pop_mfcc_frames(Self) -> @types.FeatureMatrix
+pub fn StreamingExtractor::push_samples(Self, Array[Double]) -> Unit
+pub fn StreamingExtractor::reset(Self) -> Unit
+
+// Type aliases
+
+// Traits
