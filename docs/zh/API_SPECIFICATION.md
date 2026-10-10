@@ -291,5 +291,37 @@ pub fn interchannel_phase_difference(
 - ILD 输出形状：`[n_bins, n_frames]`，单位分贝（dB）。
 - IPD 输出形状：`[n_bins, n_frames]`，取值范围 `[-PI, PI]` 弧度，通过复数互谱相位角求得。
 
+### 2.17 `chroma_stft` 与 `chroma_filterbank`
+12 音级色度图（Chromagram）与色度滤波器组，用于音高类分类与音乐和弦分析。
 
+```moonbit
+pub fn chroma_filterbank(
+  sample_rate : Int,
+  n_fft : Int,
+  tuning? : Double = 0.0,
+  f_min? : Double = 0.0
+) -> FeatureMatrix
 
+pub fn chroma_stft(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default(),
+  norm? : ChromaNorm = ChromaNorm::None
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[12, n_frames]`，对应 12 个半音音级：C, C#, D, D#, E, F, F#, G, G#, A, A#, B。
+- 归一化选项：`ChromaNorm::None`、`ChromaNorm::L1`、`ChromaNorm::L2`、`ChromaNorm::Max`。
+
+### 2.18 `fft_padded` 与 `rfft_padded`
+针对任意非 2 幂次长度信号的自动零填充快速傅里叶变换。
+
+```moonbit
+pub fn fft_padded(
+  signal : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn rfft_padded(
+  frame : Array[Double],
+  power? : Double = 2.0
+) -> Result[Array[Double], MelError]
+```
+- 自动将信号向后补零至最近的 $2^k$ 长度，无缝支持任意长度采样输入。

@@ -291,5 +291,37 @@ pub fn interchannel_phase_difference(
 - ILD shape: `[n_bins, n_frames]`, in decibels (dB).
 - IPD shape: `[n_bins, n_frames]`, in radians `[-PI, PI]`, evaluated from complex cross-spectrum angle.
 
+### 2.17 `chroma_stft` & `chroma_filterbank`
+12-semitone Chromagram and Chroma filterbank for pitch-class profile analysis and musical chord recognition.
 
+```moonbit
+pub fn chroma_filterbank(
+  sample_rate : Int,
+  n_fft : Int,
+  tuning? : Double = 0.0,
+  f_min? : Double = 0.0
+) -> FeatureMatrix
 
+pub fn chroma_stft(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default(),
+  norm? : ChromaNorm = ChromaNorm::None
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[12, n_frames]`, corresponding to semitones: C, C#, D, D#, E, F, F#, G, G#, A, A#, B.
+- Normalization options: `ChromaNorm::None`, `ChromaNorm::L1`, `ChromaNorm::L2`, `ChromaNorm::Max`.
+
+### 2.18 `fft_padded` & `rfft_padded`
+Forward and real FFT transforms with automatic zero-padding to next power of 2 for arbitrary input lengths.
+
+```moonbit
+pub fn fft_padded(
+  signal : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn rfft_padded(
+  frame : Array[Double],
+  power? : Double = 2.0
+) -> Result[Array[Double], MelError]
+```
+- Automatically pads signal/frame to next $2^k$ boundary, enabling non-power-of-two inputs.

@@ -33,9 +33,11 @@ This document tracks planned milestones and feature expansions for MoonMel.
 
 ---
 
-### Phase 3: 0.3.0 Vectorization & Arbitrary FFT
+### Phase 3: 0.3.0 Vectorization, Chroma & Arbitrary FFT
+- [x] **12-Semitone Chroma STFT (Chromagram)**: Pitch class extraction, Gaussian filterbanks, and L1/L2/Max frame normalizations.
+- [x] **Arbitrary-length Padded FFT / RFFT**: Automatic zero-padding eliminating $2^k$ input size restrictions.
 - [ ] **WebAssembly 128-bit SIMD**: SIMD acceleration for butterfly operations and filter projection.
-- [ ] **Chirp Z-Transform / Bluestein FFT**: Support for arbitrary non-power-of-two FFT sizes.
+- [ ] **Bluestein's FFT Algorithm**: Fast-convolution discrete Fourier transform for arbitrary prime lengths.
 - [ ] **Polyphase Resampler**: High-fidelity Sinc-based audio resampling engine.
 
 ---

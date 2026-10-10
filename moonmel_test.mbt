@@ -235,3 +235,38 @@ test "facade_multichannel_pipeline" {
   let ipd = @moonmel.interchannel_phase_difference(multi, 0, 1, config=cfg).unwrap()
   assert_eq(ipd.n_rows, 257)
 }
+
+///|
+test "facade_chroma_and_padded_fft" {
+  // Test pitch class name
+  assert_eq(@moonmel.pitch_class_name(0), "C")
+  assert_eq(@moonmel.pitch_class_name(9), "A")
+
+  // Test chroma filterbank
+  let fb = @moonmel.chroma_filterbank(16000, 1024)
+  assert_eq(fb.n_rows, 12)
+  assert_eq(fb.n_cols, 513)
+
+  // Test chroma STFT on audio
+  let sig = Array::make(2048, 0.0)
+  for i in 0..<2048 {
+    sig[i] = @math.sin(i.to_double() * 0.1)
+  }
+  let chroma = @moonmel.chroma_stft(sig).unwrap()
+  assert_eq(chroma.n_rows, 12)
+  assert_true(chroma.n_cols > 0)
+
+  // Test padded FFT
+  let non_pow2 = [
+    @moonmel.Complex::{ re: 1.0, im: 0.0, },
+    @moonmel.Complex::{ re: 2.0, im: 0.0, },
+    @moonmel.Complex::{ re: 3.0, im: 0.0, },
+  ]
+  let padded_fft_res = @moonmel.fft_padded(non_pow2).unwrap()
+  assert_eq(padded_fft_res.length(), 4)
+
+  // Test padded RFFT
+  let non_pow2_real = [1.0, 2.0, 3.0]
+  let padded_rfft_res = @moonmel.rfft_padded(non_pow2_real).unwrap()
+  assert_eq(padded_rfft_res.length(), 3) // 4/2 + 1
+}

@@ -309,3 +309,66 @@ pub fn interchannel_phase_difference(
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @multichannel.interchannel_phase_difference(buffer, ch1, ch2, config~)
 }
+
+///|
+/// Re-export Chroma normalization enum.
+pub type ChromaNorm = @chroma.ChromaNorm
+
+///|
+/// Re-export pitch class name mapping.
+pub fn pitch_class_name(idx : Int) -> String {
+  @chroma.pitch_class_name(idx)
+}
+
+///|
+/// Re-export Chroma filterbank generation.
+pub fn chroma_filterbank(
+  sample_rate : Int,
+  n_fft : Int,
+  tuning? : Double = 0.0,
+  f_min? : Double = 0.0,
+) -> @types.FeatureMatrix {
+  @chroma.chroma_filterbank(sample_rate, n_fft, tuning, f_min)
+}
+
+///|
+/// Re-export Chroma from spectrogram.
+pub fn chroma_from_spectrogram(
+  spectrogram : @types.FeatureMatrix,
+  sample_rate : Int,
+  n_fft : Int,
+  norm? : @chroma.ChromaNorm = @chroma.ChromaNorm::None,
+  tuning? : Double = 0.0,
+  f_min? : Double = 0.0,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @chroma.chroma_from_spectrogram(
+    spectrogram, sample_rate, n_fft, norm, tuning, f_min,
+  )
+}
+
+///|
+/// Re-export 12-bin Chroma STFT feature extraction.
+pub fn chroma_stft(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  norm? : @chroma.ChromaNorm = @chroma.ChromaNorm::None,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @chroma.chroma_stft(samples, config, norm)
+}
+
+///|
+/// Re-export Forward FFT with zero-padding for arbitrary length signals.
+pub fn fft_padded(
+  signal : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  @fft.fft_padded(signal)
+}
+
+///|
+/// Re-export Real FFT spectrum with zero-padding for arbitrary length frames.
+pub fn rfft_padded(
+  frame : Array[Double],
+  power? : Double = 2.0,
+) -> Result[Array[Double], @types.MelError] {
+  @fft.rfft_padded(frame, power)
+}

@@ -10,11 +10,15 @@ pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelErr
 
 pub fn fft_in_place(Array[Double], Array[Double], Int, Bool) -> Unit
 
+pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn is_power_of_two(Int) -> Bool
 
 pub fn next_power_of_two(Int) -> Int
+
+pub fn rfft_padded(Array[Double], Double) -> Result[Array[Double], @types.MelError]
 
 pub fn rfft_spectrum(Array[Double], Int, Double) -> Result[Array[Double], @types.MelError]
 

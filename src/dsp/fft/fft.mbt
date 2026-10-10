@@ -190,3 +190,37 @@ pub fn rfft_spectrum(
   }
   Ok(spec)
 }
+
+///|
+/// Forward FFT with automatic zero-padding to the next power of 2 for arbitrary length signals.
+pub fn fft_padded(
+  signal : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  let n = signal.length()
+  if n == 0 {
+    return Err(EmptyAudio)
+  }
+  let target_n = next_power_of_two(n)
+  let padded : Array[@types.Complex] = Array::make(
+    target_n,
+    @types.complex(0.0, 0.0),
+  )
+  for i in 0..<n {
+    padded[i] = signal[i]
+  }
+  fft(padded)
+}
+
+///|
+/// Real FFT spectrum with automatic zero-padding to the next power of 2 for arbitrary length frames.
+pub fn rfft_padded(
+  frame : Array[Double],
+  power : Double,
+) -> Result[Array[Double], @types.MelError] {
+  let flen = frame.length()
+  if flen == 0 {
+    return Err(EmptyAudio)
+  }
+  let target_n = next_power_of_two(flen)
+  rfft_spectrum(frame, target_n, power)
+}

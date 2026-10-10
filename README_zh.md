@@ -34,6 +34,8 @@
 | **Mel 滤波器组** | Slaney 与 HTK 刻度三角滤波器组，支持面积归一化 | `librosa.filters.mel(norm='slaney')` |
 | **对数压缩** | 分贝标度转换（dB），支持 `amin=1e-10` 与 `top_db=80.0` 截断保护 | `librosa.power_to_db` |
 | **倒谱提取** | 离散余弦变换（DCT-II）正交归一化，MFCC 特征提取 | `librosa.feature.mfcc(norm='ortho')` |
+| **色度图提取** | 12 音级色度特征（Chroma STFT / Chromagram），支持高斯滤波器组与帧归一化 | `librosa.feature.chroma_stft` |
+| **FFT 长度扩展** | 自动零填充至最近 $2^k$ 阶次（Padded FFT / RFFT），支持任意输入序列长度 | 连续序列零填充 |
 | **音频解码** | 纯 MoonBit 实现的 RIFF 8-bit / 16-bit PCM WAV 解析器，声道自动下混 | 原生字节流解析 |
 
 ---

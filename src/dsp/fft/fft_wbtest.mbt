@@ -53,3 +53,53 @@ test "fft_roundtrip" {
     Err(_) => assert_true(false)
   }
 }
+
+///|
+test "fft_padded_non_power_of_two" {
+  // Length 3 should be padded to 4
+  let signal3 = [
+    @types.complex(1.0, 0.0),
+    @types.complex(2.0, 0.0),
+    @types.complex(3.0, 0.0),
+  ]
+  match fft_padded(signal3) {
+    Ok(padded_fft) => {
+      assert_eq(padded_fft.length(), 4)
+      // DC component (k=0) should be 1 + 2 + 3 + 0 = 6
+      assert_true((padded_fft[0].re - 6.0).abs() < 1.0e-7)
+      assert_true(padded_fft[0].im.abs() < 1.0e-7)
+    }
+    Err(_) => assert_true(false)
+  }
+
+  // Length 5 should be padded to 8
+  let signal5 = [
+    @types.complex(1.0, 0.0),
+    @types.complex(1.0, 0.0),
+    @types.complex(1.0, 0.0),
+    @types.complex(1.0, 0.0),
+    @types.complex(1.0, 0.0),
+  ]
+  match fft_padded(signal5) {
+    Ok(padded_fft) => {
+      assert_eq(padded_fft.length(), 8)
+      // DC component should be 5.0
+      assert_true((padded_fft[0].re - 5.0).abs() < 1.0e-7)
+    }
+    Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "rfft_padded_non_power_of_two" {
+  let frame = [1.0, 2.0, 3.0]
+  match rfft_padded(frame, 2.0) {
+    Ok(spec) => {
+      // Padded to 4 -> n_bins = 4/2 + 1 = 3
+      assert_eq(spec.length(), 3)
+      // DC power = 6^2 = 36
+      assert_true((spec[0] - 36.0).abs() < 1.0e-7)
+    }
+    Err(_) => assert_true(false)
+  }
+}

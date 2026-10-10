@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/chroma"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn chroma_filterbank(Int, Int, Double, Double) -> @types.FeatureMatrix
+
+pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int, Int, ChromaNorm, Double, Double) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn chroma_stft(Array[Double], @types.FeatureConfig, ChromaNorm) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn pitch_class_name(Int) -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum ChromaNorm {
+  None
+  L1
+  L2
+  Max
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

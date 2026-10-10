@@ -35,6 +35,8 @@
 | **Mel Filterbank** | Slaney and HTK triangular filterbank with area normalization | `librosa.filters.mel(norm='slaney')` |
 | **Log-Mel Spectrogram** | Decibel compression with `amin=1e-10` and `top_db=80.0` clipping | `librosa.power_to_db` |
 | **Cepstral Coefficients** | Discrete Cosine Transform Type-II (DCT-II) orthogonal normalization | `librosa.feature.mfcc(norm='ortho')` |
+| **Chroma Features** | 12-semitone pitch-class profiles (Chroma STFT), Gaussian filterbanks & norm | `librosa.feature.chroma_stft` |
+| **Padded FFT** | Automatic zero-padding to next $2^k$ boundary for arbitrary signal lengths | Zero-padded discrete transform |
 | **Audio Codec** | Pure MoonBit 8-bit & 16-bit PCM RIFF WAV parser, stereo downmixing | Built-in byte stream decoder |
 
 ---

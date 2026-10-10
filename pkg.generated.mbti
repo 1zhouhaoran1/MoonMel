@@ -3,10 +3,17 @@ package "zhr/moonmel"
 
 import {
   "zhr/moonmel/src/core/types",
+  "zhr/moonmel/src/features/chroma",
   "zhr/moonmel/src/features/streaming",
 }
 
 // Values
+pub fn chroma_filterbank(Int, Int, tuning? : Double, f_min? : Double) -> @types.FeatureMatrix
+
+pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int, Int, norm? : @chroma.ChromaNorm, tuning? : Double, f_min? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn chroma_stft(Array[Double], config? : @types.FeatureConfig, norm? : @chroma.ChromaNorm) -> Result[@types.FeatureMatrix, @types.MelError]
+
 pub fn compute_delta(@types.FeatureMatrix, width? : Int, order? : Int) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn compute_energy(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
@@ -24,6 +31,8 @@ pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
 pub fn deemphasis(Array[Double], alpha? : Double) -> Array[Double]
 
 pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
@@ -47,6 +56,8 @@ pub fn multichannel_stft(@types.MultiChannelAudioBuffer, config? : @types.Featur
 
 pub fn pad_reflect(Array[Double], Int) -> Array[Double]
 
+pub fn pitch_class_name(Int) -> String
+
 pub fn power_to_db(@types.FeatureMatrix, Double, Double, Double) -> @types.FeatureMatrix
 
 pub fn preemphasis(Array[Double], alpha? : Double) -> Array[Double]
@@ -54,6 +65,8 @@ pub fn preemphasis(Array[Double], alpha? : Double) -> Array[Double]
 pub fn resample(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
 
 pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+
+pub fn rfft_padded(Array[Double], power? : Double) -> Result[Array[Double], @types.MelError]
 
 pub fn spectral_centroid(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -73,6 +86,8 @@ pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? :
 
 // Type aliases
 pub using @types {type AudioBuffer}
+
+pub using @chroma {type ChromaNorm}
 
 pub using @types {type Complex}
 

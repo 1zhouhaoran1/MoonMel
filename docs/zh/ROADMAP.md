@@ -33,9 +33,11 @@
 
 ---
 
-### Phase 3: 0.3.0 性能极限与指令集加速
+### Phase 3: 0.3.0 性能极限与特征扩展
+- [x] **12 音级色度图特征 (Chroma STFT / Chromagram)**：支持音高类特征抽取、高斯滤波器组与多样化时间帧归一化（L1 / L2 / Max）。
+- [x] **任意长度 FFT 零填充扩展 (Padded FFT / RFFT)**：消除对输入序列必须为 $2^k$ 的严格限制。
 - [ ] **WebAssembly SIMD 向量化加速**：针对蝶形运算和三角滤波投影进行 128 位 SIMD 原语优化。
-- [ ] **任意长度 FFT (Chirp Z-Transform / Bluestein's Algorithm)**：突破当前 Radix-2 必须为 2 的幂次约束。
+- [ ] **任意长度 Bluestein 算法**：基于快速卷积的任意素数长度离散傅里叶变换。
 - [ ] **多采样率多相重采样器 (Polyphase Resampler)**：内置高质量 Sinc 降采样与升采样算法。
 
 ---
