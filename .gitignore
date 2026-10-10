@@ -17,3 +17,7 @@ __pycache__/
 # Application forms containing private personal info
 *APPLICATION*
 *申报*
+
+# Local quality audit and issue tracking
+ISSUE.md
+issue.md
