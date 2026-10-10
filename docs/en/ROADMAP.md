@@ -22,8 +22,9 @@ This document tracks planned milestones and feature expansions for MoonMel.
 ---
 
 ### Phase 2: 0.2.0 Algorithmic Expansions
-- [ ] **Delta & Delta-Delta Coefficients**: First and second temporal cepstral derivatives.
-- [ ] **Pre-emphasis High-Pass Filter**: High frequency spectral compensation ($y[n] = x[n] - \alpha x[n-1]$).
+- [x] **Delta & Delta-Delta Coefficients**: First and second temporal cepstral derivatives.
+- [x] **Pre-emphasis & De-emphasis Filters**: High frequency spectral compensation and exact inverse reconstruction.
+- [x] **RMS & Frame Energy Extraction**: Time-domain and spectral frame root-mean-square energy.
 - [ ] **Multi-Channel Extraction**: Parallel processing for multichannel arrays.
 - [ ] **Streaming Feature Extraction**: Rolling-buffer streaming extraction for live audio.
 - [ ] **Live Microphone Input**: Real-time microphone capture via Web Audio API AudioWorklet.

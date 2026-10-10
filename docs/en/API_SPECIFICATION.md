@@ -124,3 +124,44 @@ Parses raw PCM WAV file bytes.
 pub fn decode_wav(bytes : Array[Byte]) -> Result[AudioBuffer, MelError]
 ```
 - Supports 8-bit and 16-bit PCM; automatically averages stereo down to mono.
+
+### 2.6 `preemphasis` / `deemphasis`
+High-pass pre-emphasis filtering and exact inverse reconstruction.
+
+```moonbit
+pub fn preemphasis(samples : Array[Double], alpha? : Double = 0.97) -> Array[Double]
+pub fn deemphasis(samples : Array[Double], alpha? : Double = 0.97) -> Array[Double]
+```
+- $y[n] = x[n] - \alpha x[n-1]$ compensates high frequencies and spectral roll-off.
+
+### 2.7 `compute_delta`
+Calculates first-order (Delta) and second-order (Delta-Delta) temporal dynamic features.
+
+```moonbit
+pub fn compute_delta(
+  matrix : FeatureMatrix,
+  width? : Int = 9,
+  order? : Int = 1
+) -> Result[FeatureMatrix, MelError]
+```
+- Implements standard HTK / librosa polynomial approximation derivative; retains input matrix dimensions.
+
+### 2.8 `compute_rms` / `compute_energy`
+Extracts framed root-mean-square (RMS) energy and sum-of-squares total energy.
+
+```moonbit
+pub fn compute_rms(
+  audio : AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true
+) -> Result[FeatureMatrix, MelError]
+
+pub fn compute_energy(
+  audio : AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[1, n_frames]`.

@@ -124,3 +124,44 @@ pub fn mfcc(
 pub fn decode_wav(bytes : Array[Byte]) -> Result[AudioBuffer, MelError]
 ```
 - 支持 8-bit、16-bit 线性 PCM；多声道自动下混为单声道。
+
+### 2.6 `preemphasis` / `deemphasis`
+高频预加重滤波与逆滤波恢复。
+
+```moonbit
+pub fn preemphasis(samples : Array[Double], alpha? : Double = 0.97) -> Array[Double]
+pub fn deemphasis(samples : Array[Double], alpha? : Double = 0.97) -> Array[Double]
+```
+- $y[n] = x[n] - \alpha x[n-1]$，补偿高频分量并消除唇辐射效应。
+
+### 2.7 `compute_delta`
+计算一阶差分（Delta）或二阶差分（Delta-Delta）时序动态特征。
+
+```moonbit
+pub fn compute_delta(
+  matrix : FeatureMatrix,
+  width? : Int = 9,
+  order? : Int = 1
+) -> Result[FeatureMatrix, MelError]
+```
+- 严格遵循 HTK / librosa 多项式求导近似公式，输出矩阵与输入保持一致形状。
+
+### 2.8 `compute_rms` / `compute_energy`
+提取时域分帧均方根能量与总能量。
+
+```moonbit
+pub fn compute_rms(
+  audio : AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true
+) -> Result[FeatureMatrix, MelError]
+
+pub fn compute_energy(
+  audio : AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[1, n_frames]`。
