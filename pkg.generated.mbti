@@ -45,9 +45,17 @@ pub fn resample(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Dou
 
 pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
 
+pub fn spectral_centroid(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn spectral_flatness(Array[Double], config? : @types.FeatureConfig, amin? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn spectral_rolloff(Array[Double], config? : @types.FeatureConfig, roll_percent? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
+
 pub fn stft(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@types.Complex]], @types.MelError]
+
+pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
 // Errors
 

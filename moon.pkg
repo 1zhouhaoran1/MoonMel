@@ -10,6 +10,7 @@ import {
   "zhr/moonmel/src/features/delta",
   "zhr/moonmel/src/features/energy",
   "zhr/moonmel/src/features/streaming",
+  "zhr/moonmel/src/features/spectral",
   "zhr/moonmel/src/codec/wav",
 }
 

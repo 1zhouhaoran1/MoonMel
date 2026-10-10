@@ -201,3 +201,52 @@ pub fn StreamingExtractor::reset(self : StreamingExtractor) -> Unit
 ```
 - 零额外堆分配，内部重用 FFT 与功率谱缓冲区，支持边采集边分帧输出。
 
+### 2.11 `spectral_centroid`
+计算时频谱质心（Spectral Centroid），表征声音明亮度与频率能量重心。
+
+```moonbit
+pub fn spectral_centroid(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[1, n_frames]`，单位 Hz。
+
+### 2.12 `spectral_rolloff`
+计算频谱能量滚降截止频率（Spectral Rolloff）。
+
+```moonbit
+pub fn spectral_rolloff(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default(),
+  roll_percent? : Double = 0.85
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[1, n_frames]`，默认计算累积能量达 85% 的截止频率点。
+
+### 2.13 `spectral_flatness`
+计算谱平坦度（Spectral Flatness / Wiener 熵），量化频谱白噪声度。
+
+```moonbit
+pub fn spectral_flatness(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default(),
+  amin? : Double = 1.0e-10
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[1, n_frames]`，取值范围 `[0.0, 1.0]`（纯音接近 0，白噪接近 1）。
+
+### 2.14 `zero_crossing_rate`
+计算时域分帧过零率（ZCR），区分清音/浊音与瞬态边界。
+
+```moonbit
+pub fn zero_crossing_rate(
+  audio : AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[1, n_frames]`。
+
+

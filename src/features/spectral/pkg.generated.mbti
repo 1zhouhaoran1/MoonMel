@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/spectral"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn spectral_centroid(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn spectral_flatness(Array[Double], config? : @types.FeatureConfig, amin? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn spectral_rolloff(Array[Double], config? : @types.FeatureConfig, roll_percent? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

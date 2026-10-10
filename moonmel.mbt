@@ -217,3 +217,43 @@ pub fn ifft(
 ) -> Result[Array[@types.Complex], @types.MelError] {
   @fft.ifft(spectrum)
 }
+
+///|
+/// Re-export Spectral Centroid extraction.
+pub fn spectral_centroid(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @spectral.spectral_centroid(samples, config~)
+}
+
+///|
+/// Re-export Spectral Rolloff extraction.
+pub fn spectral_rolloff(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  roll_percent? : Double = 0.85,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @spectral.spectral_rolloff(samples, config~, roll_percent~)
+}
+
+///|
+/// Re-export Spectral Flatness extraction.
+pub fn spectral_flatness(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  amin? : Double = 1.0e-10,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @spectral.spectral_flatness(samples, config~, amin~)
+}
+
+///|
+/// Re-export Zero-Crossing Rate extraction.
+pub fn zero_crossing_rate(
+  audio : @types.AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @spectral.zero_crossing_rate(audio, frame_length~, hop_length~, center~)
+}

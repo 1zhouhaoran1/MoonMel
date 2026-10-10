@@ -201,3 +201,52 @@ pub fn StreamingExtractor::reset(self : StreamingExtractor) -> Unit
 ```
 - Reuses internal FFT, power spectrum, and filterbank buffers; emits frames incrementally.
 
+### 2.11 `spectral_centroid`
+Extracts Spectral Centroid across frames, representing spectral center of mass and perceived brightness.
+
+```moonbit
+pub fn spectral_centroid(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default()
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[1, n_frames]`, in Hz.
+
+### 2.12 `spectral_rolloff`
+Extracts Spectral Rolloff frequency below which 85% of total spectral energy is contained.
+
+```moonbit
+pub fn spectral_rolloff(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default(),
+  roll_percent? : Double = 0.85
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[1, n_frames]`.
+
+### 2.13 `spectral_flatness`
+Extracts Spectral Flatness (Wiener entropy), measuring noise-like versus tone-like spectral character.
+
+```moonbit
+pub fn spectral_flatness(
+  samples : Array[Double],
+  config? : FeatureConfig = FeatureConfig::default(),
+  amin? : Double = 1.0e-10
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[1, n_frames]`, range `[0.0, 1.0]`.
+
+### 2.14 `zero_crossing_rate`
+Extracts Zero-Crossing Rate (ZCR) across framed audio signals.
+
+```moonbit
+pub fn zero_crossing_rate(
+  audio : AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[1, n_frames]`.
+
+

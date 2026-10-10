@@ -28,6 +28,7 @@
 - [x] **高保真音频重采样器 (Audio Resampling)**：支持 44.1k/48k 转 16k 语音标准采样率（Sinc 抗混叠滤波与线性插值）。
 - [x] **流式特征提取 (Streaming Audio)**：支持定长滑动窗口实时在线增量特征抽取（StreamingExtractor）。
 - [x] **实时麦克风输入接入**：在 Playground 中接入 Web Audio API 实时录音流与动态频谱渲染。
+- [x] **频域声学描述符 (Spectral Descriptors)**：谱质心 (Centroid)、谱滚降 (Rolloff)、谱平坦度 (Flatness) 与时域过零率 (ZCR)。
 - [ ] **多声道与多通道谱支持**：支持独立多声道特征并行抽取。
 
 ---

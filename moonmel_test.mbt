@@ -191,3 +191,21 @@ test "facade_streaming_pipeline" {
   assert_eq(mel.n_rows, 20)
   assert_eq(mel.n_cols, 1)
 }
+
+///|
+test "facade_spectral_features" {
+  let sig = Array::make(3200, 0.5)
+  let cfg = @moonmel.FeatureConfig::default()
+  let centroid = @moonmel.spectral_centroid(sig, config=cfg).unwrap()
+  let rolloff = @moonmel.spectral_rolloff(sig, config=cfg).unwrap()
+  let flatness = @moonmel.spectral_flatness(sig, config=cfg).unwrap()
+  let audio = @moonmel.AudioBuffer::new(sig, 16000).unwrap()
+  let zcr = @moonmel.zero_crossing_rate(audio).unwrap()
+
+  assert_eq(centroid.n_rows, 1)
+  assert_eq(rolloff.n_rows, 1)
+  assert_eq(flatness.n_rows, 1)
+  assert_eq(zcr.n_rows, 1)
+  assert_true(centroid.n_cols > 0)
+  assert_true(rolloff.n_cols > 0)
+}
