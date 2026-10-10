@@ -1,0 +1,43 @@
+# MoonMel 演进路线图 (Roadmap)
+
+[English](../en/ROADMAP.md) | [中文说明](./ROADMAP.md)
+
+本文档规划 MoonMel 从当前 0.1.0 Hackathon MVP 版本向生产级生态基础设施演进的里程碑。
+
+---
+
+## 里程碑阶段规划
+
+### Phase 1: 0.1.0 MVP (当前版本 - 2026 Hackathon)
+- [x] 纯 MoonBit 原地 Radix-2 Cooley-Tukey 快速傅里叶变换。
+- [x] 周期性与对称性 Hann 窗函数，支持 `center=True` 镜像反射填充。
+- [x] Slaney 标度三角 Mel 滤波器组构建与面积归一化。
+- [x] Log-Mel 功率转分贝压缩（支持 `amin` 与 `top_db` 保护）。
+- [x] 正交归一化 DCT-II 与 MFCC 系数提取。
+- [x] 纯 MoonBit PCM WAV 解码器（支持 8-bit、16-bit 及声道自动下混）。
+- [x] 基于 Python `librosa 1.0.0` 的 15 项权威数值真值严格对齐测试。
+- [x] 低耦合分层架构（`src/core/types`、`src/dsp/*`、`src/features/*`、`src/codec/*`）。
+- [x] 交互式 Vite + TailwindCSS WebAssembly 浏览器演练场。
+
+---
+
+### Phase 2: 0.2.0 特征扩展与算法增强
+- [ ] **Delta 与 Delta-Delta 一阶/二阶差分特征**：增强语音时序动态特征建模。
+- [ ] **预加重高通滤波器 (Pre-emphasis)**：高频补偿增强（$y[n] = x[n] - \alpha x[n-1]$）。
+- [ ] **多声道与多通道谱支持**：支持独立多声道特征并行抽取。
+- [ ] **流式特征提取 (Streaming Audio)**：支持定长滑动窗口实时在线增量特征抽取。
+- [ ] **实时麦克风输入接入**：在 Playground 中接入 Web Audio API AudioWorklet 实时录音特征抽取。
+
+---
+
+### Phase 3: 0.3.0 性能极限与指令集加速
+- [ ] **WebAssembly SIMD 向量化加速**：针对蝶形运算和三角滤波投影进行 128 位 SIMD 原语优化。
+- [ ] **任意长度 FFT (Chirp Z-Transform / Bluestein's Algorithm)**：突破当前 Radix-2 必须为 2 的幂次约束。
+- [ ] **多采样率多相重采样器 (Polyphase Resampler)**：内置高质量 Sinc 降采样与升采样算法。
+
+---
+
+### Phase 4: 1.0.0 生产级生态发布
+- [ ] 发布到 Mooncakes 官方包管理器中心。
+- [ ] 提供与 ONNX Runtime Web / Transformers.js 的特征输入适配器。
+- [ ] 针对常见开源语音识别模型（Whisper、Wav2Vec2、Conformer）提供标准化前端特征抽取流水线。
