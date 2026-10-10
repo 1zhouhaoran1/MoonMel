@@ -1,0 +1,108 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/core/types"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn complex(Double, Double) -> Complex
+
+// Errors
+
+// Types and methods
+pub(all) struct AudioBuffer {
+  samples : Array[Double]
+  sample_rate : Int
+} derive(@debug.Debug)
+pub fn AudioBuffer::duration(Self) -> Double
+pub fn AudioBuffer::length(Self) -> Int
+pub fn AudioBuffer::new(Array[Double], Int) -> Result[Self, MelError]
+
+pub(all) struct Complex {
+  re : Double
+  im : Double
+} derive(Eq, @debug.Debug)
+pub fn Complex::abs(Self) -> Double
+pub fn Complex::abs2(Self) -> Double
+pub fn Complex::add(Self, Self) -> Self
+pub fn Complex::mul(Self, Self) -> Self
+pub fn Complex::sub(Self, Self) -> Self
+
+pub(all) struct FeatureConfig {
+  sample_rate : Int
+  n_fft : Int
+  hop_length : Int
+  win_length : Int
+  window : WindowType
+  center : Bool
+  power : Double
+  n_mels : Int
+  f_min : Double
+  f_max : Double
+  mel_scale : MelScale
+  mel_norm : MelNorm
+  log_scale : LogScale
+  n_mfcc : Int
+  norm_ortho : Bool
+  ref_value : Double
+  amin : Double
+  top_db : Double
+} derive(@debug.Debug)
+pub fn FeatureConfig::default() -> Self
+pub fn FeatureConfig::validate(Self) -> Result[Unit, MelError]
+pub fn FeatureConfig::whisper() -> Self
+
+pub(all) struct FeatureMatrix {
+  data : Array[Array[Double]]
+  n_rows : Int
+  n_cols : Int
+} derive(@debug.Debug)
+pub fn FeatureMatrix::at(Self, Int, Int) -> Double
+pub fn FeatureMatrix::flatten(Self) -> Array[Double]
+pub fn FeatureMatrix::get_col(Self, Int) -> Array[Double]
+pub fn FeatureMatrix::get_row(Self, Int) -> Array[Double]
+pub fn FeatureMatrix::new(Array[Array[Double]]) -> Self
+pub fn FeatureMatrix::set(Self, Int, Int, Double) -> Unit
+pub fn FeatureMatrix::transpose(Self) -> Self
+pub fn FeatureMatrix::zeros(Int, Int) -> Self
+
+pub(all) enum LogScale {
+  Db
+  NaturalLog
+  Log10
+} derive(Eq, @debug.Debug)
+
+pub(all) enum MelError {
+  EmptyAudio
+  InvalidSampleRate(Int)
+  InvalidFftSize(Int)
+  InvalidHopLength(Int)
+  InvalidMelBands(Int)
+  InvalidFrequencyRange(Double, Double)
+  DimensionMismatch(String)
+  WavParseError(String)
+} derive(Eq, @debug.Debug)
+pub impl Show for MelError
+
+pub(all) enum MelNorm {
+  Slaney
+  None
+} derive(Eq, @debug.Debug)
+
+pub(all) enum MelScale {
+  Slaney
+  Htk
+} derive(Eq, @debug.Debug)
+
+pub(all) enum WindowType {
+  PeriodicHann
+  SymmetricHann
+  Hamming
+  Blackman
+  Rectangular
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

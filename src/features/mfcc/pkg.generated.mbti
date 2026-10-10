@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/mfcc"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn dct_ii(Array[Double], Int, Bool) -> Array[Double]
+
+pub fn log_mel_spectrogram(Array[Double], @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mfcc(Array[Double], @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn power_to_db(@types.FeatureMatrix, Double, Double, Double) -> @types.FeatureMatrix
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

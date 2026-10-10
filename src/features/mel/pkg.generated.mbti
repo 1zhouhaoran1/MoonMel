@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/mel"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn hz_to_mel(Double, @types.MelScale) -> Double
+
+pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mel_spectrogram(Array[Double], @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mel_to_hz(Double, @types.MelScale) -> Double
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

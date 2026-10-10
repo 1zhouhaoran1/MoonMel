@@ -1,0 +1,58 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn create_window(@types.WindowType, Int) -> Array[Double]
+
+pub fn dct_ii(Array[Double], Int, Bool) -> Array[Double]
+
+pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
+
+pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mfcc(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn pad_reflect(Array[Double], Int) -> Array[Double]
+
+pub fn power_to_db(@types.FeatureMatrix, Double, Double, Double) -> @types.FeatureMatrix
+
+pub fn stft(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@types.Complex]], @types.MelError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @types {type AudioBuffer}
+
+pub using @types {type Complex}
+
+pub using @types {type FeatureConfig}
+
+pub using @types {type FeatureMatrix}
+
+pub using @types {type LogScale}
+
+pub using @types {type MelError}
+
+pub using @types {type MelNorm}
+
+pub using @types {type MelScale}
+
+pub using @types {type WindowType}
+
+// Traits

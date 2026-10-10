@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/dsp/window"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn create_window(@types.WindowType, Int) -> Array[Double]
+
+pub fn pad_reflect(Array[Double], Int) -> Array[Double]
+
+pub let pi : Double
+
+pub fn reflect_index(Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,12 @@
+pkgtype(kind: "foreign_library")
+
+import {
+  "zhr/moonmel",
+}
+
+options(
+  link: {
+    "js": { "exports": ["process_audio", "process_wav_bytes"] },
+    "wasm": { "exports": ["process_audio", "process_wav_bytes"] },
+  },
+)
