@@ -100,6 +100,56 @@ pub fn dct_ii(
 }
 
 ///|
+/// Re-export pre-emphasis high-pass filter.
+pub fn preemphasis(
+  samples : Array[Double],
+  alpha? : Double = 0.97,
+) -> Array[Double] {
+  @filter.preemphasis(samples, alpha~)
+}
+
+///|
+/// Re-export de-emphasis inverse filter.
+pub fn deemphasis(
+  samples : Array[Double],
+  alpha? : Double = 0.97,
+) -> Array[Double] {
+  @filter.deemphasis(samples, alpha~)
+}
+
+///|
+/// Re-export Delta / Delta-Delta dynamic feature calculation.
+pub fn compute_delta(
+  matrix : @types.FeatureMatrix,
+  width? : Int = 9,
+  order? : Int = 1,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @delta.compute_delta(matrix, width~, order~)
+}
+
+///|
+/// Re-export Root Mean Square (RMS) frame energy extraction.
+pub fn compute_rms(
+  audio : @types.AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @energy.compute_rms(audio, frame_length~, hop_length~, center~)
+}
+
+///|
+/// Re-export total frame sum-of-squares energy extraction.
+pub fn compute_energy(
+  audio : @types.AudioBuffer,
+  frame_length? : Int = 2048,
+  hop_length? : Int = 512,
+  center? : Bool = true,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @energy.compute_energy(audio, frame_length~, hop_length~, center~)
+}
+
+///|
 /// Re-export WAV decoder.
 pub fn decode_wav(
   bytes : Array[Byte],

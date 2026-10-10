@@ -3,8 +3,11 @@ import {
   "zhr/moonmel/src/dsp/window",
   "zhr/moonmel/src/dsp/fft",
   "zhr/moonmel/src/dsp/stft",
+  "zhr/moonmel/src/dsp/filter",
   "zhr/moonmel/src/features/mel",
   "zhr/moonmel/src/features/mfcc",
+  "zhr/moonmel/src/features/delta",
+  "zhr/moonmel/src/features/energy",
   "zhr/moonmel/src/codec/wav",
 }
 
