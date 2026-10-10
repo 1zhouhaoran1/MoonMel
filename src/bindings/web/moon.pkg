@@ -6,7 +6,7 @@ import {
 
 options(
   link: {
-    "js": { "exports": ["process_audio", "process_wav_bytes"] },
-    "wasm": { "exports": ["process_audio", "process_wav_bytes"] },
+    "js": { "exports": [ "process_audio", "process_wav_bytes" ] },
+    "wasm": { "exports": [ "process_audio", "process_wav_bytes" ] },
   },
 )

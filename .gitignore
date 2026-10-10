@@ -13,3 +13,7 @@ __pycache__/
 .env
 .env.*
 .env.local
+
+# Application forms containing private personal info
+*APPLICATION*
+*申报*

@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/bindings/web"
+
+// Values
+pub fn process_audio(Array[Double], Int, Int, Int, Int, Int) -> String
+
+pub fn process_wav_bytes(Array[Byte], Int, Int, Int, Int) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

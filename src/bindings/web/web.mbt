@@ -1,11 +1,12 @@
-///| Web binding API for MoonMel Playground.
+///|
+/// Web binding API for MoonMel Playground.
 pub fn process_audio(
   samples : Array[Double],
   sample_rate : Int,
   n_fft : Int,
   hop_length : Int,
   n_mels : Int,
-  n_mfcc : Int
+  n_mfcc : Int,
 ) -> String {
   let cfg = {
     ..@moonmel.FeatureConfig::default(),
@@ -40,10 +41,14 @@ pub fn process_audio(
       // Linear Mel Spectrogram matrix [n_mels][n_frames]
       sb.write_string("\"mel\":[")
       for r in 0..<mel_mat.n_rows {
-        if r > 0 { sb.write_string(",") }
+        if r > 0 {
+          sb.write_string(",")
+        }
         sb.write_string("[")
         for c in 0..<mel_mat.n_cols {
-          if c > 0 { sb.write_string(",") }
+          if c > 0 {
+            sb.write_string(",")
+          }
           sb.write_string("\{mel_mat.at(r, c)}")
         }
         sb.write_string("]")
@@ -53,10 +58,14 @@ pub fn process_audio(
       // Log-Mel matrix [n_mels][n_frames]
       sb.write_string("\"log_mel\":[")
       for r in 0..<logmel_mat.n_rows {
-        if r > 0 { sb.write_string(",") }
+        if r > 0 {
+          sb.write_string(",")
+        }
         sb.write_string("[")
         for c in 0..<logmel_mat.n_cols {
-          if c > 0 { sb.write_string(",") }
+          if c > 0 {
+            sb.write_string(",")
+          }
           sb.write_string("\{logmel_mat.at(r, c)}")
         }
         sb.write_string("]")
@@ -66,10 +75,14 @@ pub fn process_audio(
       // MFCC matrix [n_mfcc][n_frames]
       sb.write_string("\"mfcc\":[")
       for r in 0..<mfcc_mat.n_rows {
-        if r > 0 { sb.write_string(",") }
+        if r > 0 {
+          sb.write_string(",")
+        }
         sb.write_string("[")
         for c in 0..<mfcc_mat.n_cols {
-          if c > 0 { sb.write_string(",") }
+          if c > 0 {
+            sb.write_string(",")
+          }
           sb.write_string("\{mfcc_mat.at(r, c)}")
         }
         sb.write_string("]")
@@ -77,43 +90,54 @@ pub fn process_audio(
       sb.write_string("],")
 
       // Downsampled STFT preview (max 64 frequency bins for speedy rendering)
-      let stft_sample_bins = if stft_mat.n_rows > 64 { 64 } else { stft_mat.n_rows }
+      let stft_sample_bins = if stft_mat.n_rows > 64 {
+        64
+      } else {
+        stft_mat.n_rows
+      }
       sb.write_string("\"stft_preview\":[")
       for r in 0..<stft_sample_bins {
-        if r > 0 { sb.write_string(",") }
+        if r > 0 {
+          sb.write_string(",")
+        }
         sb.write_string("[")
         let bin_idx = r * (stft_mat.n_rows / stft_sample_bins)
         for c in 0..<stft_mat.n_cols {
-          if c > 0 { sb.write_string(",") }
+          if c > 0 {
+            sb.write_string(",")
+          }
           sb.write_string("\{stft_mat.at(bin_idx, c)}")
         }
         sb.write_string("]")
       }
       sb.write_string("]")
     }
-    _ => {
-      sb.write_string("\"error\":\"Feature extraction failed\"")
-    }
+    _ => sb.write_string("\"error\":\"Feature extraction failed\"")
   }
 
   sb.write_string("}")
   sb.to_string()
 }
 
-///| Web binding for WAV bytes.
+///|
+/// Web binding for WAV bytes.
 pub fn process_wav_bytes(
   bytes : Array[Byte],
   n_fft : Int,
   hop_length : Int,
   n_mels : Int,
-  n_mfcc : Int
+  n_mfcc : Int,
 ) -> String {
   match @moonmel.decode_wav(bytes) {
-    Ok(buf) => {
-      process_audio(buf.samples, buf.sample_rate, n_fft, hop_length, n_mels, n_mfcc)
-    }
-    Err(e) => {
-      "{\"success\":false,\"error\":\"\{e}\"}"
-    }
+    Ok(buf) =>
+      process_audio(
+        buf.samples,
+        buf.sample_rate,
+        n_fft,
+        hop_length,
+        n_mels,
+        n_mfcc,
+      )
+    Err(e) => "{\"success\":false,\"error\":\"\{e}\"}"
   }
 }

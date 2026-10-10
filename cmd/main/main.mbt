@@ -1,3 +1,4 @@
+///|
 fn main {
   println("==================================================")
   println(" MoonMel Audio DSP Benchmark (MoonBit 0.1.0)       ")
