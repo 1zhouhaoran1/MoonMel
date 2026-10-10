@@ -1,3 +1,4 @@
+///|
 test "facade_full_pipeline" {
   let samples : Array[Double] = Array::make(3200, 0.0)
   for i in 0..<3200 {
@@ -39,6 +40,7 @@ test "facade_full_pipeline" {
   }
 }
 
+///|
 test "numerical_parity_with_librosa_reference" {
   let cfg = @moonmel.FeatureConfig::default()
 
@@ -111,19 +113,8 @@ test "numerical_parity_with_librosa_reference" {
       assert_eq(mfcc_mat.n_rows, 13)
       assert_eq(mfcc_mat.n_cols, 16)
       let ref_mfcc = [
-        -382.8412,
-        49.6230,
-        34.3304,
-        12.5705,
-        -10.9932,
-        -31.4456,
-        -44.7312,
-        -48.5245,
-        -42.6553,
-        -29.0133,
-        -10.9842,
-        7.4128,
-        22.4587,
+        -382.8412, 49.6230, 34.3304, 12.5705, -10.9932, -31.4456, -44.7312, -48.5245,
+        -42.6553, -29.0133, -10.9842, 7.4128, 22.4587,
       ]
       for k in 0..<13 {
         let actual = mfcc_mat.at(k, 8)
@@ -132,5 +123,44 @@ test "numerical_parity_with_librosa_reference" {
       }
     }
     Err(_) => assert_true(false)
+  }
+}
+
+///|
+test "facade_preemphasis_and_deemphasis" {
+  let sig = [0.1, -0.4, 0.7, -0.2, 0.9, -0.5]
+  let filtered = @moonmel.preemphasis(sig, alpha=0.97)
+  let restored = @moonmel.deemphasis(filtered, alpha=0.97)
+  for i in 0..<sig.length() {
+    assert_true((restored[i] - sig[i]).abs() < 1.0e-12)
+  }
+}
+
+///|
+test "facade_delta_and_delta_delta" {
+  let samples : Array[Double] = Array::make(3200, 0.0)
+  for i in 0..<3200 {
+    samples[i] = @math.sin(i.to_double() * 0.05)
+  }
+  let mfccs = @moonmel.mfcc(samples).unwrap()
+  let deltas = @moonmel.compute_delta(mfccs, width=5, order=1).unwrap()
+  let delta_deltas = @moonmel.compute_delta(mfccs, width=5, order=2).unwrap()
+  assert_eq(deltas.n_rows, 13)
+  assert_eq(deltas.n_cols, mfccs.n_cols)
+  assert_eq(delta_deltas.n_rows, 13)
+  assert_eq(delta_deltas.n_cols, mfccs.n_cols)
+}
+
+///|
+test "facade_rms_and_energy" {
+  let samples = Array::make(2048, 1.5)
+  let audio = @moonmel.AudioBuffer::new(samples, 16000).unwrap()
+  let rms = @moonmel.compute_rms(audio, frame_length=512, hop_length=256).unwrap()
+  let energy = @moonmel.compute_energy(audio, frame_length=512, hop_length=256).unwrap()
+  assert_eq(rms.n_rows, 1)
+  assert_eq(rms.n_cols, energy.n_cols)
+  for c in 0..<rms.n_cols {
+    let r = rms.at(0, c)
+    assert_true((r - 1.5).abs() < 1.0e-10)
   }
 }
