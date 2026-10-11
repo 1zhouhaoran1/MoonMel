@@ -1,7 +1,7 @@
 ///|
 test "median_filter_1d impulse suppression" {
   let signal = [2.0, 2.0, 100.0, 2.0, 2.0]
-  let filtered = median_filter_1d(signal, 3)
+  let filtered = @hpss.median_filter_1d(signal, 3)
   assert_eq(filtered.length(), 5)
   // The impulse 100.0 at index 2 should be rejected by median filter of window 3
   assert_eq(filtered[2], 2.0)
@@ -18,7 +18,7 @@ test "hpss synthetic matrix separation" {
     spec.set(r, 6, 10.0)
   }
 
-  let config : HpssConfig = {
+  let config : @hpss.HpssConfig = {
     kernel_harm: 5,
     kernel_perc: 5,
     power: 2.0,
@@ -27,7 +27,7 @@ test "hpss synthetic matrix separation" {
     mask_mode: Soft,
   }
 
-  let result = hpss(spec, config)
+  let result = @hpss.hpss(spec, config)
   assert_eq(result.harmonic.n_rows, 9)
   assert_eq(result.harmonic.n_cols, 9)
 
@@ -61,7 +61,7 @@ test "hpss audio pipeline harmonic tone" {
   }
   let audio = @types.AudioBuffer::new(samples, sr).unwrap()
   let f_cfg = @types.FeatureConfig::default()
-  let h_cfg : HpssConfig = {
+  let h_cfg : @hpss.HpssConfig = {
     kernel_harm: 15,
     kernel_perc: 15,
     power: 2.0,
@@ -70,8 +70,8 @@ test "hpss audio pipeline harmonic tone" {
     mask_mode: Soft,
   }
 
-  let hpss_res = hpss_from_audio(audio, f_cfg, h_cfg).unwrap()
-  let harm_ratios = harmonic_energy_ratio(hpss_res)
+  let hpss_res = @hpss.hpss_from_audio(audio, f_cfg, h_cfg).unwrap()
+  let harm_ratios = @hpss.harmonic_energy_ratio(hpss_res)
   assert_true(harm_ratios.length() > 0)
   // For sustained pure sine wave, middle frames should have dominant harmonic ratio
   let mid_frame = harm_ratios.length() / 2

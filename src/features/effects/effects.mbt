@@ -15,12 +15,18 @@ pub fn phase_vocoder(
   hop_length : Int,
   n_fft : Int,
 ) -> Result[Array[Array[@types.Complex]], @types.MelError] {
-  if rate <= 0.0 {
+  if !@types.is_finite(rate) || rate <= 0.0 {
     return Err(
       @types.MelError::DimensionMismatch("Vocoder rate must be positive"),
     )
   }
   let n_frames = frames.length()
+  if n_fft <= 0 {
+    return Err(InvalidFftSize(n_fft))
+  }
+  if hop_length <= 0 {
+    return Err(InvalidHopLength(hop_length))
+  }
   if n_frames == 0 {
     return Err(EmptyAudio)
   }
@@ -139,7 +145,7 @@ pub fn time_stretch(
   if samples.is_empty() {
     return Err(EmptyAudio)
   }
-  if rate <= 0.0 {
+  if !@types.is_finite(rate) || rate <= 0.0 {
     return Err(
       @types.MelError::DimensionMismatch("time_stretch rate must be positive"),
     )
@@ -182,6 +188,9 @@ pub fn pitch_shift(
   }
   if sr <= 0 {
     return Err(InvalidSampleRate(sr))
+  }
+  if !@types.is_finite(n_steps) {
+    return Err(DimensionMismatch("Pitch shift must be finite"))
   }
   if n_steps.abs() < 1.0e-6 {
     let out = Array::make(samples.length(), 0.0)

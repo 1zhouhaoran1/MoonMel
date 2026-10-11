@@ -1,11 +1,11 @@
 ///|
 test "difference_function_and_cmndf_properties" {
   let frame = [1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0]
-  let d = difference_function(frame, 4)
+  let d = @pitch.difference_function(frame, 4)
   assert_eq(d.length(), 5)
   assert_eq(d[0], 0.0)
 
-  let cmndf = cumulative_mean_normalized_difference(d)
+  let cmndf = @pitch.cumulative_mean_normalized_difference(d)
   assert_eq(cmndf.length(), 5)
   assert_eq(cmndf[0], 1.0)
   // For period of 3, d[3] should be 0.0 and cmndf[3] should be 0.0
@@ -26,7 +26,7 @@ test "yin_frame_440hz_sine" {
     frame[i] = @math.sin(pi2 * target_f0 * t)
   }
 
-  let (f0, voiced_prob, _) = yin_frame(frame, sr, 65.0, 2093.0, 0.1)
+  let (f0, voiced_prob, _) = @pitch.yin_frame(frame, sr, 65.0, 2093.0, 0.1)
   assert_true((f0 - target_f0).abs() < 1.0)
   assert_true(voiced_prob > 0.9)
 }
@@ -45,7 +45,7 @@ test "pitch_yin_audio_pipeline" {
   }
 
   let audio = @types.AudioBuffer::new(samples, sr).unwrap()
-  let track = pitch_yin(audio).unwrap()
+  let track = @pitch.pitch_yin(audio).unwrap()
   assert_true(track.f0.length() > 0)
 
   let mid_frame = track.f0.length() / 2

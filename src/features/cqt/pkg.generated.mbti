@@ -24,6 +24,9 @@ pub(all) struct CqtConfig {
   power : Double
 } derive(Eq, @debug.Debug)
 pub fn CqtConfig::default() -> Self
+pub fn CqtConfig::equal(Self, Self) -> Bool
+pub fn CqtConfig::not_equal(Self, Self) -> Bool
+pub fn CqtConfig::to_repr(Self) -> @debug.Repr
 pub fn CqtConfig::validate(Self) -> Result[Unit, @types.MelError]
 
 // Type aliases

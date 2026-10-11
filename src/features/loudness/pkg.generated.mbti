@@ -27,6 +27,7 @@ pub(all) struct BiquadCoeffs {
   a1 : Double
   a2 : Double
 } derive(@debug.Debug)
+pub fn BiquadCoeffs::to_repr(Self) -> @debug.Repr
 
 pub(all) struct BiquadFilter {
   coeffs : BiquadCoeffs
@@ -37,6 +38,7 @@ pub fn BiquadFilter::filter_array(Self, Array[Double]) -> Array[Double]
 pub fn BiquadFilter::new(BiquadCoeffs) -> Self
 pub fn BiquadFilter::process_sample(Self, Double) -> Double
 pub fn BiquadFilter::reset(Self) -> Unit
+pub fn BiquadFilter::to_repr(Self) -> @debug.Repr
 
 pub(all) struct LoudnessResult {
   integrated : Double
@@ -45,6 +47,7 @@ pub(all) struct LoudnessResult {
   short_term_max : Double
   true_peak : Double
 } derive(@debug.Debug)
+pub fn LoudnessResult::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

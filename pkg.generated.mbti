@@ -14,9 +14,12 @@ import {
   "zhr/moonmel/src/features/pitch",
   "zhr/moonmel/src/features/streaming",
   "zhr/moonmel/src/features/tempo",
+  "zhr/moonmel/src/pipeline/analysis",
 }
 
 // Values
+pub fn analyze(Array[Double], config? : @types.FeatureConfig) -> Result[@analysis.AnalysisResult, @types.MelError]
+
 pub fn apply_k_weighting(Array[Double], Int) -> Array[Double]
 
 pub fn autocorrelation(Array[Double], Int) -> Array[Double]
@@ -190,6 +193,8 @@ pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? :
 // Types and methods
 
 // Type aliases
+pub using @analysis {type AnalysisResult}
+
 pub using @types {type AudioBuffer}
 
 pub using @loudness {type BiquadCoeffs}

@@ -4,7 +4,7 @@ pub(all) struct ContrastConfig {
   n_bands : Int // Number of frequency octave sub-bands (default 6)
   f_min : Double // Minimum base frequency boundary in Hz (default 200.0)
   quantile : Double // Quantile fraction for valley and peak (default 0.02)
-  linear : Bool // Output linear ratio instead of logarithmic dB difference (default false)
+  linear : Bool // Output peak-minus-valley instead of dB difference
 } derive(Debug)
 
 ///|
@@ -38,7 +38,16 @@ pub fn quantile_sorted(sorted : Array[Double], q : Double) -> Double {
   if len == 1 {
     return sorted[0]
   }
-  let pos = (len - 1).to_double() * q
+  let safe_q = if q < 0.0 {
+    0.0
+  } else if q > 1.0 {
+    1.0
+  } else if !@types.is_finite(q) {
+    0.0
+  } else {
+    q
+  }
+  let pos = (len - 1).to_double() * safe_q
   let idx = pos.to_int()
   let frac = pos - idx.to_double()
   if idx >= len - 1 {
@@ -58,6 +67,16 @@ pub fn spectral_contrast(
 ) -> @types.FeatureMatrix {
   let n_rows = spec.n_rows
   let n_cols = spec.n_cols
+  if sample_rate <= 0 ||
+    n_fft <= 0 ||
+    config.n_bands < 0 ||
+    !@types.is_finite(config.f_min) ||
+    config.f_min <= 0.0 ||
+    !@types.is_finite(config.quantile) ||
+    config.quantile < 0.0 ||
+    config.quantile > 0.5 {
+    return @types.FeatureMatrix::zeros(0, 0)
+  }
   let n_bands = config.n_bands
   let num_features = n_bands + 1
   let result = @types.FeatureMatrix::zeros(num_features, n_cols)
@@ -109,9 +128,9 @@ pub fn spectral_contrast(
       let peak = quantile_sorted(buf, q_high)
 
       let contrast_val = if config.linear {
-        (peak + eps) / (valley + eps)
+        peak - valley
       } else {
-        @math.ln((peak + eps) / (valley + eps))
+        10.0 * @math.log10((peak + eps) / (valley + eps))
       }
 
       result.set(b, c, contrast_val)
@@ -141,3 +160,6 @@ pub fn spectral_contrast_audio(
     Err(e) => Err(e)
   }
 }
+
+///|
+pub extend ContrastConfig with @moonbitlang/core/debug.Debug::{to_repr}

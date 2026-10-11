@@ -45,6 +45,24 @@ pub fn tempogram_from_onset(
   config? : TempoConfig = TempoConfig::default(),
 ) -> TempogramResult {
   let len = onset_env.length()
+  if len < 2 ||
+    sample_rate <= 0 ||
+    hop_length <= 0 ||
+    config.win_length < 2 ||
+    !@types.is_finite(config.min_bpm) ||
+    !@types.is_finite(config.max_bpm) ||
+    !@types.is_finite(config.start_bpm) ||
+    !@types.is_finite(config.std_bpm) ||
+    config.min_bpm <= 0.0 ||
+    config.max_bpm <= config.min_bpm ||
+    config.start_bpm <= 0.0 ||
+    config.std_bpm <= 0.0 {
+    return {
+      tempogram: @types.FeatureMatrix::zeros(0, 0),
+      tempi: [],
+      bpm: 0.0,
+    }
+  }
   let fps = sample_rate.to_double() / hop_length.to_double()
   let w_len = if config.win_length < len { config.win_length } else { len }
 
@@ -110,8 +128,8 @@ pub fn tempogram_from_onset(
   }
 
   // Estimate global tempo using prior-weighted peak picking
-  let mut best_score = -1.0
-  let mut best_bpm = config.start_bpm
+  let mut best_score = 0.0
+  let mut best_bpm = 0.0
 
   for i in 0..<n_lags {
     let avg_r = lag_sums[i] / n_frames.to_double()
@@ -149,3 +167,9 @@ pub fn tempogram(
     Err(e) => Err(e)
   }
 }
+
+///|
+pub extend TempoConfig with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend TempogramResult with @moonbitlang/core/debug.Debug::{to_repr}

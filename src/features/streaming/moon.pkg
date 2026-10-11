@@ -3,6 +3,7 @@ import {
   "zhr/moonmel/src/core/types",
   "zhr/moonmel/src/dsp/window",
   "zhr/moonmel/src/dsp/fft",
+  "zhr/moonmel/src/dsp/framing",
   "zhr/moonmel/src/features/mel",
   "zhr/moonmel/src/features/mfcc",
 }

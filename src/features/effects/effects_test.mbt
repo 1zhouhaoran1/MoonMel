@@ -17,7 +17,8 @@ test "phase_vocoder_rate_1" {
       return
     }
   }
-  let voc = match phase_vocoder(frames, 1.0, cfg.hop_length, cfg.n_fft) {
+  let voc = match
+    @effects.phase_vocoder(frames, 1.0, cfg.hop_length, cfg.n_fft) {
     Ok(v) => v
     Err(_) => {
       assert_true(false)
@@ -43,7 +44,7 @@ test "time_stretch_half_and_double" {
   }
 
   // Double speed (half duration: ~512)
-  let faster = match time_stretch(signal, 2.0, cfg) {
+  let faster = match @effects.time_stretch(signal, 2.0, cfg) {
     Ok(s) => s
     Err(_) => {
       assert_true(false)
@@ -53,7 +54,7 @@ test "time_stretch_half_and_double" {
   assert_eq(faster.length(), 512)
 
   // Half speed (double duration: ~2048)
-  let slower = match time_stretch(signal, 0.5, cfg) {
+  let slower = match @effects.time_stretch(signal, 0.5, cfg) {
     Ok(s) => s
     Err(_) => {
       assert_true(false)
@@ -79,7 +80,7 @@ test "pitch_shift_preserves_length" {
   }
 
   // Shift +4 semitones (major third up)
-  let up = match pitch_shift(signal, 16000, 4.0, cfg) {
+  let up = match @effects.pitch_shift(signal, 16000, 4.0, cfg) {
     Ok(s) => s
     Err(_) => {
       assert_true(false)
@@ -89,7 +90,7 @@ test "pitch_shift_preserves_length" {
   assert_eq(up.length(), n)
 
   // Shift -5 semitones (fourth down)
-  let down = match pitch_shift(signal, 16000, -5.0, cfg) {
+  let down = match @effects.pitch_shift(signal, 16000, -5.0, cfg) {
     Ok(s) => s
     Err(_) => {
       assert_true(false)

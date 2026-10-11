@@ -221,3 +221,15 @@ pub fn onset_detect_audio(
     Err(e) => Err(e)
   }
 }
+
+///|
+pub extend OnsetConfig with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend OnsetConfig with Eq::{not_equal, equal}
+
+///|
+pub extend OnsetMethod with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend OnsetMethod with Eq::{not_equal, equal}

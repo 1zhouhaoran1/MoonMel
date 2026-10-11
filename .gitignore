@@ -6,6 +6,9 @@ target
 .moonagent/
 node_modules/
 dist/
+playground/src/generated/
+.impeccable/review/
+output/
 __pycache__/
 *.pyc
 
@@ -21,3 +24,7 @@ __pycache__/
 # Local quality audit and issue tracking
 ISSUE.md
 issue.md
+
+# Transient design tool state
+.impeccable/build/
+.impeccable/mocks/

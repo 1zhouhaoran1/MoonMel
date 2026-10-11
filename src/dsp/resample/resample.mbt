@@ -61,6 +61,9 @@ pub fn resample_sinc(
   target_sr : Int,
   filter_size? : Int = 16,
 ) -> Result[Array[Double], @types.MelError] {
+  if filter_size <= 0 {
+    return Err(DimensionMismatch("filter_size must be positive"))
+  }
   if orig_sr <= 0 {
     return Err(@types.MelError::InvalidSampleRate(orig_sr))
   }
@@ -163,7 +166,7 @@ fn gcd(a : Int, b : Int) -> Int {
 }
 
 ///|
-/// Polyphase rational factor audio resampler (scipy.signal.resample_poly equivalent).
+/// Polyphase rational factor audio resampler (Hann-windowed source-grid interpolation).
 /// Uses precomputed polyphase FIR filter banks for fast, artifact-free up/downsampling.
 pub fn resample_polyphase(
   samples : Array[Double],
@@ -171,6 +174,9 @@ pub fn resample_polyphase(
   target_sr : Int,
   half_len? : Int = 10,
 ) -> Result[Array[Double], @types.MelError] {
+  if half_len <= 0 {
+    return Err(DimensionMismatch("half_len must be positive"))
+  }
   if orig_sr <= 0 {
     return Err(@types.MelError::InvalidSampleRate(orig_sr))
   }
@@ -206,20 +212,21 @@ pub fn resample_polyphase(
     return Ok([])
   }
 
-  let max_factor = if up > down { up } else { down }
-  let cutoff = 0.5 / max_factor.to_double()
+  let scale = if up < down { up.to_double() / down.to_double() } else { 1.0 }
+  let cutoff = 0.5 * scale
+  let radius = (half_len.to_double() / scale).ceil().to_int()
   let pi = @math.PI
 
-  // Build polyphase filter bank: 'up' subfilters of length 2 * half_len
-  let filter_len = 2 * half_len
+  // Source-grid filters centered on the fractional source position.
+  let filter_len = 2 * radius + 1
   let poly_filters : Array[Array[Double]] = Array::make(up, [])
 
   for p in 0..<up {
     let sub = Array::make(filter_len, 0.0)
     let mut sum_w = 0.0
     for j in 0..<filter_len {
-      let t = (j - half_len).to_double() + p.to_double() / up.to_double()
-      let norm_t = t / half_len.to_double()
+      let t = (j - radius).to_double() - p.to_double() / up.to_double()
+      let norm_t = t / radius.to_double()
       if norm_t.abs() <= 1.0 {
         let w = 0.5 + 0.5 * @math.cos(pi * norm_t)
         let sinc_val = if t.abs() < 1.0e-9 {
@@ -245,14 +252,15 @@ pub fn resample_polyphase(
 
   // Stream convolution across polyphase subfilters
   for n in 0..<out_len {
-    let m = n * down
-    let phase = m % up
-    let center_k = m / up
+    let center_k = (n.to_double() * down.to_double() / up.to_double())
+      .floor()
+      .to_int()
+    let phase = n % up * down % up
     let sub = poly_filters[phase]
     let mut acc = 0.0
 
     for j in 0..<filter_len {
-      let src_idx = center_k + (j - half_len)
+      let src_idx = center_k + (j - radius)
       if src_idx >= 0 && src_idx < len {
         acc = acc + samples[src_idx] * sub[j]
       }
@@ -280,6 +288,9 @@ pub fn resample_to_length(
   target_len : Int,
   filter_size? : Int = 16,
 ) -> Result[Array[Double], @types.MelError] {
+  if filter_size <= 0 {
+    return Err(DimensionMismatch("filter_size must be positive"))
+  }
   if target_len < 0 {
     return Err(
       @types.MelError::DimensionMismatch("target_len must be non-negative"),

@@ -24,6 +24,9 @@ pub(all) enum ChromaNorm {
   L2
   Max
 } derive(Eq, @debug.Debug)
+pub fn ChromaNorm::equal(Self, Self) -> Bool
+pub fn ChromaNorm::not_equal(Self, Self) -> Bool
+pub fn ChromaNorm::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

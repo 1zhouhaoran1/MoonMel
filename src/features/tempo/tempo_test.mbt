@@ -13,7 +13,7 @@ test "tempogram_periodic_clicks_120bpm" {
     i = i + period_frames
   }
 
-  let res = tempogram_from_onset(env, sr, hop, config={
+  let res = @tempo.tempogram_from_onset(env, sr, hop, config={
     min_bpm: 60.0,
     max_bpm: 240.0,
     start_bpm: 120.0,
@@ -48,7 +48,7 @@ test "tempogram_audio_pipeline" {
 
   let audio = @types.AudioBuffer::new(samples, sr).unwrap()
   let f_cfg = @types.FeatureConfig::default()
-  let res = tempogram(audio, f_cfg).unwrap()
+  let res = @tempo.tempogram(audio, f_cfg).unwrap()
 
   assert_true(res.bpm >= 30.0 && res.bpm <= 300.0)
   assert_true(res.tempogram.n_rows > 0)

@@ -24,6 +24,9 @@ pub(all) struct Formant {
   frequency : Double
   bandwidth : Double
 } derive(Eq, @debug.Debug)
+pub fn Formant::equal(Self, Self) -> Bool
+pub fn Formant::not_equal(Self, Self) -> Bool
+pub fn Formant::to_repr(Self) -> @debug.Repr
 
 pub(all) struct FormantConfig {
   lpc_order : Int
@@ -35,10 +38,12 @@ pub(all) struct FormantConfig {
   hop_length : Int
 } derive(@debug.Debug)
 pub fn FormantConfig::default() -> Self
+pub fn FormantConfig::to_repr(Self) -> @debug.Repr
 
 pub(all) struct FormantFrame {
   formants : Array[Formant]
 } derive(@debug.Debug)
+pub fn FormantFrame::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

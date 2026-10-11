@@ -19,8 +19,8 @@ fn synth_sine(
 
 ///|
 test "cqt_frequencies_octave_doubling" {
-  let cfg = CqtConfig::default()
-  let freqs = cqt_frequencies(cfg)
+  let cfg = @cqt.CqtConfig::default()
+  let freqs = @cqt.cqt_frequencies(cfg)
   assert_eq(freqs.length(), 84)
 
   // Test that 12 bins corresponds to exact frequency doubling (octave)
@@ -34,9 +34,9 @@ test "cqt_frequencies_octave_doubling" {
 test "cqt_tone_440hz_peak_at_bin_45" {
   let sr = 16000
   let tone_a4 = synth_sine(440.0, sr, 0.3)
-  let cfg = CqtConfig::default()
+  let cfg = @cqt.CqtConfig::default()
 
-  match cqt(tone_a4, config=cfg) {
+  match @cqt.cqt(tone_a4, config=cfg) {
     Ok(cqt_mat) => {
       assert_eq(cqt_mat.n_rows, 84)
       assert_true(cqt_mat.n_cols > 0)
@@ -63,9 +63,9 @@ test "cqt_tone_440hz_peak_at_bin_45" {
 test "cqt_octave_peak_shift_220hz_and_440hz" {
   let sr = 16000
   let tone_a3 = synth_sine(220.0, sr, 0.3)
-  let cfg = CqtConfig::default()
+  let cfg = @cqt.CqtConfig::default()
 
-  match cqt(tone_a3, config=cfg) {
+  match @cqt.cqt(tone_a3, config=cfg) {
     Ok(cqt_mat) => {
       let mid = cqt_mat.n_cols / 2
       let mut max_val = 0.0

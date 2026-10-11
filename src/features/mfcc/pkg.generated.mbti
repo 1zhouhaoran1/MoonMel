@@ -8,9 +8,13 @@ import {
 // Values
 pub fn dct_ii(Array[Double], Int, Bool) -> Array[Double]
 
+pub fn log_mel_from_mel(@types.FeatureMatrix, @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
 pub fn log_mel_spectrogram(Array[Double], @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn mfcc(Array[Double], @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mfcc_from_log_mel(@types.FeatureMatrix, @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn power_to_db(@types.FeatureMatrix, Double, Double, Double) -> @types.FeatureMatrix
 

@@ -35,10 +35,20 @@ pub fn difference_function(
   tau_max : Int,
 ) -> Array[Double] {
   let len = frame.length()
-  let win_len = if len > tau_max { len - tau_max } else { len / 2 }
+  if tau_max < 0 {
+    return []
+  }
+  let safe_tau = if tau_max < len {
+    tau_max
+  } else if len > 0 {
+    len - 1
+  } else {
+    0
+  }
+  let win_len = len - safe_tau
   let d : Array[Double] = Array::make(tau_max + 1, 0.0)
 
-  for tau in 0..<=tau_max {
+  for tau in 0..<=safe_tau {
     let mut sum = 0.0
     for j in 0..<win_len {
       let diff = frame[j] - frame[j + tau]
@@ -82,6 +92,16 @@ pub fn yin_frame(
   f_max : Double,
   threshold : Double,
 ) -> (Double, Double, Double) {
+  if sample_rate <= 0 ||
+    !@types.is_finite(f_min) ||
+    !@types.is_finite(f_max) ||
+    f_min <= 0.0 ||
+    f_max <= f_min ||
+    !@types.is_finite(threshold) ||
+    threshold <= 0.0 ||
+    threshold >= 1.0 {
+    return (0.0, 0.0, 0.0)
+  }
   let fs = sample_rate.to_double()
   let tau_min_raw = (fs / f_max).to_int()
   let tau_max_raw = (fs / f_min).to_int() + 1
@@ -175,6 +195,21 @@ pub fn pitch_yin(
     return Err(EmptyAudio)
   }
   let sr = audio.sample_rate
+  if sr <= 0 {
+    return Err(InvalidSampleRate(sr))
+  }
+  if !@types.is_finite(config.f_min) ||
+    !@types.is_finite(config.f_max) ||
+    config.f_min <= 0.0 ||
+    config.f_max <= config.f_min ||
+    config.f_max > sr.to_double() / 2.0 {
+    return Err(InvalidFrequencyRange(config.f_min, config.f_max))
+  }
+  if !@types.is_finite(config.threshold) ||
+    config.threshold <= 0.0 ||
+    config.threshold >= 1.0 {
+    return Err(DimensionMismatch("YIN threshold must be in (0, 1)"))
+  }
   let frame_len = config.frame_length
   let hop_len = config.hop_length
   if frame_len <= 0 || hop_len <= 0 {
@@ -212,3 +247,9 @@ pub fn pitch_yin(
 
   Ok({ f0: f0_arr, voiced_prob: prob_arr, periods: period_arr, })
 }
+
+///|
+pub extend PitchTrack with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend YinConfig with @moonbitlang/core/debug.Debug::{to_repr}

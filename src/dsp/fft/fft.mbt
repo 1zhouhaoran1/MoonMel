@@ -52,6 +52,13 @@ pub fn fft_in_place(
   n : Int,
   inverse : Bool,
 ) -> Unit {
+  // This low-level kernel is radix-2 only. Reject unsafe direct calls before
+  // bit reversal can loop forever or a butterfly can index beyond the arrays.
+  if !is_power_of_two(n) || re.length() < n || im.length() < n {
+    abort(
+      "fft_in_place requires power-of-two n and buffers of at least n elements",
+    )
+  }
   bit_reverse_permute(re, im, n)
   let dir = if inverse { 1.0 } else { -1.0 }
   let mut len = 2
@@ -158,7 +165,7 @@ pub fn rfft_spectrum(
   n_fft : Int,
   power : Double,
 ) -> Result[Array[Double], @types.MelError] {
-  if !is_power_of_two(n_fft) {
+  if n_fft <= 0 {
     return Err(InvalidFftSize(n_fft))
   }
   let re : Array[Double] = Array::make(n_fft, 0.0)
@@ -171,7 +178,10 @@ pub fn rfft_spectrum(
       re[i] = 0.0
     }
   }
-  fft_in_place(re, im, n_fft, false)
+  match transform_in_place(re, im, n_fft, false) {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let num_bins = n_fft / 2 + 1
   let spec : Array[Double] = Array::make(num_bins, 0.0)
   if power == 2.0 {
@@ -189,6 +199,40 @@ pub fn rfft_spectrum(
     }
   }
   Ok(spec)
+}
+
+///|
+/// Safe transform dispatcher. Reuses buffers for radix-2 sizes and preserves
+/// the exact frequency grid with Bluestein for all other positive lengths.
+pub fn transform_in_place(
+  re : Array[Double],
+  im : Array[Double],
+  n : Int,
+  inverse : Bool,
+) -> Result[Unit, @types.MelError] {
+  if n <= 0 {
+    return Err(InvalidFftSize(n))
+  }
+  if re.length() < n || im.length() < n {
+    return Err(DimensionMismatch("FFT buffers are shorter than n"))
+  }
+  if is_power_of_two(n) {
+    fft_in_place(re, im, n, inverse)
+    return Ok(())
+  }
+  let signal = Array::make(n, @types.complex(0.0, 0.0))
+  for i in 0..<n {
+    signal[i] = @types.complex(re[i], im[i])
+  }
+  let transformed = match (if inverse { idft(signal) } else { dft(signal) }) {
+    Ok(result) => result
+    Err(e) => return Err(e)
+  }
+  for i in 0..<n {
+    re[i] = transformed[i].re
+    im[i] = transformed[i].im
+  }
+  Ok(())
 }
 
 ///|

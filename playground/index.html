@@ -1,284 +1,51 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoonMel Playground — Audio to Features</title>
-  <meta name="description" content="MoonBit-native Audio Feature Extraction Engine: STFT, Mel Spectrogram, Log-Mel, and MFCC in WebAssembly." />
-  <link rel="icon" type="image/jpeg" href="/logo.jpg" />
-  <link rel="stylesheet" href="/src/style.css" />
-</head>
-<body class="bg-studio-950 text-slate-200 min-h-screen flex flex-col font-sans selection:bg-accent-copper selection:text-white">
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="theme-color" content="#f1eee7" /><link rel="icon" type="image/png" href="/logo.png" /><meta name="description" content="MoonMel：纯 MoonBit 音频特征提取。运行真实音频，检查数值验证与竞品差距。" /><title>MoonMel — 声音，可验证。</title></head>
+<body>
+<a class="skip-link" href="#lab">跳到音频实验台</a>
+<header class="page-width site-header"><a class="brand" href="#"><img src="/logo.png" alt="" width="36" height="36" />MoonMel<span>音频特征引擎</span></a><nav aria-label="主导航"><a href="#lab">运行演示</a><a href="#comparison">竞品差距</a><a href="#evidence">验证依据</a></nav><a class="source-link" href="https://github.com/1zhouhaoran1/MoonMel">GitHub 源码</a></header>
+<main>
+<section class="page-width intro" aria-labelledby="intro-title"><div class="brand-art"><h1 id="intro-title" class="sr-only">MoonMel：声音，可验证。</h1><img src="/brand-banner.webp" alt="MoonMel — Audio Into Features，朱砂红声波与月牙标志" width="1672" height="941" fetchpriority="high" /></div><div class="intro-copy"><p>从波形到 Mel 与 MFCC。<br />一套纯 MoonBit 实现，三个编译目标。</p><p class="muted">让浏览器中的真实结果，成为项目的说明书。</p><a class="text-link" href="#lab">运行音频实验台 →</a></div></section>
+<section id="lab" class="page-width laboratory" tabindex="-1" aria-labelledby="lab-title">
+<div class="section-header"><h2 id="lab-title">听见输入，看见特征。</h2><span class="engine-label">MoonBit → JavaScript · 本地计算</span></div>
+<div class="lab-layout">
+<form id="analysis-form" class="controls">
+<div><label for="signal">音频输入</label><select id="signal"><option value="chirp">合成 · 100–4,000 Hz 扫频</option><option value="sine">合成 · 440 Hz 正弦波</option><option value="chord">合成 · 三频组合</option><option value="vowel">合成 · 类元音信号</option><option value="silence">合成 · 静音</option></select></div>
+<div><label for="audio-file">或选择 PCM WAV</label><input id="audio-file" type="file" accept=".wav,audio/wav" /><p class="field-note">8 / 16 位 · 混合为单声道 · 预览前 10 秒</p></div>
+<div class="audio-actions"><button id="play" type="button" disabled>播放声音</button><button id="microphone" type="button">使用麦克风</button></div><p id="audio-meta" class="measurement">等待计算</p>
+<fieldset><legend>分析参数</legend><div class="parameter-grid">
+<div><label for="fft">FFT 大小</label><select id="fft"><option>256</option><option>400</option><option>512</option><option selected>1024</option><option>2048</option></select></div>
+<div><label for="hop">帧步长</label><select id="hop"><option>64</option><option>160</option><option selected>256</option><option>512</option></select></div>
+<div><label for="mels">Mel 频带</label><select id="mels"><option>24</option><option>40</option><option selected>80</option><option>128</option></select></div>
+<div><label for="mfcc">MFCC 系数</label><select id="mfcc"><option selected>13</option><option>20</option></select></div>
+<div><label for="sample-rate">合成采样率</label><select id="sample-rate"><option selected>16000</option><option>22050</option><option>44100</option><option>48000</option></select></div>
+<div><label for="duration">合成秒数</label><select id="duration"><option>0.25</option><option selected>1</option><option>3</option></select></div>
+</div></fieldset><button class="primary-button" type="submit">重新计算</button><p id="error" class="error" role="alert" hidden></p>
+</form>
+<div id="results" class="results" aria-busy="true">
+<div class="result-toolbar"><div class="view-switch" role="group" aria-label="特征视图"><button type="button" data-view="log_mel" aria-pressed="true">Log-Mel</button><button type="button" data-view="stft_preview" aria-pressed="false">STFT</button><button type="button" data-view="mfcc" aria-pressed="false">MFCC</button></div><span id="compute-status" class="measurement" role="status">正在计算</span></div>
+<figure><div class="plot-shell"><div class="vertical-axis"><span id="axis-high">Mel 79</span><span id="axis-low">Mel 0</span></div><canvas id="spectrum" tabindex="0" aria-label="特征热图；左右方向键选择时间帧" aria-describedby="plot-description frame-readout">需要支持 Canvas 的浏览器。</canvas></div><figcaption class="plot-caption"><span id="plot-title">Log-Mel · dB</span><span>0 s — <span id="time-end">1.00 s</span></span></figcaption></figure>
+<div class="result-summary"><p id="plot-description">正在读取 MoonBit 分析结果。</p><p id="frame-readout" class="measurement" aria-live="polite">帧数与数值将在计算后显示。</p></div>
+<figure class="waveform-figure"><canvas id="waveform" aria-label="输入音频波形"></canvas><figcaption id="waveform-description">输入波形</figcaption></figure>
+<div class="result-footer"><span id="dimensions" class="measurement">—</span><div><button id="export-json" type="button" disabled>导出 JSON</button><button id="export-csv" type="button" disabled>导出 MFCC CSV</button></div></div>
+<details id="filter-details"><summary>检查实际 Mel 滤波器组</summary><canvas id="filterbank" aria-label="MoonBit 计算的 Slaney Mel 滤波器组"></canvas><p class="field-note">来自同一次分析，非前端模拟数据。</p></details>
+</div></div></section>
+<section id="comparison" class="page-width comparison" aria-labelledby="comparison-title">
+<div class="section-intro"><h2 id="comparison-title">差异在哪里，<br /><span>差距也在哪里。</span></h2><p>贡献在于 MoonBit 原生实现与跨目标复用。其他库也支持浏览器本地分析；算法广度与成熟生态仍是竞品的优势。</p></div>
+<div class="table-scroll" tabindex="0" role="region" aria-label="可横向滚动的音频库对比"><table><caption class="sr-only">MoonMel 与三个音频库的能力和边界</caption><thead><tr><th scope="col">选型维度</th><th scope="col" class="our-column">MoonMel</th><th scope="col">librosa</th><th scope="col">Meyda</th><th scope="col">Essentia.js</th></tr></thead><tbody>
+<tr><th scope="row">核心实现</th><td class="our-column">纯 MoonBit</td><td>Python / NumPy / SciPy</td><td>JavaScript</td><td>C++ → WASM</td></tr>
+<tr><th scope="row">主要场景</th><td class="our-column">MoonBit 集成、本地特征提取</td><td>Python 音乐分析与研究</td><td>Web Audio 实时特征</td><td>浏览器音乐分析与模型</td></tr>
+<tr><th scope="row">运行路径</th><td class="our-column">同源编译 JS / WASM / Native</td><td>Python 科学计算环境</td><td>浏览器 / Node.js</td><td>WASM + JS / TS API</td></tr>
+<tr><th scope="row">可核查依据</th><td class="our-column">8 组核心数值参考 + 回归测试</td><td>本项目的数值参考基准</td><td>官方特征文档与测试</td><td>官方算法与模型文档</td></tr>
+<tr><th scope="row">MoonMel 待补足</th><td class="our-column">扩展特征外部验证、长期反馈</td><td>成熟的研究生态</td><td>成熟的 Web Audio 接入</td><td>更广的算法与模型集合</td></tr>
+</tbody></table></div><div class="comparison-notes"><p>尚未做同设备、同参数的竞品性能测试，不提供速度或体积排名。</p><p>资料：<a href="https://github.com/librosa/librosa">librosa</a> · <a href="https://meyda.js.org/audio-features">Meyda</a> · <a href="https://github.com/MTG/essentia.js">Essentia.js</a></p></div></section>
+<section id="evidence" class="page-width evidence" aria-labelledby="evidence-title"><div class="section-intro"><h2 id="evidence-title">把结论打开。</h2><p>对齐参数后比较实际矩阵。正弦、静音、噪声、短窗、400 点、奇数 FFT、幅度谱与单样本均有独立验证。</p></div>
+<div class="evidence-layout"><div><div id="parity-summary" class="verification-summary">正在加载报告</div><p id="reference-convention" class="muted"></p><div class="table-scroll"><table class="parity-table"><caption>完整 Mel / Log-Mel / MFCC 矩阵最大绝对误差</caption><thead><tr><th scope="col">输入 / 配置</th><th scope="col">Mel</th><th scope="col">Log-Mel</th><th scope="col">MFCC</th></tr></thead><tbody id="parity-rows"></tbody></table></div><p class="field-note">STFT 每帧比较最多 64 个明确索引的频点。结果仅对应报告配置；不代表全库与 librosa 等价。</p><a id="report-download" class="text-link" href="#">下载原始报告</a></div>
+<aside class="developer-entry"><h3>一次计算，四种结果。</h3><pre><code>let result = @moonmel.analyze(
+  samples, config=cfg,
+).unwrap()
 
-  <!-- Header -->
-  <header class="border-b border-studio-800 bg-studio-900/80 backdrop-blur sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between">
-    <div class="flex items-center space-x-3.5">
-      <img src="/logo.jpg" alt="MoonMel Logo" class="w-9 h-9 rounded-lg border border-studio-700 shadow-sm object-cover" />
-      <div>
-        <div class="flex items-center space-x-2">
-          <h1 class="text-lg font-semibold tracking-tight text-white">MoonMel</h1>
-          <span class="text-xs px-2 py-0.5 rounded font-mono bg-studio-800 text-accent-gold border border-studio-700">v0.1.0</span>
-          <span class="text-xs px-2 py-0.5 rounded font-mono bg-emerald-950/60 text-emerald-400 border border-emerald-800/60">WASM / JS Native</span>
-        </div>
-        <p class="text-xs text-studio-400">Audio DSP & Machine Learning Feature Extraction for MoonBit</p>
-      </div>
-    </div>
-
-    <!-- Actions / Export -->
-    <div class="flex items-center space-x-2.5">
-      <div id="status-pill" class="text-xs font-mono px-2.5 py-1 rounded bg-studio-850 text-studio-400 border border-studio-800 flex items-center space-x-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span id="dsp-latency">Ready</span>
-      </div>
-      <button id="btn-export-json" class="text-xs font-medium px-3 py-1.5 rounded-md bg-studio-850 hover:bg-studio-800 text-slate-300 border border-studio-700 transition flex items-center space-x-1">
-        <span>Export JSON</span>
-      </button>
-      <button id="btn-export-csv" class="text-xs font-medium px-3 py-1.5 rounded-md bg-studio-850 hover:bg-studio-800 text-slate-300 border border-studio-700 transition flex items-center space-x-1">
-        <span>Export MFCC CSV</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- Main Content Layout -->
-  <main class="flex-1 max-w-[1720px] w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-    <!-- Left Control Panel (col-span-3) -->
-    <section class="lg:col-span-3 space-y-5">
-      
-      <!-- Audio Source Card -->
-      <div class="bg-studio-900 border border-studio-800 rounded-xl p-4.5 space-y-4">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-studio-400">Audio Input</h2>
-        
-        <!-- File Upload -->
-        <label class="block border-2 border-dashed border-studio-700 hover:border-accent-gold/60 rounded-lg p-4 text-center cursor-pointer transition bg-studio-950/50 group">
-          <input type="file" id="audio-file-input" accept=".wav,audio/wav" class="hidden" />
-          <div class="text-xs text-studio-400 group-hover:text-slate-200">
-            <span class="font-medium text-accent-gold">Upload WAV File</span>
-            <p class="text-[11px] text-studio-400/80 mt-1">PCM 16-bit / 8-bit Mono or Stereo</p>
-          </div>
-        </label>
-
-        <!-- Presets -->
-        <div class="space-y-1.5">
-          <label class="text-[11px] font-medium text-studio-400">Or Select Audio Preset:</label>
-          <div class="grid grid-cols-2 gap-1.5">
-            <button class="preset-btn text-xs py-1.5 px-2 rounded bg-studio-850 hover:bg-studio-800 border border-studio-750 text-slate-300 text-left transition" data-preset="sine">
-              440 Hz Sine
-            </button>
-            <button class="preset-btn text-xs py-1.5 px-2 rounded bg-studio-850 hover:bg-studio-800 border border-studio-750 text-slate-300 text-left transition" data-preset="chord">
-              Multi-Chord
-            </button>
-            <button class="preset-btn text-xs py-1.5 px-2 rounded bg-studio-850 hover:bg-studio-800 border border-studio-750 text-slate-300 text-left transition" data-preset="chirp">
-              Chirp Sweep
-            </button>
-            <button class="preset-btn text-xs py-1.5 px-2 rounded bg-studio-850 hover:bg-studio-800 border border-studio-750 text-slate-300 text-left transition" data-preset="vowel">
-              Synthetic Vowel
-            </button>
-          </div>
-        </div>
-
-        <!-- Audio Playback Preview & Live Mic -->
-        <div class="pt-2 border-t border-studio-800/80 flex items-center justify-between gap-2">
-          <button id="btn-play-audio" class="text-xs px-3 py-1.5 rounded bg-accent-copper/20 hover:bg-accent-copper/30 text-accent-warm border border-accent-copper/40 transition flex items-center space-x-1.5 flex-1 justify-center">
-            <span id="play-icon">▶</span>
-            <span id="play-text">Play</span>
-          </button>
-          <button id="btn-mic-stream" class="text-xs px-3 py-1.5 rounded bg-studio-850 hover:bg-studio-800 text-slate-300 border border-studio-700 transition flex items-center space-x-1.5 flex-1 justify-center">
-            <span id="mic-icon">🎙️</span>
-            <span id="mic-text">Live Mic</span>
-          </button>
-        </div>
-        <div class="flex justify-between items-center text-[11px] font-mono text-studio-400">
-          <span id="audio-meta">1.00s @ 16000Hz</span>
-          <span id="mic-status" class="hidden text-amber-400 font-semibold animate-pulse">● STREAMING</span>
-        </div>
-      </div>
-
-      <!-- DSP Config Card -->
-      <div class="bg-studio-900 border border-studio-800 rounded-xl p-4.5 space-y-4">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-studio-400">DSP Parameters</h2>
-
-        <!-- Sample Rate -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs">
-            <label class="text-studio-400">Sample Rate</label>
-            <span id="val-sr" class="font-mono text-slate-200">16,000 Hz</span>
-          </div>
-          <select id="param-sr" class="w-full text-xs bg-studio-850 border border-studio-700 rounded px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-accent-gold">
-            <option value="16000" selected>16,000 Hz (Standard Speech)</option>
-            <option value="22050">22,050 Hz (Acoustic)</option>
-            <option value="44100">44,100 Hz (Studio Audio)</option>
-          </select>
-        </div>
-
-        <!-- FFT Size -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs">
-            <label class="text-studio-400">FFT Size (n_fft)</label>
-            <span id="val-nfft" class="font-mono text-slate-200">1024</span>
-          </div>
-          <select id="param-nfft" class="w-full text-xs bg-studio-850 border border-studio-700 rounded px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-accent-gold">
-            <option value="512">512 bins</option>
-            <option value="1024" selected>1024 bins (Default)</option>
-            <option value="2048">2048 bins (High Resolution)</option>
-          </select>
-        </div>
-
-        <!-- Hop Length -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs">
-            <label class="text-studio-400">Hop Length</label>
-            <span id="val-hop" class="font-mono text-slate-200">256</span>
-          </div>
-          <select id="param-hop" class="w-full text-xs bg-studio-850 border border-studio-700 rounded px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-accent-gold">
-            <option value="128">128 samples (Dense)</option>
-            <option value="256" selected>256 samples (Standard)</option>
-            <option value="512">512 samples (Fast)</option>
-          </select>
-        </div>
-
-        <!-- Mel Bands -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs">
-            <label class="text-studio-400">Mel Filterbank Bands</label>
-            <span id="val-mels" class="font-mono text-slate-200">80</span>
-          </div>
-          <select id="param-mels" class="w-full text-xs bg-studio-850 border border-studio-700 rounded px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-accent-gold">
-            <option value="40">40 Bands</option>
-            <option value="80" selected>80 Bands (Librosa / Whisper)</option>
-            <option value="128">128 Bands (Dense)</option>
-          </select>
-        </div>
-
-        <!-- MFCC Count -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs">
-            <label class="text-studio-400">MFCC Coefficients (n_mfcc)</label>
-            <span id="val-mfcc" class="font-mono text-slate-200">13</span>
-          </div>
-          <select id="param-mfcc" class="w-full text-xs bg-studio-850 border border-studio-700 rounded px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-accent-gold">
-            <option value="13" selected>13 Coefficients (Speech standard)</option>
-            <option value="20">20 Coefficients</option>
-            <option value="40">40 Coefficients</option>
-          </select>
-        </div>
-
-        <!-- Run DSP Button -->
-        <button id="btn-recompute" class="w-full py-2 px-3 rounded-lg bg-accent-gold hover:bg-accent-warm text-studio-950 font-semibold text-xs tracking-wide transition shadow-sm">
-          Run MoonBit Feature Extraction
-        </button>
-      </div>
-
-      <!-- Execution Stats Card -->
-      <div class="bg-studio-900 border border-studio-800 rounded-xl p-4.5 space-y-3">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-studio-400">Engine Metrics</h2>
-        <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-          <div class="bg-studio-950/60 p-2 rounded border border-studio-850">
-            <span class="text-studio-400 text-[10px] block">Audio Duration</span>
-            <span id="metric-duration" class="text-slate-200 font-medium">1.00 s</span>
-          </div>
-          <div class="bg-studio-950/60 p-2 rounded border border-studio-850">
-            <span class="text-studio-400 text-[10px] block">Time Frames</span>
-            <span id="metric-frames" class="text-slate-200 font-medium">63 frames</span>
-          </div>
-          <div class="bg-studio-950/60 p-2 rounded border border-studio-850">
-            <span class="text-studio-400 text-[10px] block">Frequency Bins</span>
-            <span id="metric-bins" class="text-slate-200 font-medium">513 bins</span>
-          </div>
-          <div class="bg-studio-950/60 p-2 rounded border border-studio-850">
-            <span class="text-studio-400 text-[10px] block">Compute Latency</span>
-            <span id="metric-latency" class="text-emerald-400 font-medium">0 ms</span>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- Right Feature Visualizations (col-span-9) -->
-    <section class="lg:col-span-9 space-y-6">
-
-      <!-- Waveform Viewer -->
-      <div class="bg-studio-900 border border-studio-800 rounded-xl p-4 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="w-2 h-2 rounded-full bg-accent-copper"></span>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Raw PCM Audio Waveform</h3>
-          </div>
-          <span id="waveform-legend" class="text-[11px] font-mono text-studio-400">Time (s) vs Amplitude [-1.0 .. 1.0]</span>
-        </div>
-        <div class="canvas-container h-28">
-          <canvas id="canvas-waveform" class="w-full h-full block"></canvas>
-        </div>
-      </div>
-
-      <!-- Feature Heatmaps Grid -->
-      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-        <!-- STFT Spectrogram -->
-        <div class="bg-studio-900 border border-studio-800 rounded-xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">STFT Power Spectrogram</h3>
-            </div>
-            <span class="text-[11px] font-mono text-studio-400">Linear Freq [0 .. Nyquist]</span>
-          </div>
-          <div class="canvas-container h-52">
-            <canvas id="canvas-stft" class="w-full h-full block"></canvas>
-          </div>
-        </div>
-
-        <!-- Log-Mel Spectrogram -->
-        <div class="bg-studio-900 border border-studio-800 rounded-xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-accent-warm"></span>
-              <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Log-Mel Spectrogram</h3>
-            </div>
-            <span class="text-[11px] font-mono text-studio-400">Slaney Mel Scale (dB)</span>
-          </div>
-          <div class="canvas-container h-52">
-            <canvas id="canvas-mel" class="w-full h-full block"></canvas>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- MFCC Cepstral Coefficients -->
-      <div class="bg-studio-900 border border-studio-800 rounded-xl p-4 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">MFCC Cepstral Matrix (DCT-II Orthogonal)</h3>
-          </div>
-          <div class="flex items-center space-x-3 text-[11px] font-mono text-studio-400">
-            <span id="mfcc-tooltip-val">Hover for coefficient</span>
-            <span>n_mfcc = 13</span>
-          </div>
-        </div>
-        <div class="canvas-container h-44">
-          <canvas id="canvas-mfcc" class="w-full h-full block"></canvas>
-        </div>
-      </div>
-
-      <!-- Mel Filterbank Curves Visualizer -->
-      <div class="bg-studio-900 border border-studio-800 rounded-xl p-4 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Mel Filterbank Frequency Response (Slaney Triangular)</h3>
-          </div>
-          <span class="text-[11px] font-mono text-studio-400">80 Triangular Channels</span>
-        </div>
-        <div class="canvas-container h-36">
-          <canvas id="canvas-filterbank" class="w-full h-full block"></canvas>
-        </div>
-      </div>
-
-    </section>
-
-  </main>
-
-  <script type="module" src="/src/main.js"></script>
-</body>
-</html>
+// STFT → Mel → Log-Mel → MFCC
+println(result.mfcc.n_cols)</code></pre><p>核心类型 → DSP → 特征 → 流水线 → 门面 → 浏览器绑定。依赖方向经过自动检查。</p><a href="https://github.com/1zhouhaoran1/MoonMel/tree/main/docs/en">API 与架构文档</a><p class="field-note">当前页运行编译生成的 JS。音频不上传，特征计算在 Web Worker 中完成。</p></aside></div></section>
+</main><footer class="page-width"><span>MoonMel · zhr/moonmel</span><span>MIT · <a href="https://github.com/1zhouhaoran1/MoonMel/blob/main/LICENSE">开源许可证</a></span><a href="#lab">回到实验台</a></footer>
+<script type="module" src="/src/main.js"></script></body></html>

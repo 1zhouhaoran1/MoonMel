@@ -10,6 +10,9 @@ pub(all) struct LpcResult {
 /// Compute biased autocorrelation sequence up to max_lag.
 pub fn autocorrelation(samples : Array[Double], max_lag : Int) -> Array[Double] {
   let len = samples.length()
+  if max_lag < 0 {
+    return []
+  }
   let lag_count = if max_lag < len { max_lag + 1 } else { len }
   let r : Array[Double] = Array::make(lag_count, 0.0)
   if len == 0 {
@@ -106,6 +109,9 @@ pub fn lpc(
   if samples.is_empty() {
     return Err(EmptyAudio)
   }
+  if order <= 0 || order >= samples.length() {
+    return Err(DimensionMismatch("LPC order must be in [1, sample length)"))
+  }
   let r = autocorrelation(samples, order)
   levinson_durbin(r, order)
 }
@@ -118,6 +124,9 @@ pub fn lpc_to_lpcc(
   n_lpcc : Int,
 ) -> Array[Double] {
   let p = lpc_coeffs.length()
+  if n_lpcc <= 0 {
+    return []
+  }
   let c : Array[Double] = Array::make(n_lpcc, 0.0)
   if n_lpcc == 0 {
     return c
@@ -280,3 +289,6 @@ pub fn lpcc_features(
 
   Ok(mat)
 }
+
+///|
+pub extend LpcResult with @moonbitlang/core/debug.Debug::{to_repr}

@@ -30,7 +30,7 @@ pub fn power_to_db(
     }
   }
 
-  if top_db > 0.0 {
+  if top_db >= 0.0 {
     let threshold = max_val - top_db
     for r in 0..<rows {
       for c in 0..<cols {
@@ -56,6 +56,23 @@ pub fn log_mel_spectrogram(
     Err(e) => return Err(e)
   }
 
+  log_mel_from_mel(mel, config)
+}
+
+///|
+/// Apply the configured log scale to existing Mel features.
+pub fn log_mel_from_mel(
+  mel : @types.FeatureMatrix,
+  config : @types.FeatureConfig,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match config.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  match mel.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let rows = mel.n_rows
   let cols = mel.n_cols
 
@@ -102,7 +119,7 @@ pub fn dct_ii(
   norm_ortho : Bool,
 ) -> Array[Double] {
   let n_in = input.length()
-  let out : Array[Double] = Array::make(n_out, 0.0)
+  let out : Array[Double] = Array::make(if n_out > 0 { n_out } else { 0 }, 0.0)
   if n_in == 0 || n_out == 0 {
     return out
   }
@@ -135,22 +152,57 @@ pub fn mfcc(
     Err(e) => return Err(e)
   }
 
+  mfcc_from_log_mel(log_mel, config)
+}
+
+///|
+/// Reuse Log-Mel features; compute the DCT basis once for all time frames.
+pub fn mfcc_from_log_mel(
+  log_mel : @types.FeatureMatrix,
+  config : @types.FeatureConfig,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match config.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  match log_mel.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  if log_mel.n_rows == 0 {
+    return Err(DimensionMismatch("Log-Mel matrix has no bands"))
+  }
   let n_mfcc = config.n_mfcc
   let n_mels = log_mel.n_rows
   let n_frames = log_mel.n_cols
-
-  let res = @types.FeatureMatrix::zeros(n_mfcc, n_frames)
-  let col_buf : Array[Double] = Array::make(n_mels, 0.0)
-
-  for t in 0..<n_frames {
-    for m in 0..<n_mels {
-      col_buf[m] = log_mel.at(m, t)
+  let basis = @types.FeatureMatrix::zeros(n_mfcc, n_mels)
+  for k in 0..<n_mfcc {
+    let weight = if config.norm_ortho {
+      if k == 0 {
+        (1.0 / n_mels.to_double()).sqrt()
+      } else {
+        (2.0 / n_mels.to_double()).sqrt()
+      }
+    } else {
+      2.0
     }
-    let coeffs = dct_ii(col_buf, n_mfcc, config.norm_ortho)
-    for k in 0..<n_mfcc {
-      res.set(k, t, coeffs[k])
+    for m in 0..<n_mels {
+      let angle = pi *
+        k.to_double() *
+        (2.0 * m.to_double() + 1.0) /
+        (2.0 * n_mels.to_double())
+      basis.set(k, m, weight * @math.cos(angle))
     }
   }
-
-  Ok(res)
+  let result = @types.FeatureMatrix::zeros(n_mfcc, n_frames)
+  for k in 0..<n_mfcc {
+    for t in 0..<n_frames {
+      let mut sum = 0.0
+      for m in 0..<n_mels {
+        sum = sum + basis.at(k, m) * log_mel.at(m, t)
+      }
+      result.set(k, t, sum)
+    }
+  }
+  Ok(result)
 }

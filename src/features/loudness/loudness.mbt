@@ -174,6 +174,9 @@ pub fn true_peak_db(
   samples : Array[Double],
   sample_rate : Int,
 ) -> Result[Double, @types.MelError] {
+  if sample_rate <= 0 || sample_rate > 536870911 {
+    return Err(InvalidSampleRate(sample_rate))
+  }
   if samples.is_empty() {
     return Ok(-70.0)
   }
@@ -203,6 +206,9 @@ pub fn loudness_meter(
   audio : @types.AudioBuffer,
 ) -> Result[LoudnessResult, @types.MelError] {
   let sr = audio.sample_rate
+  if sr <= 0 {
+    return Err(InvalidSampleRate(sr))
+  }
   let n_samples = audio.length()
   if n_samples == 0 {
     return Err(EmptyAudio)
@@ -317,9 +323,22 @@ pub fn loudness_meter(
 
   // 5. Loudness Range (LRA) based on short-term loudness distribution
   let lra_loudness : Array[Double] = []
+  let mut absolute_power = 0.0
+  let mut absolute_count = 0
+  for p in st_powers {
+    if p > 1.0e-12 && -0.691 + 10.0 * log10(p) >= -70.0 {
+      absolute_power = absolute_power + p
+      absolute_count = absolute_count + 1
+    }
+  }
+  let relative_gate = if absolute_count > 0 {
+    -0.691 + 10.0 * log10(absolute_power / absolute_count.to_double()) - 20.0
+  } else {
+    -70.0
+  }
   for p in st_powers {
     let l = if p > 1.0e-12 { -0.691 + 10.0 * log10(p) } else { -140.0 }
-    if l >= -70.0 {
+    if l >= -70.0 && l >= relative_gate {
       lra_loudness.push(l)
     }
   }
@@ -346,3 +365,12 @@ pub fn loudness_meter(
     true_peak,
   })
 }
+
+///|
+pub extend BiquadCoeffs with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend BiquadFilter with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend LoudnessResult with @moonbitlang/core/debug.Debug::{to_repr}

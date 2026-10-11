@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.jpg" alt="MoonMel: Audio Feature Extraction for MoonBit" width="960" />
+  <img src="docs/banner.png" alt="MoonMel: Audio Feature Extraction for MoonBit" width="960" />
 </p>
 
 <p align="center">

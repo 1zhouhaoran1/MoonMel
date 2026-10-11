@@ -8,6 +8,10 @@ import {
 // Values
 pub fn complex(Double, Double) -> Complex
 
+pub fn is_finite(Double) -> Bool
+
+pub fn validate_samples(Array[Double]) -> Result[Unit, MelError]
+
 // Errors
 
 // Types and methods
@@ -18,6 +22,7 @@ pub(all) struct AudioBuffer {
 pub fn AudioBuffer::duration(Self) -> Double
 pub fn AudioBuffer::length(Self) -> Int
 pub fn AudioBuffer::new(Array[Double], Int) -> Result[Self, MelError]
+pub fn AudioBuffer::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Complex {
   re : Double
@@ -27,8 +32,11 @@ pub fn Complex::abs(Self) -> Double
 pub fn Complex::abs2(Self) -> Double
 pub fn Complex::add(Self, Self) -> Self
 pub fn Complex::div(Self, Self) -> Self
+pub fn Complex::equal(Self, Self) -> Bool
 pub fn Complex::mul(Self, Self) -> Self
+pub fn Complex::not_equal(Self, Self) -> Bool
 pub fn Complex::sub(Self, Self) -> Self
+pub fn Complex::to_repr(Self) -> @debug.Repr
 
 pub(all) struct FeatureConfig {
   sample_rate : Int
@@ -51,6 +59,7 @@ pub(all) struct FeatureConfig {
   top_db : Double
 } derive(@debug.Debug)
 pub fn FeatureConfig::default() -> Self
+pub fn FeatureConfig::to_repr(Self) -> @debug.Repr
 pub fn FeatureConfig::validate(Self) -> Result[Unit, MelError]
 pub fn FeatureConfig::whisper() -> Self
 
@@ -65,7 +74,9 @@ pub fn FeatureMatrix::get_col(Self, Int) -> Array[Double]
 pub fn FeatureMatrix::get_row(Self, Int) -> Array[Double]
 pub fn FeatureMatrix::new(Array[Array[Double]]) -> Self
 pub fn FeatureMatrix::set(Self, Int, Int, Double) -> Unit
+pub fn FeatureMatrix::to_repr(Self) -> @debug.Repr
 pub fn FeatureMatrix::transpose(Self) -> Self
+pub fn FeatureMatrix::validate(Self) -> Result[Unit, MelError]
 pub fn FeatureMatrix::zeros(Int, Int) -> Self
 
 pub(all) enum LogScale {
@@ -73,6 +84,9 @@ pub(all) enum LogScale {
   NaturalLog
   Log10
 } derive(Eq, @debug.Debug)
+pub fn LogScale::equal(Self, Self) -> Bool
+pub fn LogScale::not_equal(Self, Self) -> Bool
+pub fn LogScale::to_repr(Self) -> @debug.Repr
 
 pub(all) enum MelError {
   EmptyAudio
@@ -84,17 +98,28 @@ pub(all) enum MelError {
   DimensionMismatch(String)
   WavParseError(String)
 } derive(Eq, @debug.Debug)
+pub fn MelError::equal(Self, Self) -> Bool
+pub fn MelError::not_equal(Self, Self) -> Bool
+pub fn MelError::output(Self, &Logger) -> Unit
+pub fn MelError::to_repr(Self) -> @debug.Repr
+pub fn MelError::to_string(Self) -> String
 pub impl Show for MelError
 
 pub(all) enum MelNorm {
   Slaney
   None
 } derive(Eq, @debug.Debug)
+pub fn MelNorm::equal(Self, Self) -> Bool
+pub fn MelNorm::not_equal(Self, Self) -> Bool
+pub fn MelNorm::to_repr(Self) -> @debug.Repr
 
 pub(all) enum MelScale {
   Slaney
   Htk
 } derive(Eq, @debug.Debug)
+pub fn MelScale::equal(Self, Self) -> Bool
+pub fn MelScale::not_equal(Self, Self) -> Bool
+pub fn MelScale::to_repr(Self) -> @debug.Repr
 
 pub(all) struct MultiChannelAudioBuffer {
   channels : Array[Array[Double]]
@@ -106,6 +131,7 @@ pub fn MultiChannelAudioBuffer::length(Self) -> Int
 pub fn MultiChannelAudioBuffer::new(Array[Array[Double]], Int) -> Result[Self, MelError]
 pub fn MultiChannelAudioBuffer::num_channels(Self) -> Int
 pub fn MultiChannelAudioBuffer::to_mono(Self) -> AudioBuffer
+pub fn MultiChannelAudioBuffer::to_repr(Self) -> @debug.Repr
 
 pub(all) enum WindowType {
   PeriodicHann
@@ -114,6 +140,9 @@ pub(all) enum WindowType {
   Blackman
   Rectangular
 } derive(Eq, @debug.Debug)
+pub fn WindowType::equal(Self, Self) -> Bool
+pub fn WindowType::not_equal(Self, Self) -> Bool
+pub fn WindowType::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

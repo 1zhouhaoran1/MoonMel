@@ -37,6 +37,12 @@ pub fn chroma_filterbank(
   tuning : Double,
   f_min : Double,
 ) -> @types.FeatureMatrix {
+  if sample_rate <= 0 ||
+    n_fft <= 0 ||
+    !@types.is_finite(tuning) ||
+    !@types.is_finite(f_min) {
+    return @types.FeatureMatrix::zeros(12, 0)
+  }
   let n_bins = n_fft / 2 + 1
   let n_chroma = 12
   let filterbank = @types.FeatureMatrix::zeros(n_chroma, n_bins)
@@ -89,6 +95,16 @@ pub fn chroma_from_spectrogram(
   tuning : Double,
   f_min : Double,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
+  if sample_rate <= 0 {
+    return Err(InvalidSampleRate(sample_rate))
+  }
+  if n_fft <= 0 {
+    return Err(InvalidFftSize(n_fft))
+  }
+  match spectrogram.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let n_bins = n_fft / 2 + 1
   if spectrogram.n_rows != n_bins {
     return Err(
@@ -182,3 +198,9 @@ pub fn chroma_stft(
     Err(e) => Err(e)
   }
 }
+
+///|
+pub extend ChromaNorm with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend ChromaNorm with Eq::{not_equal, equal}

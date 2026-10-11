@@ -1,5 +1,5 @@
 ///|
-/// Web binding API for MoonMel Playground.
+/// Web transport only: algorithms and orchestration belong to lower layers.
 pub fn process_audio(
   samples : Array[Double],
   sample_rate : Int,
@@ -9,7 +9,7 @@ pub fn process_audio(
   n_mfcc : Int,
 ) -> String {
   let cfg = {
-    ..@moonmel.FeatureConfig::default(),
+    ..@facade.FeatureConfig::default(),
     sample_rate,
     n_fft,
     hop_length,
@@ -18,109 +18,99 @@ pub fn process_audio(
     n_mfcc,
     f_max: sample_rate.to_double() / 2.0,
   }
+  analyze_config(samples, cfg)
+}
 
-  let stft_res = @moonmel.stft(samples, config=cfg)
-  let mel_res = @moonmel.mel_spectrogram(samples, config=cfg)
-  let logmel_res = @moonmel.log_mel_spectrogram(samples, config=cfg)
-  let mfcc_res = @moonmel.mfcc(samples, config=cfg)
-
-  let sb = StringBuilder()
-  sb.write_string("{\"success\":true,")
-  sb.write_string("\"sample_rate\":\{sample_rate},")
-  sb.write_string("\"num_samples\":\{samples.length()},")
-  sb.write_string("\"n_fft\":\{n_fft},")
-  sb.write_string("\"hop_length\":\{hop_length},")
-  sb.write_string("\"n_mels\":\{n_mels},")
-  sb.write_string("\"n_mfcc\":\{n_mfcc},")
-
-  match (stft_res, mel_res, logmel_res, mfcc_res) {
-    (Ok(stft_mat), Ok(mel_mat), Ok(logmel_mat), Ok(mfcc_mat)) => {
-      sb.write_string("\"n_frames\":\{stft_mat.n_cols},")
-      sb.write_string("\"n_freq_bins\":\{stft_mat.n_rows},")
-
-      // Linear Mel Spectrogram matrix [n_mels][n_frames]
-      sb.write_string("\"mel\":[")
-      for r in 0..<mel_mat.n_rows {
-        if r > 0 {
-          sb.write_string(",")
-        }
-        sb.write_string("[")
-        for c in 0..<mel_mat.n_cols {
-          if c > 0 {
-            sb.write_string(",")
-          }
-          sb.write_string("\{mel_mat.at(r, c)}")
-        }
-        sb.write_string("]")
-      }
-      sb.write_string("],")
-
-      // Log-Mel matrix [n_mels][n_frames]
-      sb.write_string("\"log_mel\":[")
-      for r in 0..<logmel_mat.n_rows {
-        if r > 0 {
-          sb.write_string(",")
-        }
-        sb.write_string("[")
-        for c in 0..<logmel_mat.n_cols {
-          if c > 0 {
-            sb.write_string(",")
-          }
-          sb.write_string("\{logmel_mat.at(r, c)}")
-        }
-        sb.write_string("]")
-      }
-      sb.write_string("],")
-
-      // MFCC matrix [n_mfcc][n_frames]
-      sb.write_string("\"mfcc\":[")
-      for r in 0..<mfcc_mat.n_rows {
-        if r > 0 {
-          sb.write_string(",")
-        }
-        sb.write_string("[")
-        for c in 0..<mfcc_mat.n_cols {
-          if c > 0 {
-            sb.write_string(",")
-          }
-          sb.write_string("\{mfcc_mat.at(r, c)}")
-        }
-        sb.write_string("]")
-      }
-      sb.write_string("],")
-
-      // Downsampled STFT preview (max 64 frequency bins for speedy rendering)
-      let stft_sample_bins = if stft_mat.n_rows > 64 {
-        64
-      } else {
-        stft_mat.n_rows
-      }
-      sb.write_string("\"stft_preview\":[")
-      for r in 0..<stft_sample_bins {
-        if r > 0 {
-          sb.write_string(",")
-        }
-        sb.write_string("[")
-        let bin_idx = r * (stft_mat.n_rows / stft_sample_bins)
-        for c in 0..<stft_mat.n_cols {
-          if c > 0 {
-            sb.write_string(",")
-          }
-          sb.write_string("\{stft_mat.at(bin_idx, c)}")
-        }
-        sb.write_string("]")
-      }
-      sb.write_string("]")
-    }
-    _ => sb.write_string("\"error\":\"Feature extraction failed\"")
+///|
+/// Explicit framing options for reproducible browser and reference analyses.
+pub fn process_audio_config(
+  samples : Array[Double],
+  sample_rate : Int,
+  n_fft : Int,
+  hop_length : Int,
+  win_length : Int,
+  n_mels : Int,
+  n_mfcc : Int,
+  center : Bool,
+  power : Double,
+) -> String {
+  let cfg = {
+    ..@facade.FeatureConfig::default(),
+    sample_rate,
+    n_fft,
+    hop_length,
+    win_length,
+    n_mels,
+    n_mfcc,
+    center,
+    power,
+    f_max: sample_rate.to_double() / 2.0,
   }
+  analyze_config(samples, cfg)
+}
 
+///|
+/// Configure all numerical options from MoonBit callers and reference tests.
+pub fn analyze_config(
+  samples : Array[Double],
+  cfg : @facade.FeatureConfig,
+) -> String {
+  let result = match @facade.analyze(samples, config=cfg) {
+    Ok(value) => value
+    Err(error) => return error_json(error.to_string())
+  }
+  // Cover the complete one-sided frequency range, including its last bin.
+  let bins = if result.stft.n_rows > 64 { 64 } else { result.stft.n_rows }
+  let preview = Array::make(bins, [])
+  let indices = Array::make(bins, 0)
+  for r in 0..<bins {
+    let k = if bins > 1 { r * (result.stft.n_rows - 1) / (bins - 1) } else { 0 }
+    indices[r] = k
+    preview[r] = result.stft.get_row(k)
+  }
+  let sb = StringBuilder()
+  sb.write_string("{\"success\":true,\"sample_rate\":\{cfg.sample_rate},")
+  sb.write_string("\"num_samples\":\{samples.length()},\"n_fft\":\{cfg.n_fft},")
+  sb.write_string(
+    "\"hop_length\":\{cfg.hop_length},\"n_mels\":\{cfg.n_mels},\"n_mfcc\":\{cfg.n_mfcc},",
+  )
+  sb.write_string(
+    "\"n_frames\":\{result.stft.n_cols},\"n_freq_bins\":\{result.stft.n_rows},",
+  )
+  sb.write_string("\"mel\":")
+  sb.write_string(@json.to_json(result.mel.data).stringify())
+  sb.write_string(",\"log_mel\":")
+  sb.write_string(@json.to_json(result.log_mel.data).stringify())
+  sb.write_string(",\"mfcc\":")
+  sb.write_string(@json.to_json(result.mfcc.data).stringify())
+  sb.write_string(",\"stft_preview\":")
+  sb.write_string(@json.to_json(preview).stringify())
+  sb.write_string(",\"stft_bin_indices\":")
+  sb.write_string(@json.to_json(indices).stringify())
+  sb.write_string(",\"filterbank\":")
+  sb.write_string(@json.to_json(result.filterbank.data).stringify())
   sb.write_string("}")
   sb.to_string()
 }
 
 ///|
-/// Web binding for WAV bytes.
+fn error_json(message : String) -> String {
+  "{\"success\":false,\"error\":" + @json.to_json(message).stringify() + "}"
+}
+
+///|
+/// Decode through the project's PCM WAV parser, preserving samples for playback.
+pub fn decode_wav_audio(bytes : Array[Byte]) -> String {
+  match @facade.decode_wav(bytes) {
+    Ok(audio) =>
+      "{\"success\":true,\"sample_rate\":\{audio.sample_rate},\"samples\":" +
+      @json.to_json(audio.samples).stringify() +
+      "}"
+    Err(error) => error_json(error.to_string())
+  }
+}
+
+///|
 pub fn process_wav_bytes(
   bytes : Array[Byte],
   n_fft : Int,
@@ -128,16 +118,16 @@ pub fn process_wav_bytes(
   n_mels : Int,
   n_mfcc : Int,
 ) -> String {
-  match @moonmel.decode_wav(bytes) {
-    Ok(buf) =>
+  match @facade.decode_wav(bytes) {
+    Ok(audio) =>
       process_audio(
-        buf.samples,
-        buf.sample_rate,
+        audio.samples,
+        audio.sample_rate,
         n_fft,
         hop_length,
         n_mels,
         n_mfcc,
       )
-    Err(e) => "{\"success\":false,\"error\":\"\{e}\"}"
+    Err(error) => error_json(error.to_string())
   }
 }

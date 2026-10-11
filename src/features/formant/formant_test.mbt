@@ -1,7 +1,7 @@
 ///|
 test "durand_kerner_quadratic_real" {
   // P(z) = (z - 2)(z - 3) = z^2 - 5z + 6
-  let roots = durand_kerner([-5.0, 6.0])
+  let roots = @formant.durand_kerner([-5.0, 6.0])
   assert_eq(roots.length(), 2)
   let r0 = roots[0].re
   let r1 = roots[1].re
@@ -14,7 +14,7 @@ test "durand_kerner_quadratic_real" {
 ///|
 test "durand_kerner_imaginary_roots" {
   // P(z) = z^2 + 4 = 0 => z = +- 2i
-  let roots = durand_kerner([0.0, 4.0])
+  let roots = @formant.durand_kerner([0.0, 4.0])
   assert_eq(roots.length(), 2)
   assert_true(roots[0].re.abs() < 1.0e-5)
   assert_true(roots[1].re.abs() < 1.0e-5)
@@ -25,7 +25,7 @@ test "durand_kerner_imaginary_roots" {
 ///|
 test "durand_kerner_cubic" {
   // P(z) = (z - 1)(z - 2)(z - 3) = z^3 - 6z^2 + 11z - 6
-  let roots = durand_kerner([-6.0, 11.0, -6.0])
+  let roots = @formant.durand_kerner([-6.0, 11.0, -6.0])
   assert_eq(roots.length(), 3)
   for k in 0..<3 {
     let re = roots[k].re
@@ -54,13 +54,13 @@ test "formant_extraction_synthetic_resonances" {
   }
 
   let cfg = {
-    ..FormantConfig::default(),
+    ..@formant.FormantConfig::default(),
     lpc_order: 14,
     frame_length: 400,
     hop_length: 160,
   }
 
-  let frames = match formant_track(sig, sr, config=cfg) {
+  let frames = match @formant.formant_track(sig, sr, config=cfg) {
     Ok(f) => f
     Err(_) => {
       assert_true(false)
@@ -69,6 +69,6 @@ test "formant_extraction_synthetic_resonances" {
   }
 
   assert_true(frames.length() > 0)
-  let f1_track = formant_frequencies(frames, 0)
+  let f1_track = @formant.formant_frequencies(frames, 0)
   assert_eq(f1_track.length(), frames.length())
 }

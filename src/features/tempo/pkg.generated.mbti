@@ -23,12 +23,14 @@ pub(all) struct TempoConfig {
   hop_length : Int
 } derive(@debug.Debug)
 pub fn TempoConfig::default() -> Self
+pub fn TempoConfig::to_repr(Self) -> @debug.Repr
 
 pub(all) struct TempogramResult {
   tempogram : @types.FeatureMatrix
   tempi : Array[Double]
   bpm : Double
 } derive(@debug.Debug)
+pub fn TempogramResult::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

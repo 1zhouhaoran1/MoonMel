@@ -1,1 +1,5 @@
 // Core types package has no external dependencies
+
+import {
+  "moonbitlang/core/debug",
+}

@@ -38,12 +38,17 @@ fn delta_1d(row : Array[Double], width : Int) -> Array[Double] {
 
 ///|
 /// Compute temporal Delta or Delta-Delta dynamic coefficients.
-/// Matches librosa.feature.delta / HTK polynomial approximation derivative.
+/// HTK regression derivative with nearest-edge padding. Higher orders repeat
+/// this operator; this is not librosa's default Savitzky-Golay/interp behavior.
 pub fn compute_delta(
   matrix : @types.FeatureMatrix,
   width? : Int = 9,
   order? : Int = 1,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match matrix.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   if width < 3 || width % 2 == 0 {
     return Err(DimensionMismatch("Delta width must be an odd integer >= 3"))
   }

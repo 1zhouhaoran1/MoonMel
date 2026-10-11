@@ -107,12 +107,48 @@ pub fn mel_spectrogram(
     Ok(s) => s
     Err(e) => return Err(e)
   }
+  mel_from_spectrogram(spec, config)
+}
+
+///|
+/// Project a precomputed spectrogram without repeating the STFT.
+pub fn mel_from_spectrogram(
+  spec : @types.FeatureMatrix,
+  config : @types.FeatureConfig,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match spec.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  if spec.n_rows != config.n_fft / 2 + 1 {
+    return Err(DimensionMismatch("Spectrogram bins do not match n_fft"))
+  }
   let fb = match mel_filterbank(config) {
     Ok(f) => f
     Err(e) => return Err(e)
   }
 
-  let n_mels = config.n_mels
+  apply_filterbank(spec, fb)
+}
+
+///|
+/// Apply a reusable bank to an existing spectrum without another transform.
+pub fn apply_filterbank(
+  spec : @types.FeatureMatrix,
+  fb : @types.FeatureMatrix,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match spec.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  match fb.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  if fb.n_cols != spec.n_rows {
+    return Err(DimensionMismatch("Filterbank and spectrogram bins differ"))
+  }
+  let n_mels = fb.n_rows
   let n_frames = spec.n_cols
   let n_bins = spec.n_rows
 
@@ -122,7 +158,10 @@ pub fn mel_spectrogram(
     for t in 0..<n_frames {
       let mut sum = 0.0
       for k in 0..<n_bins {
-        sum = sum + fb.at(m, k) * spec.at(k, t)
+        let weight = fb.at(m, k)
+        if weight != 0.0 {
+          sum = sum + weight * spec.at(k, t)
+        }
       }
       mel_spec.set(m, t, sum)
     }

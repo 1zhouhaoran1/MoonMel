@@ -27,12 +27,18 @@ pub(all) struct OnsetConfig {
   normalize : Bool
 } derive(Eq, @debug.Debug)
 pub fn OnsetConfig::default() -> Self
+pub fn OnsetConfig::equal(Self, Self) -> Bool
+pub fn OnsetConfig::not_equal(Self, Self) -> Bool
+pub fn OnsetConfig::to_repr(Self) -> @debug.Repr
 
 pub(all) enum OnsetMethod {
   SpectralFlux
   SuperFlux(Int)
   Energy
 } derive(Eq, @debug.Debug)
+pub fn OnsetMethod::equal(Self, Self) -> Bool
+pub fn OnsetMethod::not_equal(Self, Self) -> Bool
+pub fn OnsetMethod::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

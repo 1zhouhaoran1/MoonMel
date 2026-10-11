@@ -151,8 +151,8 @@ pub fn hpss(spec : @types.FeatureMatrix, config : HpssConfig) -> HpssResult {
   for r in 0..<n_rows {
     for c in 0..<n_cols {
       let s = spec.at(r, c)
-      let h_val = h_med.at(r, c) * config.margin_harm
-      let p_val = p_med.at(r, c) * config.margin_perc
+      let h_val = h_med.at(r, c)
+      let p_val = p_med.at(r, c)
 
       let (mh, mp) = match config.mask_mode {
         Soft => {
@@ -166,14 +166,29 @@ pub fn hpss(spec : @types.FeatureMatrix, config : HpssConfig) -> HpssResult {
           } else {
             @math.pow(p_val, config.power)
           }
-          let total_pow = h_pow + p_pow
-          if total_pow <= eps {
+          if h_pow + p_pow <= eps {
             (0.5, 0.5)
           } else {
-            (h_pow / total_pow, p_pow / total_pow)
+            let h_denom = h_pow +
+              p_pow * @math.pow(config.margin_harm, config.power)
+            let p_denom = p_pow +
+              h_pow * @math.pow(config.margin_perc, config.power)
+            (h_pow / h_denom, p_pow / p_denom)
           }
         }
-        Hard => if h_val >= p_val { (1.0, 0.0) } else { (0.0, 1.0) }
+        Hard =>
+          (
+            if h_val >= p_val * config.margin_harm {
+              1.0
+            } else {
+              0.0
+            },
+            if p_val > h_val * config.margin_perc {
+              1.0
+            } else {
+              0.0
+            },
+          )
       }
 
       mask_h.set(r, c, mh)
@@ -242,3 +257,18 @@ pub fn percussive_energy_ratio(result : HpssResult) -> Array[Double] {
   }
   ratios
 }
+
+///|
+pub extend HpssConfig with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend HpssConfig with Eq::{not_equal, equal}
+
+///|
+pub extend HpssResult with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend MaskMode with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend MaskMode with Eq::{not_equal, equal}

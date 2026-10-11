@@ -1,0 +1,120 @@
+{
+  "reference": {
+    "librosa": "1.0.0",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1"
+  },
+  "convention": "periodic Hann; reflect padding; Slaney filters float64; dB; orthonormal DCT-II",
+  "scope": "All Mel, Log-Mel and MFCC cells; up to 64 explicitly indexed STFT bins per frame. Eight deterministic signals/configurations. Not whole-library parity or a speed comparison.",
+  "tolerance": {
+    "atol": 1e-07,
+    "rtol": 1e-07
+  },
+  "passed": true,
+  "cases": [
+    {
+      "case": "tone",
+      "shape": [
+        24,
+        63
+      ],
+      "max_absolute_error": {
+        "stft_preview": 2.2737367544323206e-12,
+        "mel": 2.2737367544323206e-13,
+        "log_mel": 2.0392576516314875e-12,
+        "mfcc": 1.0791367799356522e-12
+      }
+    },
+    {
+      "case": "silence",
+      "shape": [
+        24,
+        19
+      ],
+      "max_absolute_error": {
+        "stft_preview": 0.0,
+        "mel": 0.0,
+        "log_mel": 0.0,
+        "mfcc": 1.7763568394002505e-13
+      }
+    },
+    {
+      "case": "noise",
+      "shape": [
+        24,
+        11
+      ],
+      "max_absolute_error": {
+        "stft_preview": 6.483702463810914e-14,
+        "mel": 5.967448757360216e-16,
+        "log_mel": 4.440892098500626e-14,
+        "mfcc": 4.4853010194856324e-14
+      }
+    },
+    {
+      "case": "short-window",
+      "shape": [
+        24,
+        19
+      ],
+      "max_absolute_error": {
+        "stft_preview": 3.907985046680551e-14,
+        "mel": 4.718447854656915e-16,
+        "log_mel": 5.1514348342607263e-14,
+        "mfcc": 5.595524044110789e-14
+      }
+    },
+    {
+      "case": "whisper-fft",
+      "shape": [
+        24,
+        19
+      ],
+      "max_absolute_error": {
+        "stft_preview": 3.028688411177427e-13,
+        "mel": 4.385380947269368e-15,
+        "log_mel": 2.7355895326763857e-13,
+        "mfcc": 6.821210263296962e-13
+      }
+    },
+    {
+      "case": "odd-fft",
+      "shape": [
+        24,
+        19
+      ],
+      "max_absolute_error": {
+        "stft_preview": 5.906386491005833e-14,
+        "mel": 2.393918396847994e-16,
+        "log_mel": 1.4210854715202004e-13,
+        "mfcc": 1.467714838554457e-13
+      }
+    },
+    {
+      "case": "magnitude",
+      "shape": [
+        24,
+        15
+      ],
+      "max_absolute_error": {
+        "stft_preview": 6.217248937900877e-15,
+        "mel": 4.163336342344337e-17,
+        "log_mel": 1.4210854715202004e-14,
+        "mfcc": 5.684341886080802e-14
+      }
+    },
+    {
+      "case": "single-sample",
+      "shape": [
+        24,
+        1
+      ],
+      "max_absolute_error": {
+        "stft_preview": 1.120465529005268e-30,
+        "mel": 2.999828831956938e-31,
+        "log_mel": 0.0,
+        "mfcc": 2.2737367544323206e-13
+      }
+    }
+  ]
+}

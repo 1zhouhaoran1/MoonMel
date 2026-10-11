@@ -29,6 +29,7 @@ pub(all) struct LpcResult {
   reflection : Array[Double]
   prediction_error : Double
 } derive(@debug.Debug)
+pub fn LpcResult::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

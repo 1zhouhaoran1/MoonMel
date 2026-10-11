@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/dsp/framing"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn prepare(Array[Double], @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
+
+pub fn window_frame(Array[Double], Int, Array[Double], Array[Double]) -> Unit
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

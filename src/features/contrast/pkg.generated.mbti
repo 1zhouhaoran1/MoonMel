@@ -23,6 +23,7 @@ pub(all) struct ContrastConfig {
   linear : Bool
 } derive(@debug.Debug)
 pub fn ContrastConfig::default() -> Self
+pub fn ContrastConfig::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

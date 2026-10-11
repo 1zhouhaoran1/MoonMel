@@ -33,6 +33,9 @@ pub(all) struct HpssConfig {
   mask_mode : MaskMode
 } derive(Eq, @debug.Debug)
 pub fn HpssConfig::default() -> Self
+pub fn HpssConfig::equal(Self, Self) -> Bool
+pub fn HpssConfig::not_equal(Self, Self) -> Bool
+pub fn HpssConfig::to_repr(Self) -> @debug.Repr
 
 pub(all) struct HpssResult {
   harmonic : @types.FeatureMatrix
@@ -40,11 +43,15 @@ pub(all) struct HpssResult {
   harmonic_mask : @types.FeatureMatrix
   percussive_mask : @types.FeatureMatrix
 } derive(@debug.Debug)
+pub fn HpssResult::to_repr(Self) -> @debug.Repr
 
 pub(all) enum MaskMode {
   Soft
   Hard
 } derive(Eq, @debug.Debug)
+pub fn MaskMode::equal(Self, Self) -> Bool
+pub fn MaskMode::not_equal(Self, Self) -> Bool
+pub fn MaskMode::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

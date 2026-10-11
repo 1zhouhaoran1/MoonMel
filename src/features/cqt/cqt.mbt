@@ -42,8 +42,22 @@ pub fn CqtConfig::validate(self : CqtConfig) -> Result[Unit, @types.MelError] {
     return Err(DimensionMismatch("n_bins and bins_per_octave must be positive"))
   }
   let nyquist = self.sample_rate.to_double() / 2.0
-  if self.f_min <= 0.0 || self.f_min >= nyquist {
+  if !@types.is_finite(self.f_min) ||
+    self.f_min <= 0.0 ||
+    self.f_min >= nyquist ||
+    !@types.is_finite(self.tuning) ||
+    !@types.is_finite(self.power) ||
+    self.power <= 0.0 {
     return Err(InvalidFrequencyRange(self.f_min, nyquist))
+  }
+  let highest = self.f_min *
+    @math.pow(
+      2.0,
+      (self.n_bins.to_double() - 1.0 - self.tuning) /
+      self.bins_per_octave.to_double(),
+    )
+  if !@types.is_finite(highest) || highest > nyquist {
+    return Err(InvalidFrequencyRange(self.f_min, highest))
   }
   Ok(())
 }
@@ -181,3 +195,9 @@ pub fn cqt(
 
   Ok(out)
 }
+
+///|
+pub extend CqtConfig with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend CqtConfig with Eq::{not_equal, equal}

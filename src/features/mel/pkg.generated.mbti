@@ -6,9 +6,13 @@ import {
 }
 
 // Values
+pub fn apply_filterbank(@types.FeatureMatrix, @types.FeatureMatrix) -> Result[@types.FeatureMatrix, @types.MelError]
+
 pub fn hz_to_mel(Double, @types.MelScale) -> Double
 
 pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn mel_from_spectrogram(@types.FeatureMatrix, @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn mel_spectrogram(Array[Double], @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 

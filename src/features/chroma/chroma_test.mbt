@@ -19,22 +19,22 @@ fn generate_sine_wave(
 
 ///|
 test "pitch_class_name_mapping" {
-  assert_eq(pitch_class_name(0), "C")
-  assert_eq(pitch_class_name(2), "D")
-  assert_eq(pitch_class_name(4), "E")
-  assert_eq(pitch_class_name(5), "F")
-  assert_eq(pitch_class_name(7), "G")
-  assert_eq(pitch_class_name(9), "A")
-  assert_eq(pitch_class_name(11), "B")
-  assert_eq(pitch_class_name(12), "C")
-  assert_eq(pitch_class_name(-1), "B")
+  assert_eq(@chroma.pitch_class_name(0), "C")
+  assert_eq(@chroma.pitch_class_name(2), "D")
+  assert_eq(@chroma.pitch_class_name(4), "E")
+  assert_eq(@chroma.pitch_class_name(5), "F")
+  assert_eq(@chroma.pitch_class_name(7), "G")
+  assert_eq(@chroma.pitch_class_name(9), "A")
+  assert_eq(@chroma.pitch_class_name(11), "B")
+  assert_eq(@chroma.pitch_class_name(12), "C")
+  assert_eq(@chroma.pitch_class_name(-1), "B")
 }
 
 ///|
 test "chroma_filterbank_dimensions_and_energy" {
   let sr = 16000
   let n_fft = 1024
-  let fb = chroma_filterbank(sr, n_fft, 0.0, 0.0)
+  let fb = @chroma.chroma_filterbank(sr, n_fft, 0.0, 0.0)
   assert_eq(fb.n_rows, 12)
   assert_eq(fb.n_cols, 513)
 
@@ -51,7 +51,7 @@ test "chroma_a440_prominence" {
   let sr = 16000
   let tone_a4 = generate_sine_wave(440.0, sr, 0.2)
   let cfg = @types.FeatureConfig::default()
-  match chroma_stft(tone_a4, cfg, ChromaNorm::Max) {
+  match @chroma.chroma_stft(tone_a4, cfg, @chroma.ChromaNorm::Max) {
     Ok(chroma) => {
       assert_eq(chroma.n_rows, 12)
       assert_true(chroma.n_cols > 0)
@@ -73,7 +73,7 @@ test "chroma_c4_prominence" {
   let sr = 16000
   let tone_c4 = generate_sine_wave(261.63, sr, 0.2)
   let cfg = @types.FeatureConfig::default()
-  match chroma_stft(tone_c4, cfg, ChromaNorm::Max) {
+  match @chroma.chroma_stft(tone_c4, cfg, @chroma.ChromaNorm::Max) {
     Ok(chroma) => {
       let mid = chroma.n_cols / 2
       let c_val = chroma.at(0, mid) // Pitch class 0 is C
@@ -94,7 +94,7 @@ test "chroma_normalization_l1_and_l2" {
   let cfg = @types.FeatureConfig::default()
 
   // Test L1 normalization: column sums equal ~1.0
-  match chroma_stft(tone, cfg, ChromaNorm::L1) {
+  match @chroma.chroma_stft(tone, cfg, @chroma.ChromaNorm::L1) {
     Ok(chroma) => {
       let mid = chroma.n_cols / 2
       let mut sum = 0.0
@@ -107,7 +107,7 @@ test "chroma_normalization_l1_and_l2" {
   }
 
   // Test L2 normalization: Euclidean length equals ~1.0
-  match chroma_stft(tone, cfg, ChromaNorm::L2) {
+  match @chroma.chroma_stft(tone, cfg, @chroma.ChromaNorm::L2) {
     Ok(chroma) => {
       let mid = chroma.n_cols / 2
       let mut sum_sq = 0.0

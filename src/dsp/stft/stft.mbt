@@ -4,30 +4,14 @@ pub fn stft_spectrogram(
   samples : Array[Double],
   config : @types.FeatureConfig,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
-  match config.validate() {
-    Ok(_) => ()
+  let audio = match @framing.prepare(samples, config) {
+    Ok(audio) => audio
     Err(e) => return Err(e)
-  }
-  if samples.is_empty() {
-    return Err(EmptyAudio)
   }
   let n_fft = config.n_fft
   let hop_length = config.hop_length
   let win_length = config.win_length
-
-  let audio = if config.center {
-    let pad_width = n_fft / 2
-    @window.pad_reflect(samples, pad_width)
-  } else {
-    samples.copy()
-  }
-
   let audio_len = audio.length()
-  if audio_len < n_fft {
-    return Err(
-      DimensionMismatch("Audio length after padding is shorter than n_fft"),
-    )
-  }
 
   let n_frames = 1 + (audio_len - n_fft) / hop_length
   let n_bins = n_fft / 2 + 1
@@ -38,16 +22,7 @@ pub fn stft_spectrogram(
 
   for frame_idx in 0..<n_frames {
     let start = frame_idx * hop_length
-    let pad_offset = (n_fft - win_length) / 2
-    for i in 0..<n_fft {
-      frame_buf[i] = 0.0
-    }
-    for j in 0..<win_length {
-      let s_idx = start + j
-      if s_idx < audio_len {
-        frame_buf[pad_offset + j] = audio[s_idx] * win[j]
-      }
-    }
+    @framing.window_frame(audio, start, win, frame_buf)
 
     match @fft.rfft_spectrum(frame_buf, n_fft, config.power) {
       Ok(spec) =>
@@ -67,30 +42,14 @@ pub fn stft_complex(
   samples : Array[Double],
   config : @types.FeatureConfig,
 ) -> Result[Array[Array[@types.Complex]], @types.MelError] {
-  match config.validate() {
-    Ok(_) => ()
+  let audio = match @framing.prepare(samples, config) {
+    Ok(audio) => audio
     Err(e) => return Err(e)
-  }
-  if samples.is_empty() {
-    return Err(EmptyAudio)
   }
   let n_fft = config.n_fft
   let hop_length = config.hop_length
   let win_length = config.win_length
-
-  let audio = if config.center {
-    let pad_width = n_fft / 2
-    @window.pad_reflect(samples, pad_width)
-  } else {
-    samples.copy()
-  }
-
   let audio_len = audio.length()
-  if audio_len < n_fft {
-    return Err(
-      DimensionMismatch("Audio length after padding is shorter than n_fft"),
-    )
-  }
 
   let n_frames = 1 + (audio_len - n_fft) / hop_length
   let n_bins = n_fft / 2 + 1
@@ -102,19 +61,12 @@ pub fn stft_complex(
 
   for frame_idx in 0..<n_frames {
     let start = frame_idx * hop_length
-    let pad_offset = (n_fft - win_length) / 2
-    for i in 0..<n_fft {
-      re[i] = 0.0
-      im[i] = 0.0
+    @framing.window_frame(audio, start, win, re)
+    im.fill(0.0)
+    match @fft.transform_in_place(re, im, n_fft, false) {
+      Ok(_) => ()
+      Err(e) => return Err(e)
     }
-    for j in 0..<win_length {
-      let s_idx = start + j
-      if s_idx < audio_len {
-        re[pad_offset + j] = audio[s_idx] * win[j]
-      }
-    }
-
-    @fft.fft_in_place(re, im, n_fft, false)
     let f : Array[@types.Complex] = Array::make(n_bins, @types.Complex::{
       re: 0.0,
       im: 0.0,
@@ -159,7 +111,7 @@ pub fn istft(
   let pad_offset = (n_fft - win_length) / 2
   let win = @window.create_window(config.window, win_length)
 
-  let total_len = (n_frames - 1) * hop_length + win_length
+  let total_len = (n_frames - 1) * hop_length + n_fft
   let y_buf : Array[Double] = Array::make(total_len, 0.0)
   let w_sum : Array[Double] = Array::make(total_len, 0.0)
 
@@ -175,16 +127,19 @@ pub fn istft(
       re[k] = f[k].re
       im[k] = f[k].im
     }
-    for k in 1..<(n_fft / 2) {
+    for k in 1..<((n_fft + 1) / 2) {
       re[n_fft - k] = f[k].re
       im[n_fft - k] = -f[k].im
     }
 
-    @fft.fft_in_place(re, im, n_fft, true)
+    match @fft.transform_in_place(re, im, n_fft, true) {
+      Ok(_) => ()
+      Err(e) => return Err(e)
+    }
 
     for j in 0..<win_length {
       let syn = re[pad_offset + j] * win[j]
-      let idx = start + j
+      let idx = start + pad_offset + j
       y_buf[idx] = y_buf[idx] + syn
       w_sum[idx] = w_sum[idx] + win[j] * win[j]
     }

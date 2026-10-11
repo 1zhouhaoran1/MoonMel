@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/pipeline/analysis"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn analyze(Array[Double], @types.FeatureConfig) -> Result[AnalysisResult, @types.MelError]
+
+// Errors
+
+// Types and methods
+pub(all) struct AnalysisResult {
+  stft : @types.FeatureMatrix
+  filterbank : @types.FeatureMatrix
+  mel : @types.FeatureMatrix
+  log_mel : @types.FeatureMatrix
+  mfcc : @types.FeatureMatrix
+} derive(@debug.Debug)
+pub fn AnalysisResult::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

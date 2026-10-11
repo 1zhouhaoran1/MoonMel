@@ -163,6 +163,9 @@ pub fn zero_crossing_rate(
   let n_frames = (eff_len - frame_length) / hop_length + 1
   let out = @types.FeatureMatrix::zeros(1, n_frames)
   let denom = 2.0 * (frame_length - 1).to_double()
+  if frame_length == 1 {
+    return Ok(out)
+  }
 
   for f in 0..<n_frames {
     let offset = f * hop_length

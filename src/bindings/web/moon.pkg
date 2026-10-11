@@ -1,12 +1,27 @@
 pkgtype(kind: "foreign_library")
 
 import {
-  "zhr/moonmel",
+  "zhr/moonmel/src/facade",
+  "moonbitlang/core/json",
 }
 
 options(
   link: {
-    "js": { "exports": [ "process_audio", "process_wav_bytes" ] },
-    "wasm": { "exports": [ "process_audio", "process_wav_bytes" ] },
+    "js": {
+      "exports": [
+        "process_audio",
+        "process_audio_config",
+        "process_wav_bytes",
+        "decode_wav_audio",
+      ],
+    },
+    "wasm": {
+      "exports": [
+        "process_audio",
+        "process_audio_config",
+        "process_wav_bytes",
+        "decode_wav_audio",
+      ],
+    },
   },
 )

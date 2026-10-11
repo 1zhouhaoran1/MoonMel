@@ -128,7 +128,9 @@ pub fn formants_from_lpc(
   sample_rate : Int,
   config : FormantConfig,
 ) -> FormantFrame {
-  let roots = durand_kerner(lpc_coeffs)
+  // Positive predictor coefficients map to the denominator 1 - sum(a*z^-k).
+  let polynomial = lpc_coeffs.map(fn(coefficient) { -coefficient })
+  let roots = durand_kerner(polynomial)
   let cand : Array[Formant] = []
   let sr_d = sample_rate.to_double()
 
@@ -185,6 +187,20 @@ pub fn formants_frame(
   }
 
   // 1. Pre-emphasis filter
+  if config.lpc_order <= 0 || config.lpc_order >= flen {
+    return Err(DimensionMismatch("LPC order must be in [1, frame_length)"))
+  }
+  if !@types.is_finite(config.pre_emphasis) ||
+    !@types.is_finite(config.min_frequency) ||
+    !@types.is_finite(config.max_frequency) ||
+    !@types.is_finite(config.max_bandwidth) ||
+    config.min_frequency < 0.0 ||
+    config.max_frequency <= config.min_frequency ||
+    config.max_bandwidth <= 0.0 {
+    return Err(
+      DimensionMismatch("Invalid formant frequency range or pre-emphasis"),
+    )
+  }
   let pe : Array[Double] = Array::make(flen, 0.0)
   pe[0] = frame[0]
   for i in 1..<flen {
@@ -224,6 +240,12 @@ pub fn formant_track(
   }
   let flen = config.frame_length
   let hop = config.hop_length
+  if flen <= 0 {
+    return Err(InvalidFftSize(flen))
+  }
+  if hop <= 0 {
+    return Err(InvalidHopLength(hop))
+  }
   if len < flen {
     return Err(DimensionMismatch("Audio length shorter than frame_length"))
   }
@@ -262,3 +284,15 @@ pub fn formant_frequencies(
   }
   out
 }
+
+///|
+pub extend Formant with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend Formant with Eq::{not_equal, equal}
+
+///|
+pub extend FormantConfig with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+pub extend FormantFrame with @moonbitlang/core/debug.Debug::{to_repr}

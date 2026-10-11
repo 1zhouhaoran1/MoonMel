@@ -23,6 +23,7 @@ pub(all) struct PitchTrack {
   voiced_prob : Array[Double]
   periods : Array[Double]
 } derive(@debug.Debug)
+pub fn PitchTrack::to_repr(Self) -> @debug.Repr
 
 pub(all) struct YinConfig {
   f_min : Double
@@ -32,6 +33,7 @@ pub(all) struct YinConfig {
   hop_length : Int
 } derive(@debug.Debug)
 pub fn YinConfig::default() -> Self
+pub fn YinConfig::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

@@ -1,0 +1,70 @@
+name: Project CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  moonbit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [wasm, wasm-gc, js, native]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh -o /tmp/install-moonbit.sh
+          bash /tmp/install-moonbit.sh
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Verify compiler and architecture
+        run: |
+          node tools/quality/check-toolchain.mjs
+          node tools/quality/check-architecture.mjs
+      - name: Check
+        run: moon check --target ${{ matrix.target }} --deny-warn
+      - name: Build
+        run: moon build --target ${{ matrix.target }} --release
+      - name: Test
+        run: moon test --target ${{ matrix.target }} --deny-warn
+      - name: Runnable example
+        run: moon run cmd/main --target ${{ matrix.target }}
+
+  playground:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh -o /tmp/install-moonbit.sh
+          bash /tmp/install-moonbit.sh
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.14.0'
+      - name: Verify compiler
+        run: node tools/quality/check-toolchain.mjs
+      - name: Install playground dependencies
+        run: pnpm --dir playground install --frozen-lockfile
+      - name: Build fresh bindings and playground
+        run: pnpm --dir playground run build
+      - name: Binding integration tests
+        run: pnpm --dir playground test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moonmel-playground
+          path: playground/dist
