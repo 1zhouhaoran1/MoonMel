@@ -348,3 +348,27 @@ pub fn bluestein_ifft(
 ```
 - **复杂度**：严格 $O(N \log N)$，支持任意长度 $N$（包括素数如 3, 5, 7, 13 等）。
 - 当 $N$ 为 2 的幂次时，`dft` 自动路由至原地 Radix-2 Cooley-Tukey FFT；非 2 幂次时自动应用 Bluestein 快速卷积。
+
+### 2.20 `cqt` 与 `cqt_frequencies` (Constant-Q Transform)
+常量 Q 变换，在对数几何频带上以恒定品质因数 $Q$ 提取高保真时频表示。
+
+```moonbit
+pub struct CqtConfig {
+  sample_rate : Int       // 采样率（默认 16000）
+  hop_length : Int        // 帧移步长（默认 512）
+  f_min : Double          // 最低基准频率（默认 32.703 Hz / C1）
+  n_bins : Int            // 频带总数（默认 84 / 7个八度）
+  bins_per_octave : Int   // 每八度频带数（默认 12）
+  tuning : Double         // 调音偏置（默认 0.0）
+  power : Double          // 功率谱指数（默认 2.0）
+}
+
+pub fn cqt_frequencies(config : CqtConfig) -> Array[Double]
+
+pub fn cqt(
+  samples : Array[Double],
+  config? : CqtConfig = CqtConfig::default()
+) -> Result[FeatureMatrix, MelError]
+```
+- 输出形状：`[n_bins, n_frames]`，频点满足几何级数倍增：$f_k = f_{min} \cdot 2^{k / B}$。
+- 品质因数恒定：$Q = 1 / (2^{1/B} - 1)$，支持音乐和弦与音高分析。

@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/cqt"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn cqt(Array[Double], config? : CqtConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn cqt_frequencies(CqtConfig) -> Array[Double]
+
+// Errors
+
+// Types and methods
+pub(all) struct CqtConfig {
+  sample_rate : Int
+  hop_length : Int
+  f_min : Double
+  n_bins : Int
+  bins_per_octave : Int
+  tuning : Double
+  power : Double
+} derive(Eq, @debug.Debug)
+pub fn CqtConfig::default() -> Self
+pub fn CqtConfig::validate(Self) -> Result[Unit, @types.MelError]
+
+// Type aliases
+
+// Traits

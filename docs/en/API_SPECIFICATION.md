@@ -348,3 +348,27 @@ pub fn bluestein_ifft(
 ```
 - **Time Complexity**: Exact $O(N \log N)$ for arbitrary $N$, including prime numbers (3, 5, 7, 13, etc.).
 - Automatically routes to in-place Radix-2 Cooley-Tukey FFT when $N$ is a power of 2, and Bluestein fast convolution otherwise.
+
+### 2.20 `cqt` & `cqt_frequencies` (Constant-Q Transform)
+Constant-Q Transform extracting geometrically spaced time-frequency representations with constant Q quality factor.
+
+```moonbit
+pub struct CqtConfig {
+  sample_rate : Int       // Sample rate (default 16000)
+  hop_length : Int        // Hop length (default 512)
+  f_min : Double          // Minimum base frequency (default 32.703 Hz / C1)
+  n_bins : Int            // Total bins (default 84 / 7 octaves)
+  bins_per_octave : Int   // Bins per octave (default 12)
+  tuning : Double         // Tuning offset (default 0.0)
+  power : Double          // Spectrogram power (default 2.0)
+}
+
+pub fn cqt_frequencies(config : CqtConfig) -> Array[Double]
+
+pub fn cqt(
+  samples : Array[Double],
+  config? : CqtConfig = CqtConfig::default()
+) -> Result[FeatureMatrix, MelError]
+```
+- Output shape: `[n_bins, n_frames]` with geometric frequency distribution $f_k = f_{min} \cdot 2^{k / B}$.
+- Quality factor $Q = 1 / (2^{1/B} - 1)$, tailored for musical pitch and harmonic analysis.

@@ -299,3 +299,18 @@ test "facade_bluestein_arbitrary_dft" {
     assert_true((rec5[i].im - prime5[i].im).abs() < 1.0e-7)
   }
 }
+
+///|
+test "facade_cqt" {
+  let cfg = @moonmel.CqtConfig::default()
+  let freqs = @moonmel.cqt_frequencies(cfg)
+  assert_eq(freqs.length(), 84)
+
+  let sig = Array::make(3200, 0.0)
+  for i in 0..<3200 {
+    sig[i] = @math.sin(i.to_double() * 0.1)
+  }
+  let cqt_mat = @moonmel.cqt(sig, config=cfg).unwrap()
+  assert_eq(cqt_mat.n_rows, 84)
+  assert_true(cqt_mat.n_cols > 0)
+}

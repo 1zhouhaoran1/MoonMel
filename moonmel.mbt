@@ -404,3 +404,22 @@ pub fn idft(
 ) -> Result[Array[@types.Complex], @types.MelError] {
   @fft.idft(spectrum)
 }
+
+///|
+/// Re-export Constant-Q Transform config.
+pub type CqtConfig = @cqt.CqtConfig
+
+///|
+/// Re-export CQT center frequencies calculation.
+pub fn cqt_frequencies(config : @cqt.CqtConfig) -> Array[Double] {
+  @cqt.cqt_frequencies(config)
+}
+
+///|
+/// Re-export Constant-Q Transform (CQT) feature extraction.
+pub fn cqt(
+  samples : Array[Double],
+  config? : @cqt.CqtConfig = @cqt.CqtConfig::default(),
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @cqt.cqt(samples, config~)
+}

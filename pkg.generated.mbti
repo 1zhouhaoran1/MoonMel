@@ -4,6 +4,7 @@ package "zhr/moonmel"
 import {
   "zhr/moonmel/src/core/types",
   "zhr/moonmel/src/features/chroma",
+  "zhr/moonmel/src/features/cqt",
   "zhr/moonmel/src/features/streaming",
 }
 
@@ -23,6 +24,10 @@ pub fn compute_delta(@types.FeatureMatrix, width? : Int, order? : Int) -> Result
 pub fn compute_energy(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn compute_rms(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn cqt(Array[Double], config? : @cqt.CqtConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn cqt_frequencies(@cqt.CqtConfig) -> Array[Double]
 
 pub fn create_streaming_extractor(config? : @types.FeatureConfig) -> Result[@streaming.StreamingExtractor, @types.MelError]
 
@@ -98,6 +103,8 @@ pub using @types {type AudioBuffer}
 pub using @chroma {type ChromaNorm}
 
 pub using @types {type Complex}
+
+pub using @cqt {type CqtConfig}
 
 pub using @types {type FeatureConfig}
 
