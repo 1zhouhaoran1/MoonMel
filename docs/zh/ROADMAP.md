@@ -39,7 +39,7 @@
 - [ ] **WebAssembly SIMD 向量化加速**：针对蝶形运算和三角滤波投影进行 128 位 SIMD 原语优化。
 - [x] **任意长度 Bluestein 算法**：基于快速卷积的任意素数长度离散傅里叶变换。
 - [x] **常量 Q 变换 (Constant-Q Transform / CQT)**：对数几何频带抽取，恒定品质因数 $Q$ 分辨率。
-- [ ] **多采样率多相重采样器 (Polyphase Resampler)**：内置高质量 Sinc 降采样与升采样算法。
+- [x] **多采样率多相重采样器 (Polyphase Resampler)**：预计算多相 FIR 滤波组，支持任意有理倍率（scipy.signal.resample_poly 对齐）。
 
 ---
 

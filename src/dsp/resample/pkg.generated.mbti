@@ -6,7 +6,11 @@ import {
 }
 
 // Values
+pub fn resample(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+
 pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+
+pub fn resample_polyphase(Array[Double], Int, Int, half_len? : Int) -> Result[Array[Double], @types.MelError]
 
 pub fn resample_sinc(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
 

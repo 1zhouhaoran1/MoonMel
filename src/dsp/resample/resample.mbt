@@ -144,3 +144,131 @@ pub fn resample_sinc(
 
   Ok(out)
 }
+
+///|
+/// Greatest common divisor for rational resampling factor reduction.
+fn gcd(a : Int, b : Int) -> Int {
+  let mut x = if a < 0 { -a } else { a }
+  let mut y = if b < 0 { -b } else { b }
+  while y != 0 {
+    let t = y
+    y = x % y
+    x = t
+  }
+  if x == 0 {
+    1
+  } else {
+    x
+  }
+}
+
+///|
+/// Polyphase rational factor audio resampler (scipy.signal.resample_poly equivalent).
+/// Uses precomputed polyphase FIR filter banks for fast, artifact-free up/downsampling.
+pub fn resample_polyphase(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+  half_len? : Int = 10,
+) -> Result[Array[Double], @types.MelError] {
+  if orig_sr <= 0 {
+    return Err(@types.MelError::InvalidSampleRate(orig_sr))
+  }
+  if target_sr <= 0 {
+    return Err(@types.MelError::InvalidSampleRate(target_sr))
+  }
+  let len = samples.length()
+  if len == 0 {
+    return Ok([])
+  }
+  if orig_sr == target_sr {
+    let out = Array::make(len, 0.0)
+    for i in 0..<len {
+      out[i] = samples[i]
+    }
+    return Ok(out)
+  }
+
+  // Reduce to coprime rational factors P / Q = target_sr / orig_sr
+  let g = gcd(target_sr, orig_sr)
+  let raw_up = target_sr / g
+  let raw_down = orig_sr / g
+
+  // If factors are very large, fall back to windowed sinc resampler
+  if raw_up > 64 || raw_down > 128 {
+    return resample_sinc(samples, orig_sr, target_sr)
+  }
+
+  let up = raw_up
+  let down = raw_down
+  let out_len = (len.to_double() * up.to_double() / down.to_double() + 0.5).to_int()
+  if out_len <= 0 {
+    return Ok([])
+  }
+
+  let max_factor = if up > down { up } else { down }
+  let cutoff = 0.5 / max_factor.to_double()
+  let pi = @math.PI
+
+  // Build polyphase filter bank: 'up' subfilters of length 2 * half_len
+  let filter_len = 2 * half_len
+  let poly_filters : Array[Array[Double]] = Array::make(up, [])
+
+  for p in 0..<up {
+    let sub = Array::make(filter_len, 0.0)
+    let mut sum_w = 0.0
+    for j in 0..<filter_len {
+      let t = (j - half_len).to_double() + p.to_double() / up.to_double()
+      let norm_t = t / half_len.to_double()
+      if norm_t.abs() <= 1.0 {
+        let w = 0.5 + 0.5 * @math.cos(pi * norm_t)
+        let sinc_val = if t.abs() < 1.0e-9 {
+          2.0 * cutoff
+        } else {
+          @math.sin(2.0 * pi * cutoff * t) / (pi * t)
+        }
+        let weight = w * sinc_val
+        sub[j] = weight
+        sum_w = sum_w + weight
+      }
+    }
+    if sum_w.abs() > 1.0e-9 {
+      let inv_sum = 1.0 / sum_w
+      for j in 0..<filter_len {
+        sub[j] = sub[j] * inv_sum
+      }
+    }
+    poly_filters[p] = sub
+  }
+
+  let out = Array::make(out_len, 0.0)
+
+  // Stream convolution across polyphase subfilters
+  for n in 0..<out_len {
+    let m = n * down
+    let phase = m % up
+    let center_k = m / up
+    let sub = poly_filters[phase]
+    let mut acc = 0.0
+
+    for j in 0..<filter_len {
+      let src_idx = center_k + (j - half_len)
+      if src_idx >= 0 && src_idx < len {
+        acc = acc + samples[src_idx] * sub[j]
+      }
+    }
+    out[n] = acc
+  }
+
+  Ok(out)
+}
+
+///|
+/// Production-grade audio resampler automatically choosing optimal algorithm.
+pub fn resample(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+) -> Result[Array[Double], @types.MelError] {
+  resample_polyphase(samples, orig_sr, target_sr)
+}

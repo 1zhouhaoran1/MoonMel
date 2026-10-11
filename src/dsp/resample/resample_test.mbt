@@ -95,3 +95,42 @@ test "resample_sine_upsample_16k_to_48k" {
   }
   assert_true(max_err < 0.05)
 }
+
+///|
+test "resample_polyphase_downsample_and_upsample" {
+  // Test downsampling 48k -> 16k (3:1 rational decimation)
+  let n_samples = 4800
+  let orig_sr = 48000
+  let target_sr = 16000
+  let sig = Array::make(n_samples, 0.0)
+  let f0 = 440.0
+  let pi = @math.PI
+
+  for i in 0..<n_samples {
+    let t = i.to_double() / orig_sr.to_double()
+    sig[i] = @math.sin(2.0 * pi * f0 * t)
+  }
+
+  let down = @resample.resample_polyphase(sig, orig_sr, target_sr).unwrap()
+  assert_eq(down.length(), 1600)
+
+  // Verify numerical fidelity on 440Hz tone
+  let mut max_err_down = 0.0
+  for i in 50..<1550 {
+    let t = i.to_double() / target_sr.to_double()
+    let expected = @math.sin(2.0 * pi * f0 * t)
+    let err = (down[i] - expected).abs()
+    if err > max_err_down {
+      max_err_down = err
+    }
+  }
+  assert_true(max_err_down < 0.05)
+
+  // Test upsampling 16k -> 48k (1:3 rational expansion)
+  let up = @resample.resample_polyphase(down, target_sr, orig_sr).unwrap()
+  assert_eq(up.length(), 4800)
+
+  // Test universal wrapper
+  let uni = @resample.resample(sig, orig_sr, target_sr).unwrap()
+  assert_eq(uni.length(), 1600)
+}

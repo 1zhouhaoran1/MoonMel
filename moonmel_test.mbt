@@ -314,3 +314,19 @@ test "facade_cqt" {
   assert_eq(cqt_mat.n_rows, 84)
   assert_true(cqt_mat.n_cols > 0)
 }
+
+///|
+test "facade_resample" {
+  let sig = Array::make(4800, 0.5)
+  let down = @moonmel.resample(sig, 48000, 16000).unwrap()
+  assert_eq(down.length(), 1600)
+
+  let down_poly = @moonmel.resample_polyphase(sig, 48000, 16000).unwrap()
+  assert_eq(down_poly.length(), 1600)
+
+  let down_sinc = @moonmel.resample_sinc(sig, 48000, 16000).unwrap()
+  assert_eq(down_sinc.length(), 1600)
+
+  let down_lin = @moonmel.resample_linear(sig, 48000, 16000).unwrap()
+  assert_eq(down_lin.length(), 1600)
+}

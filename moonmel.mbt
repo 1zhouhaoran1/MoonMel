@@ -167,8 +167,29 @@ pub fn create_window(kind : @types.WindowType, n : Int) -> Array[Double] {
 }
 
 ///|
-/// Re-export audio resampler (windowed-sinc bandlimited by default).
+/// Re-export audio resampler (polyphase by default).
 pub fn resample(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+) -> Result[Array[Double], @types.MelError] {
+  @resample.resample(samples, orig_sr, target_sr)
+}
+
+///|
+/// Re-export polyphase rational factor audio resampler.
+pub fn resample_polyphase(
+  samples : Array[Double],
+  orig_sr : Int,
+  target_sr : Int,
+  half_len? : Int = 10,
+) -> Result[Array[Double], @types.MelError] {
+  @resample.resample_polyphase(samples, orig_sr, target_sr, half_len~)
+}
+
+///|
+/// Re-export windowed-sinc bandlimited audio resampler.
+pub fn resample_sinc(
   samples : Array[Double],
   orig_sr : Int,
   target_sr : Int,
