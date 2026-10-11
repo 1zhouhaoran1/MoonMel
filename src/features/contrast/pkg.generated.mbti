@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/contrast"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn quantile_sorted(Array[Double], Double) -> Double
+
+pub fn spectral_contrast(@types.FeatureMatrix, Int, Int, config? : ContrastConfig) -> @types.FeatureMatrix
+
+pub fn spectral_contrast_audio(@types.AudioBuffer, @types.FeatureConfig, contrast_config? : ContrastConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+// Errors
+
+// Types and methods
+pub(all) struct ContrastConfig {
+  n_bands : Int
+  f_min : Double
+  quantile : Double
+  linear : Bool
+} derive(@debug.Debug)
+pub fn ContrastConfig::default() -> Self
+
+// Type aliases
+
+// Traits

@@ -46,6 +46,7 @@ This document tracks planned milestones and feature expansions for MoonMel.
 - [x] **Linear Predictive Coding & Cepstral Coefficients (LPC & LPCC)**: Levinson-Durbin all-pole filter solving, reflection coefficients (PARCOR), inverse filtering prediction residual, and LPCC recursion.
 - [x] **Fundamental Frequency F0 Pitch Tracking (YIN)**: Difference function, cumulative mean normalized difference (CMNDF), absolute dip thresholding, and parabolic subsample interpolation.
 - [x] **Tempogram & Tempo Estimation**: Local autocorrelation tempogram matrix, log-normal prior weighting, and global BPM tempo estimation.
+- [x] **Octave Spectral Contrast**: Multi-octave peak and valley quantile contrast extraction for timbre and texture discrimination.
 
 ---
 

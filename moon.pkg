@@ -20,6 +20,7 @@ import {
   "zhr/moonmel/src/features/lpc",
   "zhr/moonmel/src/features/pitch",
   "zhr/moonmel/src/features/tempo",
+  "zhr/moonmel/src/features/contrast",
   "zhr/moonmel/src/codec/wav",
 }
 

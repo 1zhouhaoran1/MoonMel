@@ -415,3 +415,11 @@ test "facade_tempo" {
   assert_true(res.tempogram.n_rows > 0)
   assert_true(res.bpm > 0.0)
 }
+
+///|
+test "facade_contrast" {
+  let sig = Array::make(4000, 0.2)
+  let contrast_mat = @moonmel.spectral_contrast_audio(sig).unwrap()
+  assert_eq(contrast_mat.n_rows, 7)
+  assert_true(contrast_mat.n_cols > 0)
+}

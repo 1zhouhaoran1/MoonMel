@@ -4,6 +4,7 @@ package "zhr/moonmel"
 import {
   "zhr/moonmel/src/core/types",
   "zhr/moonmel/src/features/chroma",
+  "zhr/moonmel/src/features/contrast",
   "zhr/moonmel/src/features/cqt",
   "zhr/moonmel/src/features/hpss",
   "zhr/moonmel/src/features/loudness",
@@ -139,6 +140,10 @@ pub fn rfft_padded(Array[Double], power? : Double) -> Result[Array[Double], @typ
 
 pub fn spectral_centroid(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
+pub fn spectral_contrast(@types.FeatureMatrix, Int, Int, config? : @contrast.ContrastConfig) -> @types.FeatureMatrix
+
+pub fn spectral_contrast_audio(Array[Double], feature_config? : @types.FeatureConfig, contrast_config? : @contrast.ContrastConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
 pub fn spectral_flatness(Array[Double], config? : @types.FeatureConfig, amin? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn spectral_flux(@types.FeatureMatrix) -> Array[Double]
@@ -175,6 +180,8 @@ pub using @loudness {type BiquadFilter}
 pub using @chroma {type ChromaNorm}
 
 pub using @types {type Complex}
+
+pub using @contrast {type ContrastConfig}
 
 pub using @cqt {type CqtConfig}
 

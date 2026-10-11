@@ -794,3 +794,32 @@ pub fn tempogram(
     Err(e) => Err(e)
   }
 }
+
+///|
+/// Re-export Octave Spectral Contrast configuration.
+pub type ContrastConfig = @contrast.ContrastConfig
+
+///|
+/// Re-export Octave Spectral Contrast from magnitude spectrogram.
+pub fn spectral_contrast(
+  spec : @types.FeatureMatrix,
+  sample_rate : Int,
+  n_fft : Int,
+  config? : @contrast.ContrastConfig = @contrast.ContrastConfig::default(),
+) -> @types.FeatureMatrix {
+  @contrast.spectral_contrast(spec, sample_rate, n_fft, config~)
+}
+
+///|
+/// Re-export Octave Spectral Contrast directly from audio samples.
+pub fn spectral_contrast_audio(
+  samples : Array[Double],
+  feature_config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  contrast_config? : @contrast.ContrastConfig = @contrast.ContrastConfig::default(),
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match @types.AudioBuffer::new(samples, feature_config.sample_rate) {
+    Ok(audio) =>
+      @contrast.spectral_contrast_audio(audio, feature_config, contrast_config~)
+    Err(e) => Err(e)
+  }
+}
