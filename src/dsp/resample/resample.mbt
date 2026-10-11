@@ -272,3 +272,81 @@ pub fn resample(
 ) -> Result[Array[Double], @types.MelError] {
   resample_polyphase(samples, orig_sr, target_sr)
 }
+
+///|
+/// Resamples arbitrary audio signal to an exact target length using windowed-sinc interpolation.
+pub fn resample_to_length(
+  samples : Array[Double],
+  target_len : Int,
+  filter_size? : Int = 16,
+) -> Result[Array[Double], @types.MelError] {
+  if target_len < 0 {
+    return Err(
+      @types.MelError::DimensionMismatch("target_len must be non-negative"),
+    )
+  }
+  let len = samples.length()
+  if len == 0 || target_len == 0 {
+    return Ok([])
+  }
+  if len == target_len {
+    let out = Array::make(len, 0.0)
+    for i in 0..<len {
+      out[i] = samples[i]
+    }
+    return Ok(out)
+  }
+
+  let ratio = target_len.to_double() / len.to_double()
+  let inv_ratio = 1.0 / ratio
+  let scale = if ratio < 1.0 { ratio } else { 1.0 }
+  let cutoff = 0.5 * scale * 0.95
+  let pi = @math.PI
+  let radius = (filter_size.to_double() / scale + 0.5).to_int()
+
+  let out : Array[Double] = Array::make(target_len, 0.0)
+
+  for i in 0..<target_len {
+    let src_pos = i.to_double() * inv_ratio
+    let center_idx = src_pos.to_int()
+    let start_idx = if center_idx - radius < 0 {
+      0
+    } else {
+      center_idx - radius
+    }
+    let end_idx = if center_idx + radius + 1 >= len {
+      len - 1
+    } else {
+      center_idx + radius + 1
+    }
+
+    let mut sum_val = 0.0
+    let mut sum_weight = 0.0
+
+    for j in start_idx..<=end_idx {
+      let delta = src_pos - j.to_double()
+      let norm_delta = delta * scale
+      if norm_delta.abs() <= filter_size.to_double() {
+        let w = 0.5 + 0.5 * @math.cos(pi * norm_delta / filter_size.to_double())
+        let sinc_val = if delta.abs() < 1.0e-9 {
+          2.0 * cutoff
+        } else {
+          @math.sin(2.0 * pi * cutoff * delta) / (pi * delta)
+        }
+        let weight = w * sinc_val
+        sum_val = sum_val + samples[j] * weight
+        sum_weight = sum_weight + weight
+      }
+    }
+
+    out[i] = if sum_weight.abs() > 1.0e-9 {
+      sum_val / sum_weight
+    } else if center_idx < len {
+      samples[center_idx]
+    } else {
+      0.0
+    }
+  }
+
+  Ok(out)
+}

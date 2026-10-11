@@ -823,3 +823,55 @@ pub fn spectral_contrast_audio(
     Err(e) => Err(e)
   }
 }
+
+///|
+/// Re-export Inverse STFT (ISTFT) time-domain audio reconstruction.
+pub fn istft(
+  frames : Array[Array[@types.Complex]],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  length? : Int = 0,
+) -> Result[Array[Double], @types.MelError] {
+  @stft.istft(frames, config, length)
+}
+
+///|
+/// Re-export windowed-sinc resampling to target length.
+pub fn resample_to_length(
+  samples : Array[Double],
+  target_len : Int,
+  filter_size? : Int = 16,
+) -> Result[Array[Double], @types.MelError] {
+  @resample.resample_to_length(samples, target_len, filter_size~)
+}
+
+///|
+/// Re-export Phase Vocoder time stretching on complex STFT frames.
+pub fn phase_vocoder(
+  frames : Array[Array[@types.Complex]],
+  rate : Double,
+  hop_length : Int,
+  n_fft : Int,
+) -> Result[Array[Array[@types.Complex]], @types.MelError] {
+  @effects.phase_vocoder(frames, rate, hop_length, n_fft)
+}
+
+///|
+/// Re-export time stretching on audio samples without pitch shift.
+pub fn time_stretch(
+  samples : Array[Double],
+  rate : Double,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[Array[Double], @types.MelError] {
+  @effects.time_stretch(samples, rate, config)
+}
+
+///|
+/// Re-export pitch shifting on audio samples without tempo change.
+pub fn pitch_shift(
+  samples : Array[Double],
+  sample_rate? : Int = 16000,
+  n_steps? : Double = 0.0,
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+) -> Result[Array[Double], @types.MelError] {
+  @effects.pitch_shift(samples, sample_rate, n_steps, config)
+}

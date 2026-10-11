@@ -28,3 +28,46 @@ test "stft_sine_peak" {
     Err(_) => assert_true(false)
   }
 }
+
+///|
+test "stft_istft_reconstruction_sine" {
+  let sr = 16000.0
+  let n = 2048
+  let freq = 440.0
+  let samples : Array[Double] = Array::make(n, 0.0)
+  for i in 0..<n {
+    let t = i.to_double() / sr
+    samples[i] = @math.sin(2.0 * @window.pi * freq * t)
+  }
+
+  let cfg = {
+    ..@types.FeatureConfig::default(),
+    n_fft: 512,
+    win_length: 512,
+    hop_length: 128,
+    center: true,
+  }
+  let frames = match stft_complex(samples, cfg) {
+    Ok(f) => f
+    Err(_) => {
+      assert_true(false)
+      return
+    }
+  }
+  let recon = match istft(frames, cfg, n) {
+    Ok(r) => r
+    Err(_) => {
+      assert_true(false)
+      return
+    }
+  }
+  assert_eq(recon.length(), n)
+  let mut max_err = 0.0
+  for i in 128..<(n - 128) {
+    let diff = (samples[i] - recon[i]).abs()
+    if diff > max_err {
+      max_err = diff
+    }
+  }
+  assert_true(max_err < 1.0e-3)
+}

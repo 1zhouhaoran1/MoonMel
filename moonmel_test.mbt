@@ -423,3 +423,28 @@ test "facade_contrast" {
   assert_eq(contrast_mat.n_rows, 7)
   assert_true(contrast_mat.n_cols > 0)
 }
+
+///|
+test "facade_effects_and_istft" {
+  let sig = Array::make(1024, 0.1)
+  let cfg = {
+    ..@moonmel.FeatureConfig::default(),
+    n_fft: 256,
+    win_length: 256,
+    hop_length: 64,
+  }
+  let c_frames = @moonmel.stft_complex(sig, cfg).unwrap()
+  let recon = @moonmel.istft(c_frames, config=cfg, length=1024).unwrap()
+  assert_eq(recon.length(), 1024)
+
+  let stretched = @moonmel.time_stretch(sig, 2.0, config=cfg).unwrap()
+  assert_eq(stretched.length(), 512)
+
+  let pitched = @moonmel.pitch_shift(
+    sig,
+    sample_rate=16000,
+    n_steps=2.0,
+    config=cfg,
+  ).unwrap()
+  assert_eq(pitched.length(), 1024)
+}

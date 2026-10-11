@@ -1,0 +1,21 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/effects"
+
+import {
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn phase_vocoder(Array[Array[@types.Complex]], Double, Int, Int) -> Result[Array[Array[@types.Complex]], @types.MelError]
+
+pub fn pitch_shift(Array[Double], Int, Double, @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
+
+pub fn time_stretch(Array[Double], Double, @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

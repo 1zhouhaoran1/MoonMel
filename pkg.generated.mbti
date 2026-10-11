@@ -74,6 +74,8 @@ pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, c
 
 pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
+pub fn istft(Array[Array[@types.Complex]], config? : @types.FeatureConfig, length? : Int) -> Result[Array[Double], @types.MelError]
+
 pub fn levinson_durbin(Array[Double], Int) -> Result[@lpc.LpcResult, @types.MelError]
 
 pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
@@ -120,7 +122,11 @@ pub fn peak_pick(Array[Double], pre_max? : Int, post_max? : Int, pre_avg? : Int,
 
 pub fn percussive_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
+pub fn phase_vocoder(Array[Array[@types.Complex]], Double, Int, Int) -> Result[Array[Array[@types.Complex]], @types.MelError]
+
 pub fn pitch_class_name(Int) -> String
+
+pub fn pitch_shift(Array[Double], sample_rate? : Int, n_steps? : Double, config? : @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 
 pub fn pitch_yin(Array[Double], sample_rate? : Int, config? : @pitch.YinConfig) -> Result[@pitch.PitchTrack, @types.MelError]
 
@@ -135,6 +141,8 @@ pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.
 pub fn resample_polyphase(Array[Double], Int, Int, half_len? : Int) -> Result[Array[Double], @types.MelError]
 
 pub fn resample_sinc(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
+
+pub fn resample_to_length(Array[Double], Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
 
 pub fn rfft_padded(Array[Double], power? : Double) -> Result[Array[Double], @types.MelError]
 
@@ -159,6 +167,8 @@ pub fn super_flux(@types.FeatureMatrix, Int) -> Array[Double]
 pub fn tempogram(Array[Double], feature_config? : @types.FeatureConfig, tempo_config? : @tempo.TempoConfig) -> Result[@tempo.TempogramResult, @types.MelError]
 
 pub fn tempogram_from_onset(Array[Double], Int, Int, config? : @tempo.TempoConfig) -> @tempo.TempogramResult
+
+pub fn time_stretch(Array[Double], Double, config? : @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 
 pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
 
