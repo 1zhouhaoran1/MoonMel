@@ -270,3 +270,32 @@ test "facade_chroma_and_padded_fft" {
   let padded_rfft_res = @moonmel.rfft_padded(non_pow2_real).unwrap()
   assert_eq(padded_rfft_res.length(), 3) // 4/2 + 1
 }
+
+///|
+test "facade_bluestein_arbitrary_dft" {
+  // Prime length 3 exact test
+  let prime3 = [
+    @moonmel.Complex::{ re: 1.0, im: 0.0, },
+    @moonmel.Complex::{ re: 2.0, im: 0.0, },
+    @moonmel.Complex::{ re: 3.0, im: 0.0, },
+  ]
+  let res3 = @moonmel.dft(prime3).unwrap()
+  assert_eq(res3.length(), 3)
+  assert_true((res3[0].re - 6.0).abs() < 1.0e-7)
+
+  // Prime length 5 roundtrip
+  let prime5 = [
+    @moonmel.Complex::{ re: 2.0, im: 1.0, },
+    @moonmel.Complex::{ re: -1.0, im: 3.0, },
+    @moonmel.Complex::{ re: 0.0, im: -2.0, },
+    @moonmel.Complex::{ re: 4.0, im: 0.5, },
+    @moonmel.Complex::{ re: -2.5, im: -1.5, },
+  ]
+  let spec5 = @moonmel.dft(prime5).unwrap()
+  let rec5 = @moonmel.idft(spec5).unwrap()
+  assert_eq(rec5.length(), 5)
+  for i in 0..<5 {
+    assert_true((rec5[i].re - prime5[i].re).abs() < 1.0e-7)
+    assert_true((rec5[i].im - prime5[i].im).abs() < 1.0e-7)
+  }
+}

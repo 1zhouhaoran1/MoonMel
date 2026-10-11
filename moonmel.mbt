@@ -372,3 +372,35 @@ pub fn rfft_padded(
 ) -> Result[Array[Double], @types.MelError] {
   @fft.rfft_padded(frame, power)
 }
+
+///|
+/// Re-export Arbitrary-length DFT via Bluestein's Algorithm.
+pub fn bluestein_fft(
+  signal : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  @fft.bluestein_fft(signal)
+}
+
+///|
+/// Re-export Arbitrary-length IDFT via Bluestein's Algorithm.
+pub fn bluestein_ifft(
+  spectrum : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  @fft.bluestein_ifft(spectrum)
+}
+
+///|
+/// Re-export Universal DFT (Radix-2 FFT when power of 2, Bluestein's algorithm otherwise).
+pub fn dft(
+  signal : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  @fft.dft(signal)
+}
+
+///|
+/// Re-export Universal IDFT (Radix-2 IFFT when power of 2, Bluestein's algorithm otherwise).
+pub fn idft(
+  spectrum : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  @fft.idft(spectrum)
+}

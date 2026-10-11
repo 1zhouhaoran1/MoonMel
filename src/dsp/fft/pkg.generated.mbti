@@ -6,11 +6,19 @@ import {
 }
 
 // Values
+pub fn bluestein_fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn bluestein_ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn dft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
 pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn fft_in_place(Array[Double], Array[Double], Int, Bool) -> Unit
 
 pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn idft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 

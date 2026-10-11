@@ -325,3 +325,26 @@ pub fn rfft_padded(
 ) -> Result[Array[Double], MelError]
 ```
 - Automatically pads signal/frame to next $2^k$ boundary, enabling non-power-of-two inputs.
+
+### 2.19 `dft`, `idft`, `bluestein_fft` & `bluestein_ifft`
+High-performance arbitrary-length discrete Fourier transform powered by Bluestein's Chirp Z-Transform algorithm.
+
+```moonbit
+pub fn dft(
+  signal : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn idft(
+  spectrum : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn bluestein_fft(
+  signal : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn bluestein_ifft(
+  spectrum : Array[Complex]
+) -> Result[Array[Complex], MelError]
+```
+- **Time Complexity**: Exact $O(N \log N)$ for arbitrary $N$, including prime numbers (3, 5, 7, 13, etc.).
+- Automatically routes to in-place Radix-2 Cooley-Tukey FFT when $N$ is a power of 2, and Bluestein fast convolution otherwise.

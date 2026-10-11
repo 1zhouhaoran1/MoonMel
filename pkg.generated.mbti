@@ -8,6 +8,10 @@ import {
 }
 
 // Values
+pub fn bluestein_fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn bluestein_ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
 pub fn chroma_filterbank(Int, Int, tuning? : Double, f_min? : Double) -> @types.FeatureMatrix
 
 pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int, Int, norm? : @chroma.ChromaNorm, tuning? : Double, f_min? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
@@ -30,9 +34,13 @@ pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
 
 pub fn deemphasis(Array[Double], alpha? : Double) -> Array[Double]
 
+pub fn dft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
 pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn idft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 

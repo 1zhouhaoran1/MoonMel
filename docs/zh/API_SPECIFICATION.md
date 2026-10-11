@@ -325,3 +325,26 @@ pub fn rfft_padded(
 ) -> Result[Array[Double], MelError]
 ```
 - 自动将信号向后补零至最近的 $2^k$ 长度，无缝支持任意长度采样输入。
+
+### 2.19 `dft`、`idft` 与 `bluestein_fft`、`bluestein_ifft`
+基于 Bluestein 算法（Chirp Z-Transform）的高性能通用任意长度离散傅里叶变换。
+
+```moonbit
+pub fn dft(
+  signal : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn idft(
+  spectrum : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn bluestein_fft(
+  signal : Array[Complex]
+) -> Result[Array[Complex], MelError]
+
+pub fn bluestein_ifft(
+  spectrum : Array[Complex]
+) -> Result[Array[Complex], MelError]
+```
+- **复杂度**：严格 $O(N \log N)$，支持任意长度 $N$（包括素数如 3, 5, 7, 13 等）。
+- 当 $N$ 为 2 的幂次时，`dft` 自动路由至原地 Radix-2 Cooley-Tukey FFT；非 2 幂次时自动应用 Bluestein 快速卷积。

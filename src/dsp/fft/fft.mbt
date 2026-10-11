@@ -224,3 +224,150 @@ pub fn rfft_padded(
   let target_n = next_power_of_two(flen)
   rfft_spectrum(frame, target_n, power)
 }
+
+///|
+/// Arbitrary-length Discrete Fourier Transform (DFT) via Bluestein's Algorithm (Chirp Z-Transform).
+/// Runs in O(N log N) time for any length N, including prime numbers.
+pub fn bluestein_fft(
+  signal : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  let n = signal.length()
+  if n == 0 {
+    return Err(EmptyAudio)
+  }
+  if n == 1 {
+    return Ok([signal[0]])
+  }
+  if is_power_of_two(n) {
+    return fft(signal)
+  }
+
+  let m = next_power_of_two(2 * n - 1)
+  let two_n = 2 * n
+
+  // Precompute chirp factors w_k = exp(-j * pi * (k^2 % 2N) / N)
+  let w : Array[@types.Complex] = Array::make(n, @types.complex(0.0, 0.0))
+  let w_conj : Array[@types.Complex] = Array::make(n, @types.complex(0.0, 0.0))
+  for k in 0..<n {
+    let k_sq = k * k % two_n
+    let angle = -pi * k_sq.to_double() / n.to_double()
+    let cos_a = @math.cos(angle)
+    let sin_a = @math.sin(angle)
+    w[k] = @types.complex(cos_a, sin_a)
+    w_conj[k] = @types.complex(cos_a, -sin_a)
+  }
+
+  // Sequence a of length m: a[k] = signal[k] * w[k] for k < n, else 0
+  let a : Array[@types.Complex] = Array::make(m, @types.complex(0.0, 0.0))
+  for k in 0..<n {
+    let s_re = signal[k].re
+    let s_im = signal[k].im
+    let wk_re = w[k].re
+    let wk_im = w[k].im
+    a[k] = @types.complex(
+      s_re * wk_re - s_im * wk_im,
+      s_re * wk_im + s_im * wk_re,
+    )
+  }
+
+  // Sequence b of length m: b[0] = w_conj[0], b[k] = b[m - k] = w_conj[k] for k in 1..<n, else 0
+  let b : Array[@types.Complex] = Array::make(m, @types.complex(0.0, 0.0))
+  b[0] = w_conj[0]
+  for k in 1..<n {
+    b[k] = w_conj[k]
+    b[m - k] = w_conj[k]
+  }
+
+  // Fast convolution via Radix-2 FFT and IFFT of length m
+  let fa = match fft(a) {
+    Ok(res) => res
+    Err(e) => return Err(e)
+  }
+  let fb = match fft(b) {
+    Ok(res) => res
+    Err(e) => return Err(e)
+  }
+
+  let fc : Array[@types.Complex] = Array::make(m, @types.complex(0.0, 0.0))
+  for i in 0..<m {
+    let ar = fa[i].re
+    let ai = fa[i].im
+    let br = fb[i].re
+    let bi = fb[i].im
+    fc[i] = @types.complex(ar * br - ai * bi, ar * bi + ai * br)
+  }
+
+  let c = match ifft(fc) {
+    Ok(res) => res
+    Err(e) => return Err(e)
+  }
+
+  // Post-multiply by chirp factor w[k]: out[k] = c[k] * w[k]
+  let out : Array[@types.Complex] = Array::make(n, @types.complex(0.0, 0.0))
+  for k in 0..<n {
+    let cr = c[k].re
+    let ci = c[k].im
+    let wr = w[k].re
+    let wi = w[k].im
+    out[k] = @types.complex(cr * wr - ci * wi, cr * wi + ci * wr)
+  }
+
+  Ok(out)
+}
+
+///|
+/// Arbitrary-length Inverse Discrete Fourier Transform (IDFT) via Bluestein's Algorithm.
+pub fn bluestein_ifft(
+  spectrum : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  let n = spectrum.length()
+  if n == 0 {
+    return Err(EmptyAudio)
+  }
+  if n == 1 {
+    return Ok([spectrum[0]])
+  }
+  if is_power_of_two(n) {
+    return ifft(spectrum)
+  }
+
+  // IDFT(X) = (1/N) * conj(DFT(conj(X)))
+  let conj_spec : Array[@types.Complex] = Array::make(
+    n,
+    @types.complex(0.0, 0.0),
+  )
+  for i in 0..<n {
+    conj_spec[i] = @types.complex(spectrum[i].re, -spectrum[i].im)
+  }
+
+  let dft_res = match bluestein_fft(conj_spec) {
+    Ok(res) => res
+    Err(e) => return Err(e)
+  }
+
+  let inv_n = 1.0 / n.to_double()
+  let out : Array[@types.Complex] = Array::make(n, @types.complex(0.0, 0.0))
+  for i in 0..<n {
+    out[i] = @types.complex(dft_res[i].re * inv_n, -dft_res[i].im * inv_n)
+  }
+
+  Ok(out)
+}
+
+///|
+/// Universal Forward DFT for arbitrary-length complex sequences.
+/// Dispatches to in-place Radix-2 Cooley-Tukey FFT when length is a power of 2,
+/// and Bluestein's Chirp Z-Transform when length is arbitrary or prime.
+pub fn dft(
+  signal : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  bluestein_fft(signal)
+}
+
+///|
+/// Universal Inverse DFT for arbitrary-length complex sequences.
+pub fn idft(
+  spectrum : Array[@types.Complex],
+) -> Result[Array[@types.Complex], @types.MelError] {
+  bluestein_ifft(spectrum)
+}
