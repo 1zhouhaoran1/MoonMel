@@ -330,3 +330,22 @@ test "facade_resample" {
   let down_lin = @moonmel.resample_linear(sig, 48000, 16000).unwrap()
   assert_eq(down_lin.length(), 1600)
 }
+
+///|
+test "facade_hpss" {
+  let sig = Array::make(3200, 0.0)
+  for i in 0..<3200 {
+    sig[i] = @math.sin(i.to_double() * 0.2)
+  }
+  let hpss_res = @moonmel.hpss_from_audio(sig).unwrap()
+  assert_eq(hpss_res.harmonic.n_rows, 513)
+  assert_true(hpss_res.harmonic.n_cols > 0)
+
+  let h_ratio = @moonmel.harmonic_energy_ratio(hpss_res)
+  let p_ratio = @moonmel.percussive_energy_ratio(hpss_res)
+  assert_eq(h_ratio.length(), hpss_res.harmonic.n_cols)
+  assert_eq(p_ratio.length(), hpss_res.harmonic.n_cols)
+
+  let med1d = @moonmel.median_filter_1d([1.0, 50.0, 2.0], 3)
+  assert_eq(med1d[1], 2.0)
+}

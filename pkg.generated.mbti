@@ -5,6 +5,7 @@ import {
   "zhr/moonmel/src/core/types",
   "zhr/moonmel/src/features/chroma",
   "zhr/moonmel/src/features/cqt",
+  "zhr/moonmel/src/features/hpss",
   "zhr/moonmel/src/features/streaming",
 }
 
@@ -45,6 +46,12 @@ pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelErr
 
 pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
+pub fn harmonic_energy_ratio(@hpss.HpssResult) -> Array[Double]
+
+pub fn hpss(@types.FeatureMatrix, config? : @hpss.HpssConfig) -> @hpss.HpssResult
+
+pub fn hpss_from_audio(Array[Double], config? : @types.FeatureConfig, hpss_config? : @hpss.HpssConfig) -> Result[@hpss.HpssResult, @types.MelError]
+
 pub fn idft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
@@ -54,6 +61,12 @@ pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, c
 pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn median_filter_1d(Array[Double], Int) -> Array[Double]
+
+pub fn median_filter_freq(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
+
+pub fn median_filter_time(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
 
 pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -68,6 +81,8 @@ pub fn multichannel_mfcc(@types.MultiChannelAudioBuffer, config? : @types.Featur
 pub fn multichannel_stft(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
 
 pub fn pad_reflect(Array[Double], Int) -> Array[Double]
+
+pub fn percussive_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
 pub fn pitch_class_name(Int) -> String
 
@@ -114,7 +129,13 @@ pub using @types {type FeatureConfig}
 
 pub using @types {type FeatureMatrix}
 
+pub using @hpss {type HpssConfig}
+
+pub using @hpss {type HpssResult}
+
 pub using @types {type LogScale}
+
+pub using @hpss {type MaskMode}
 
 pub using @types {type MelError}
 

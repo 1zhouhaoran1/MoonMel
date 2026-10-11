@@ -444,3 +444,76 @@ pub fn cqt(
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @cqt.cqt(samples, config~)
 }
+
+///|
+/// Re-export HPSS mask mode.
+pub type MaskMode = @hpss.MaskMode
+
+///|
+/// Re-export HPSS configuration.
+pub type HpssConfig = @hpss.HpssConfig
+
+///|
+/// Re-export HPSS separation result.
+pub type HpssResult = @hpss.HpssResult
+
+///|
+/// Re-export 1D median filter.
+pub fn median_filter_1d(
+  arr : Array[Double],
+  kernel_size : Int,
+) -> Array[Double] {
+  @hpss.median_filter_1d(arr, kernel_size)
+}
+
+///|
+/// Re-export 2D median filter along time axis.
+pub fn median_filter_time(
+  matrix : @types.FeatureMatrix,
+  kernel_size : Int,
+) -> @types.FeatureMatrix {
+  @hpss.median_filter_time(matrix, kernel_size)
+}
+
+///|
+/// Re-export 2D median filter along frequency axis.
+pub fn median_filter_freq(
+  matrix : @types.FeatureMatrix,
+  kernel_size : Int,
+) -> @types.FeatureMatrix {
+  @hpss.median_filter_freq(matrix, kernel_size)
+}
+
+///|
+/// Re-export Harmonic-Percussive Source Separation (HPSS) on spectrogram.
+pub fn hpss(
+  spec : @types.FeatureMatrix,
+  config? : @hpss.HpssConfig = @hpss.HpssConfig::default(),
+) -> @hpss.HpssResult {
+  @hpss.hpss(spec, config)
+}
+
+///|
+/// Re-export HPSS directly from PCM audio samples.
+pub fn hpss_from_audio(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  hpss_config? : @hpss.HpssConfig = @hpss.HpssConfig::default(),
+) -> Result[@hpss.HpssResult, @types.MelError] {
+  match @types.AudioBuffer::new(samples, config.sample_rate) {
+    Ok(audio) => @hpss.hpss_from_audio(audio, config, hpss_config)
+    Err(e) => Err(e)
+  }
+}
+
+///|
+/// Re-export frame harmonic energy ratio.
+pub fn harmonic_energy_ratio(result : @hpss.HpssResult) -> Array[Double] {
+  @hpss.harmonic_energy_ratio(result)
+}
+
+///|
+/// Re-export frame percussive energy ratio.
+pub fn percussive_energy_ratio(result : @hpss.HpssResult) -> Array[Double] {
+  @hpss.percussive_energy_ratio(result)
+}

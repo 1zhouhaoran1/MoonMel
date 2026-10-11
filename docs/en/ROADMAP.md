@@ -40,6 +40,7 @@ This document tracks planned milestones and feature expansions for MoonMel.
 - [x] **Bluestein's FFT Algorithm**: Fast-convolution discrete Fourier transform for arbitrary prime lengths.
 - [x] **Constant-Q Transform (CQT)**: Geometrically-spaced frequency bins with constant Q quality factor.
 - [x] **Polyphase Resampler**: Precomputed polyphase FIR filter banks for rational-factor resampling (aligned with scipy.signal.resample_poly).
+- [x] **Harmonic-Percussive Source Separation (HPSS)**: 2D median filtering with soft/hard Wiener masking to separate tonal harmonics and transient percussion.
 
 ---
 
