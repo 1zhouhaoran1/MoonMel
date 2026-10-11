@@ -1,72 +1,50 @@
-# MoonMel Development & Testing Guide
+# Development and testing
 
-[English](./DEVELOPMENT.md) | [中文说明](../zh/DEVELOPMENT.md)
+[中文](../zh/DEVELOPMENT.md)
 
-This document provides instructions for local development, compilation, test execution, and reference parity verification.
+## Toolchain
 
----
+Require `moonc >= 0.10.14`, Node.js 22.12+ or 24+, pnpm 11.14.0. Verify with `node tools/quality/check-toolchain.mjs`. The acceptance workstation's isolated SDK is `A:/DevEnv/SDKs/MoonBit/moonmel-current`; select it with `. ./tools/dev/activate.ps1`. This does not change the system installation.
 
-## 1. Toolchain & Prerequisites
-
-- **MoonBit SDK**: `moon 0.1.20260904` or later, `moonc v0.10.12+1634b282e`.
-- **Node.js & Package Manager**: Node 22+, `pnpm` exclusively (`v11.14.0`).
-- **Python Environment**: Python 3.13 (`A:\DevEnv\Envs\moonmel_py`) with `librosa 1.0.0`, `scipy 1.18.1`, `numpy 2.5.3`.
-
----
-
-## 2. Code Checking & Formatting
-
-```bash
-# Verify syntax and types across all packages
-moon check
-
-# Update interface files (.mbti) and apply standard formatting
-moon info && moon fmt
+```sh
+moon info
+moon fmt
+moon check --deny-warn
+node tools/quality/check-architecture.mjs
+moon test --target wasm --deny-warn
+moon test --target wasm-gc --deny-warn
+moon test --target js --deny-warn
+moon test --target native --deny-warn
+moon run examples/basic --target js
 ```
 
----
+On this Windows workstation, use `pwsh -File tools/quality/test-native.ps1` for native tests. It adapts the available MinGW GCC runtime declaration without editing SDK sources and restores `MOON_CC`/`MOON_AR`. The default MSVC installation has missing headers. Linux/macOS CI uses its normal native compiler.
 
-## 3. Test Suites
+## Browser
 
-### 3.1 Local Test Execution
-```bash
-# Run all unit and integration tests (default WASM backend)
-moon test
-
-# Test against the JavaScript compilation target
-moon test --target js
-
-# Test against the WebAssembly compilation target
-moon test --target wasm
+```sh
+pnpm --dir playground install --frozen-lockfile
+pnpm --dir playground run dev
+pnpm --dir playground run build
+pnpm --dir playground test
 ```
 
-### 3.2 Reference Ground-Truth Parity Verification
-```bash
-# Generate reference_vectors.json using Python
-A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/validate_reference.py
+`predev` and `prebuild` run `tools/build/sync-web.mjs`. Generated JS lives under ignored `playground/src/generated`; do not edit it. Production output is `playground/dist`. The Node binding tests exercise failed inputs, malicious WAV lengths, decoded audio recomputation, arbitrary FFTs and short-window alignment.
 
-# Execute test suite to verify numerical assertions against ground truth
-moon test
+## Independent numerical reference
+
+Use `uv`; do not install into a shared base interpreter. On Windows all new environments belong under `A:/DevEnv/Envs`:
+
+```powershell
+uv venv A:\DevEnv\Envs\moonmel_py --python 3.13
+uv pip install --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe -r tools/reference/requirements.txt
+& A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
----
+If this environment already exists, skip creation and use it. On Linux/macOS choose an isolated development environment in the host's approved environment directory and pass its interpreter to `uv pip install --python`. The script builds current JS, compares complete Mel/Log-Mel/MFCC matrices plus selected STFT bins and records actual package versions and tolerances. `validate_reference.py` only generates older spot-check vectors; generating those vectors does not itself prove MoonMel parity.
 
-## 4. CLI Benchmark
+## CI and publishing
 
-```bash
-moon run cmd/main
-```
+`.github/workflows/ci.yml` performs check, build, test and example execution for all four targets, then builds the demo and tests its bindings. The minimum compiler gate runs in each job. See GitHub Actions for actual remote results. Mooncakes publication is intentionally deferred; source checkout is the reproducible distribution path for now.
 
-Executes end-to-end benchmark analysis across 1s and 10s audio buffers.
-
----
-
-## 5. WebAssembly Playground
-
-```bash
-cd playground
-pnpm install
-pnpm run dev
-pnpm run build
-```
-Production output is generated at `playground/dist/`.
+To build release Native artifacts with the same Windows adapter: `pwsh -File tools/quality/test-native.ps1 -Build`.

@@ -39,7 +39,7 @@ jobs:
       - name: Test
         run: moon test --target ${{ matrix.target }} --deny-warn
       - name: Runnable example
-        run: moon run cmd/main --target ${{ matrix.target }}
+        run: moon run examples/basic --target ${{ matrix.target }}
 
   playground:
     runs-on: ubuntu-latest

@@ -1,179 +1,101 @@
-<p align="center">
-  <img src="docs/banner.png" alt="MoonMel: Audio Feature Extraction for MoonBit" width="960" />
-</p>
+<p align="center"><img src="docs/banner.png" alt="MoonMel — Audio Into Features" width="960" /></p>
+<p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.14+" src="https://img.shields.io/badge/moonc-0.10.14+-24211d?style=flat-square" /> <img alt="编译目标" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
+<p align="center">纯 MoonBit 音频特征引擎，复用 STFT、Mel、Log-Mel 与 MFCC 流水线。</p>
+<p align="center"><a href="README.md">English</a> · <a href="#从源码运行">运行</a> · <a href="docs/zh/API_SPECIFICATION.md">API</a> · <a href="docs/zh/ARCHITECTURE.md">架构</a> · <a href="docs/zh/HEALTH.md">健康报告</a></p>
 
-<p align="center">
-  <img alt="版本 0.1.0" src="https://img.shields.io/badge/版本-0.1.0-amber?style=flat-square" />
-  <img alt="运行目标: WASM | JS | Native" src="https://img.shields.io/badge/运行目标-WASM%20%7C%20JS%20%7C%20Native-2b384a?style=flat-square" />
-  <img alt="零外部依赖" src="https://img.shields.io/badge/依赖-纯原生零依赖-2b384a?style=flat-square" />
-  <img alt="数值对齐: librosa 1.0.0" src="https://img.shields.io/badge/数值真值对齐-librosa_1.0.0-emerald?style=flat-square" />
-  <a href="LICENSE"><img alt="许可证: MIT" src="https://img.shields.io/badge/许可证-MIT-2b384a?style=flat-square" /></a>
-</p>
+## 从源码运行
 
-<p align="center">
-  基于纯 MoonBit 实现的轻量级、确定性音频数字信号处理（DSP）与机器学习特征提取引擎，支持 WebAssembly、JavaScript 与 Native 运行时。
-</p>
+安装 [MoonBit](https://www.moonbitlang.com/download/)，要求 `moonc >= 0.10.14`。浏览器演示另需 Node.js 22.12+ 或 24+、pnpm 11。源码运行不依赖 Mooncakes 发布。
 
-<p align="center">
-  <a href="README.md"><strong>English Version</strong></a> ·
-  <a href="#快速上手">快速上手</a> ·
-  <a href="docs/zh/API_SPECIFICATION.md">接口说明</a> ·
-  <a href="docs/zh/ARCHITECTURE.md">架构设计</a> ·
-  <a href="docs/zh/SPEC.md">形式化规范</a> ·
-  <a href="playground/">在线演示</a>
-</p>
-
----
-
-## 核心能力矩阵
-
-| 阶段 | 核心算法与数学变换 | 对齐标准 |
-| :--- | :--- | :--- |
-| **时域处理** | Periodic Hann、Symmetric Hann、Hamming、Blackman 窗函数，两端镜像反射填充 | `scipy.signal.windows.hann(sym=False)` |
-| **傅里叶变换** | 原地 Radix-2 Cooley-Tukey FFT 蝶形算法，单边功率谱输出 | 连续频域正交投影 |
-| **Mel 滤波器组** | Slaney 与 HTK 刻度三角滤波器组，支持面积归一化 | `librosa.filters.mel(norm='slaney')` |
-| **对数压缩** | 分贝标度转换（dB），支持 `amin=1e-10` 与 `top_db=80.0` 截断保护 | `librosa.power_to_db` |
-| **倒谱提取** | 离散余弦变换（DCT-II）正交归一化，MFCC 特征提取 | `librosa.feature.mfcc(norm='ortho')` |
-| **色度图提取** | 12 音级色度特征（Chroma STFT / Chromagram），支持高斯滤波器组与帧归一化 | `librosa.feature.chroma_stft` |
-| **FFT 长度扩展** | 自动零填充至最近 $2^k$ 阶次（Padded FFT / RFFT），支持任意输入序列长度 | 连续序列零填充 |
-| **音频解码** | 纯 MoonBit 实现的 RIFF 8-bit / 16-bit PCM WAV 解析器，声道自动下混 | 原生字节流解析 |
-
----
-
-## 模块分层与解耦架构
-
-MoonMel 拒绝扁平单目录，坚持按职责清晰解耦：
-
-```
-moonmel/
-├── src/
-│   ├── core/
-│   │   └── types/          # 核心音频容器、FeatureConfig、Complex、MelError、FeatureMatrix
-│   ├── dsp/
-│   │   ├── window/         # 周期性与对称性窗函数、反射填充
-│   │   ├── fft/            # 原地 Radix-2 Cooley-Tukey FFT、位反转置换、单边功率谱
-│   │   └── stft/           # 短时傅里叶变换分帧、加窗、单边复数谱与功率谱
-│   ├── features/
-│   │   ├── mel/            # Slaney 与 HTK Mel 刻度、三角滤波器组、Mel 谱投影
-│   │   └── mfcc/           # 功率转分贝（dB）、Log-Mel、DCT-II 正交变换、MFCC
-│   ├── codec/
-│   │   └── wav/            # 纯 MoonBit PCM WAV 解码器（8-bit、16-bit，双声道转单声道）
-│   └── bindings/
-│       └── web/            # 供浏览器与前端调用的 WebAssembly / JavaScript JSON 桥接层
-├── cmd/
-│   └── main/               # CLI 性能基准测试与命令行特征分析工具
-├── playground/             # 基于 Vite + TailwindCSS 的浏览器可视化演练场
-├── tools/
-│   └── reference/          # Python 权威真值生成与数值对齐测试脚本
-└── docs/                   # 形式化技术规范、接口文档与系统设计说明
+```sh
+git clone https://github.com/1zhouhaoran1/MoonMel.git
+cd MoonMel
+moon run examples/basic --target js
 ```
 
----
+内置一秒 440 Hz 正弦信号，无需音频文件，输出：
 
-## 快速上手
-
-### 安装与引入
-
-```bash
-moon add zhr/moonmel
+```text
+STFT: 513 x 63
+Mel: 80 x 63
+Log-Mel: 80 x 63
+MFCC: 13 x 63
 ```
 
-### 基础特征提取代码
+项目本机可先在 PowerShell 选择已安装的隔离编译器：
+
+```powershell
+. ./tools/dev/activate.ps1
+```
+
+## 浏览器演示
+
+```sh
+pnpm --dir playground install --frozen-lockfile
+pnpm --dir playground run dev
+```
+
+打开 `http://localhost:5173`。启动与构建会重新编译 MoonBit 绑定，不再手工维护生成代码。当前页实际在 Web Worker 中运行 **MoonBit 生成的 JS**；WASM 是库支持的编译目标。音频保留在本地。
+
+| 操作 | 实际结果 |
+| --- | --- |
+| 选择正弦、扫频、混合或静音 | 显示 MoonBit 计算的频谱与输入波形 |
+| 上传 8/16 位 PCM WAV | 使用 MoonMel 解析，多声道混合为单声道，预览前十秒 |
+| 更改 FFT、步长、Mel、MFCC | 对当前真实输入重新计算 |
+| 切换 Log-Mel、STFT、MFCC | 鼠标或图上左右键检查时间帧数值 |
+| 播放、麦克风、导出 | 听输入、分析滚动一秒窗口、下载 JSON/CSV |
+
+麦克风需要 HTTPS 或 localhost 与浏览器许可，使用 AudioWorklet。它是滚动窗口演示，不等于库的增量流式接口。文件限制 10 MB，分析预览限制 2,000 帧；超限时缩短音频或增加步长。
+
+## 使用 API
 
 ```moonbit
-let samples : Array[Double] = [ /* 单声道 PCM 浮点音频采样，幅值 [-1.0, 1.0] */ ]
-let config = @moonmel.FeatureConfig::default()
-
-// 1. 计算 STFT 功率谱
-let stft_spec = @moonmel.stft(samples, config~)?
-
-// 2. 计算线性 Mel 频谱
-let mel_spec = @moonmel.mel_spectrogram(samples, config~)?
-
-// 3. 计算对数 Mel 频谱（分贝标度）
-let log_mel = @moonmel.log_mel_spectrogram(samples, config~)?
-
-// 4. 计算 MFCC 倒谱系数
-let mfccs = @moonmel.mfcc(samples, config~)?
-
-println("STFT 维度:   \{stft_spec.n_rows} 频带 x \{stft_spec.n_cols} 帧")
-println("Mel 维度:    \{mel_spec.n_rows} 通道 x \{mel_spec.n_cols} 帧")
-println("MFCC 维度:   \{mfccs.n_rows} 阶数 x \{mfccs.n_cols} 帧")
+let cfg = @moonmel.FeatureConfig::default()
+let result = @moonmel.analyze(samples, config=cfg).unwrap()
+println(result.mfcc.n_cols)
 ```
 
-### 解析 WAV 字节流
+`analyze` 只计算一次 STFT 与滤波器组，依次派生 Mel、Log-Mel、MFCC。已有独立接口及扩展特征接口保留。WAV 使用 `@moonmel.decode_wav(bytes)`，再分析 `audio.samples`；配置采样率和频率上限必须与解码后的音频一致。
 
-```moonbit
-let wav_bytes : Array[Byte] = [ /* 读取的 WAV 二进制数据 */ ]
-let buffer = @moonmel.decode_wav(wav_bytes)?
+特征矩阵为 `[特征行][时间帧]`，复数 STFT 为 `[时间帧][频点]`。用户输入要处理 `Result` 错误，不应直接 `unwrap`。公开原始矩阵与低层内核仍有前置条件。
 
-println("采样率: \{buffer.sample_rate} Hz")
-println("时长:   \{buffer.duration()} 秒")
+## 数值证据与边界
 
-// 直接从解码后的 AudioBuffer 提取 MFCC
-let mfccs = buffer.mfcc()?
+[机器可读报告](tools/reference/parity_report.json) 由 `tools/reference/check_parity.py` 生成，参考 librosa 1.0.0、NumPy 2.5.3、SciPy 1.18.1。八组确定性案例包含短窗、任意与奇数 FFT、单样本；比较全部 Mel、Log-Mel、MFCC 单元，STFT 每帧比较最多 64 个明确索引频点。对齐周期 Hann、reflect 填充、float64 Slaney 滤波器、正交 DCT-II；容差 `atol=rtol=1e-7`，观察到的最大绝对误差约 `2.3e-12`。
+
+不宣称整个库等价或竞品速度排名。librosa 默认 STFT 为 constant 填充，MoonMel 使用 reflect；HTK 风格差分、直接 CQT、Chroma、HPSS、响度与效果处理仍有独立约定和验证边界。Whisper 配置只是分帧预设，不是完整模型前端。
+
+| 库 | 实现与场景 | 本项目选型差异 |
+| --- | --- | --- |
+| MoonMel | 纯 MoonBit，同源编译 JS/WASM/Native | 原生 MoonBit 集成与可检查流水线；高级功能外部验证仍有限 |
+| [librosa](https://github.com/librosa/librosa) | Python / NumPy / SciPy 研究生态 | 核心参数对齐后的数值参考 |
+| [Meyda](https://meyda.js.org/audio-features) | JS 与 Web Audio 特征 | 成熟的浏览器音频接入 |
+| [Essentia.js](https://github.com/MTG/essentia.js) | C++ → WASM，JS/TS 接口 | 更广的音乐算法与模型集成 |
+
+## 检查与 CI
+
+```sh
+node tools/quality/check-toolchain.mjs
+node tools/quality/check-architecture.mjs
+moon check --deny-warn
+moon test --deny-warn
+moon test --target js --deny-warn
+pnpm --dir playground run build
+pnpm --dir playground test
 ```
 
----
+[CI 工作流](.github/workflows/ci.yml) 覆盖 WASM、WASM-GC、JS、Native 的检查、构建、测试与基本示例，另构建演示页并验证浏览器绑定。配置文件存在不等于远端运行通过，实际状态以 GitHub Actions 为准。
 
-## 输出矩阵维度约定
+Windows Native 可执行 `pwsh -File tools/quality/test-native.ps1`；没有显式编译器设置时选择现有 MinGW GCC，结束后恢复环境。本机默认 MSVC 发现结果指向缺失头文件，暂不可直接使用。
 
-特征统一封装于 `FeatureMatrix` 二维结构中：
+独立 Python 验证可使用项目已准备环境：
 
-| 特征类型 | 行数（`n_rows`） | 列数（`n_cols`） | 取值范围与物理含义 |
-| :--- | :--- | :--- | :--- |
-| **STFT 频谱图** | `n_fft / 2 + 1`（默认 513） | `n_frames` | 线性功率 `|X|^2`（非负） |
-| **Mel 频谱图** | `n_mels`（默认 80） | `n_frames` | 滤波器组加权能量（非负） |
-| **Log-Mel 频谱图** | `n_mels`（默认 80） | `n_frames` | 分贝值 `dB`（相对基准 `ref_value=1.0`） |
-| **MFCC 倒谱系数** | `n_mfcc`（默认 13） | `n_frames` | 实数倒谱系数 `C0 .. C(n-1)` |
-
----
-
-## 数值精度验证报告
-
-与 Python `librosa 1.0.0`、`scipy 1.18.1`、`numpy 2.5.3` 官方真值全自动化严格比对：
-
-| 验证项 | 对比基准 | 最大绝对误差 | 验证结论 |
-| :--- | :--- | :--- | :--- |
-| **周期性 Hann 窗** | `scipy.signal.windows.hann(sym=False)` | `< 1e-10` | 完全一致 |
-| **Mel 滤波器组权重** | `librosa.filters.mel(norm='slaney')` | `< 1e-5` | 完全一致 |
-| **STFT 功率谱采样** | `librosa.stft(center=True)` | `< 0.05` | 完全一致 |
-| **Log-Mel（dB）** | `librosa.power_to_db(top_db=80)` | `< 0.05` | 完全一致 |
-| **MFCC 倒谱系数** | `librosa.feature.mfcc(norm='ortho')` | `< 0.05` | 完全一致 |
-
----
-
-## WebAssembly 交互式演练场
-
-前端演示位于 `playground/` 目录：
-
-```bash
-cd playground
-pnpm install
-pnpm run dev
+```powershell
+& A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
-特性包含：
-1. 本地直接拖拽加载真实 WAV 文件并解析。
-2. 内置合成音频预设（440 Hz 单频正弦波、三和弦、扫频 Chirp、合成元音）。
-3. 实时调节 FFT 大小、帧移步长、Mel 通道数及 MFCC 阶数。
-4. 高清 Canvas 绘制波形图、STFT 功率谱图、Log-Mel 谱图及 MFCC 热力图。
-5. 一键导出 JSON 与 CSV 格式矩阵数据。
-6. 实时测量纯 MoonBit 算法在浏览器端的执行毫秒耗时。
+[开发指南](docs/zh/DEVELOPMENT.md) 提供可移植 uv 设置，[验收清单](docs/zh/ACCEPTANCE.md) 对应九项指南，[健康报告](docs/zh/HEALTH.md) 列出审查范围和剩余限制。Mooncakes 发布按负责人要求暂缓。
 
----
+## 许可证
 
-## 详细技术文档导航
-
-- [产品规格说明书 (Product Specification)](docs/zh/PRODUCT.md)
-- [形式化技术规范 (Formal Specification)](docs/zh/SPEC.md)
-- [系统架构设计 (Architecture)](docs/zh/ARCHITECTURE.md)
-- [API 详细接口手册 (API Specification)](docs/zh/API_SPECIFICATION.md)
-- [开发者指南与测试 (Development Guide)](docs/zh/DEVELOPMENT.md)
-- [项目演进路线图 (Roadmap)](docs/zh/ROADMAP.md)
-
----
-
-## 开源许可证
-
-本项目基于 MIT License 开源。版权所有 (c) 2026 zhr (3449002191@qq.com)。
+[MIT](LICENSE)，Copyright 2026 zhr。算法在 MoonBit 中实现，NumPy/SciPy/librosa 用于开发验证。字体与参考来源见 [第三方声明](THIRD_PARTY_NOTICES_zh.md)。

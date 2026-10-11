@@ -1,3 +1,33 @@
+///|
+/// Check public channel metadata before spatial features index both channels.
+fn validate_buffer(
+  buffer : @types.MultiChannelAudioBuffer,
+  config : @types.FeatureConfig,
+) -> Result[Unit, @types.MelError] {
+  match config.validate() {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
+  if buffer.sample_rate <= 0 {
+    return Err(InvalidSampleRate(buffer.sample_rate))
+  }
+  if buffer.sample_rate != config.sample_rate {
+    return Err(
+      DimensionMismatch("Buffer and feature-config sample rates differ"),
+    )
+  }
+  if buffer.channels.is_empty() || buffer.channels[0].is_empty() {
+    return Err(EmptyAudio)
+  }
+  let length = buffer.channels[0].length()
+  for channel in buffer.channels {
+    if channel.length() != length {
+      return Err(DimensionMismatch("Channels have differing sample lengths"))
+    }
+  }
+  Ok(())
+}
+
 ///| Multi-channel audio feature extraction and spatial acoustics (ILD & IPD).
 
 ///|
@@ -6,6 +36,10 @@ pub fn multichannel_stft(
   buffer : @types.MultiChannelAudioBuffer,
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
+  match validate_buffer(buffer, config) {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let n_ch = buffer.num_channels()
   let out : Array[@types.FeatureMatrix] = []
   for i in 0..<n_ch {
@@ -25,6 +59,10 @@ pub fn multichannel_mel(
   buffer : @types.MultiChannelAudioBuffer,
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
+  match validate_buffer(buffer, config) {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let n_ch = buffer.num_channels()
   let out : Array[@types.FeatureMatrix] = []
   for i in 0..<n_ch {
@@ -44,6 +82,10 @@ pub fn multichannel_mfcc(
   buffer : @types.MultiChannelAudioBuffer,
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
+  match validate_buffer(buffer, config) {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let n_ch = buffer.num_channels()
   let out : Array[@types.FeatureMatrix] = []
   for i in 0..<n_ch {
@@ -66,6 +108,10 @@ pub fn interchannel_level_difference(
   ch2 : Int,
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match validate_buffer(buffer, config) {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let n_ch = buffer.num_channels()
   if ch1 < 0 || ch1 >= n_ch || ch2 < 0 || ch2 >= n_ch {
     return Err(
@@ -75,11 +121,12 @@ pub fn interchannel_level_difference(
     )
   }
 
-  let stft1 = match @stft.stft_spectrogram(buffer.channels[ch1], config) {
+  let power_config = { ..config, power: 2.0, }
+  let stft1 = match @stft.stft_spectrogram(buffer.channels[ch1], power_config) {
     Ok(m) => m
     Err(e) => return Err(e)
   }
-  let stft2 = match @stft.stft_spectrogram(buffer.channels[ch2], config) {
+  let stft2 = match @stft.stft_spectrogram(buffer.channels[ch2], power_config) {
     Ok(m) => m
     Err(e) => return Err(e)
   }
@@ -110,6 +157,10 @@ pub fn interchannel_phase_difference(
   ch2 : Int,
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
+  match validate_buffer(buffer, config) {
+    Ok(_) => ()
+    Err(e) => return Err(e)
+  }
   let n_ch = buffer.num_channels()
   if ch1 < 0 || ch1 >= n_ch || ch2 < 0 || ch2 >= n_ch {
     return Err(

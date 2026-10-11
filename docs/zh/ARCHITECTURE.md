@@ -1,79 +1,39 @@
-# MoonMel 架构设计文档 (Architecture)
+# 架构
 
-[English](../en/ARCHITECTURE.md) | [中文说明](./ARCHITECTURE.md)
+[English](../en/ARCHITECTURE.md)
 
-本文档阐述 MoonMel 项目的低耦合分层架构、包拓扑依赖规则、内存管理策略与错误处理模型。
+## 层次与依赖
 
----
+核心类型 → DSP/编解码 → 特征 → 流水线 → 门面 → 根模块与浏览器绑定 → 演示页。`node tools/quality/check-architecture.mjs` 自动拒绝循环与向上依赖；核心类型不引用项目内部包，同层特征允许按需求互相依赖。
 
-## 1. 设计哲学与核心原则
+| 层 | 责任 | 边界 |
+| --- | --- | --- |
+| core/types | 错误、音频、配置、矩阵、复数分别组织 | 只持有数据与校验，不编排算法 |
+| DSP/codec | 窗、分帧、FFT、STFT、滤波、重采样、WAV | 处理信号或有边界的字节输入 |
+| features | Mel/MFCC 与扩展特征 | 引用 DSP 或同层、下层特征 |
+| pipeline/analysis | 按顺序编排四类特征 | 只计算一次 STFT 与滤波器组 |
+| facade/bindings | 易用适配、公开重导出、JSON 传输 | 不复制 DSP 算法 |
 
-1. **拒绝扁平单目录**：严格遵循分层解耦架构，严禁将所有数据结构、数学运算、特征算子平铺在根目录。
-2. **单向无环依赖 (DAG)**：底层核心模型不依赖上层算法，DSP 变换层仅依赖数据类型与数学标准库。
-3. **零外部原生依赖**：所有矩阵操作、复数运算、窗函数与编解码器均为纯 MoonBit 代码，保证 WASM、JS 与 Native 平台行为完全同一。
-4. **高层门面 (Facade) 极简接入**：根包作为 Ergonomic Facade，通过统一重导出降低终端使用者集成心智负担。
+## 共享计算
 
----
+`AnalysisResult` 包含 STFT、滤波器组、Mel、Log-Mel、MFCC。独立接口保留；矩阵阶段提供滤波器投影、已有谱转 Mel、Mel 转对数、对数 Mel 转 MFCC。每个矩阵只生成一次 DCT 基，而非每帧重算。
 
-## 2. 模块分层与依赖拓扑
+`framing.window_frame` 将短窗居中到完整 FFT 帧，窗口位置与取样位置使用同一偏移。离线、流式共用。STFT 复用实部、虚部缓冲；非 2 的幂使用 Bluestein 并分配临时数组。低层 Radix-2 内核仍要求尺寸为 2 的幂且缓冲足够。
 
-```mermaid
-graph TD
-    A[src/core/types] --> B[src/dsp/window]
-    A --> C[src/dsp/fft]
-    A --> G[src/codec/wav]
-    B --> D[src/dsp/stft]
-    C --> D
-    D --> E[src/features/mel]
-    E --> F[src/features/mfcc]
-    A --> E
-    A --> F
-    
-    A --> Facade[Root Facade: zhr/moonmel]
-    B --> Facade
-    C --> Facade
-    D --> Facade
-    E --> Facade
-    F --> Facade
-    G --> Facade
+## 数据与错误
 
-    Facade --> Web[src/bindings/web]
-    Facade --> CLI[cmd/main]
-```
+矩阵使用可变行数组和显式维度。阶段边界的 `validate()` 检查维度与不等长行；`at`、`set` 等低层操作要求调用者保证索引有效。高层使用 `Result`；配置验证窗口尺寸、正数维度、有限数值与频率范围。浏览器错误返回 `success:false`，字符串经过 JSON 转义。
 
-### 包依赖规则矩阵
+WAV 必须满足声明的 RIFF 边界和各个数据块边界；校验格式、块对齐及完整 PCM 帧。有符号表示为负数的恶意无符号长度被拒绝。允许 data 在 fmt 前，拒绝重复的 data/fmt。
 
-| 包路径 | 职责定位 | 允许导入的内部依赖 |
-| :--- | :--- | :--- |
-| `src/core/types` | 基础几何模型、复数、矩阵、配置与错误 | **无内部依赖**（零内部耦合） |
-| `src/dsp/window` | 窗函数计算、索引反射填充 | `src/core/types` |
-| `src/dsp/fft` | 快速傅里叶变换内核、位反转置换 | `src/core/types` |
-| `src/dsp/stft` | 分帧加窗短时傅里叶变换、单边功率谱 | `src/core/types`, `src/dsp/window`, `src/dsp/fft` |
-| `src/features/mel` | Mel 频率映射、三角滤波器组、Mel 谱投影 | `src/core/types`, `src/dsp/stft` |
-| `src/features/mfcc` | 对数压缩、DCT-II 正交变换、MFCC 系数 | `src/core/types`, `src/features/mel` |
-| `src/codec/wav` | RIFF PCM WAV 格式解析与多声道混音 | `src/core/types` |
-| `src/bindings/web`| WebAssembly / JS 浏览器 JSON 桥接层 | 根包 `zhr/moonmel` |
-| 根包（Facade） | 统一公共 API 门面与类型重导出 | 所有底层核心模块 |
+## 流式约定
 
----
+只处理左对齐的完整 FFT 帧，忽略 `config.center`；不模拟离线反射边界，也不自动刷新不足一帧的尾部。缓冲游标保留大步长跨块间隔。FFT、窗、滤波器组复用，输出、缓冲增长/整理、Bluestein 仍会分配。MFCC 遵循对数、参考值及 DCT 配置；`top_db` 按每次输出矩阵裁剪，不能宣称分批结果与整段离线全局裁剪完全相同。
 
-## 3. 内存管理与连续存储设计
+## 浏览器结构
 
-- **原地 FFT (In-place Butterfly)**：FFT 核心计算在预分配的实部与虚部缓存数组中进行原地交换与迭代蝶形运算，分帧计算时复用 `frame_buf`，杜绝递归分支产生的海量小数组分配与 WASM GC 停顿。
-- **二维矩阵包装 (FeatureMatrix)**：以一维外层向量组织连续帧数据，提供 `at(row, col)` 与 `set(row, col, val)` 规整访问，支持高效矩阵转置与一维线性扁平化导出。
+`domain/signals` 管合成信号与限制，`engine` 管请求、Worker 与绑定，`audio` 管播放及 AudioWorklet，`render` 管图形与证据，`main` 管 DOM 协调。输入加载标识与分析版本分离，修改参数不会丢弃正在解码的 WAV；上传音频采样率不会被合成参数重解释。
 
----
+编译 JS 被忽略并在启动/构建前自动生成。页面明确运行 JS。麦克风属于节流后的滚动离线预览，并非增量流式 API 展示。
 
-## 4. 异常与错误传递模型
-
-MoonMel 摒弃无意义的隐式崩溃或静默误处理，定义强类型 `MelError`：
-- `EmptyAudio`：音频采样流为空。
-- `InvalidSampleRate(Int)`：非正采样率。
-- `InvalidFftSize(Int)`：非 2 的幂次或非正 FFT 大小。
-- `InvalidHopLength(Int)`：非正帧移步长。
-- `InvalidMelBands(Int)`：非正 Mel 频带数量。
-- `InvalidFrequencyRange(Double, Double)`：截止频率超出奈奎斯特频率或区间倒置。
-- `DimensionMismatch(String)`：时频维度不匹配。
-- `WavParseError(String)`：WAV 文件头校验失败或不支持的编码格式。
-
-所有计算管道采用 MoonBit `Result[T, MelError]` 进行强确定性错误传播。
+浏览器绑定只声明 JS/WASM/WASM-GC，Native 构建不再将浏览器外部库误链接为可执行文件；核心库和示例仍支持 Native。

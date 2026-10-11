@@ -1,0 +1,6 @@
+import {
+  "zhr/moonmel",
+  "moonbitlang/core/math",
+}
+
+pkgtype(kind: "executable")

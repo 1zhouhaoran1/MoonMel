@@ -79,7 +79,7 @@ pub fn FeatureConfig::default() -> FeatureConfig {
 }
 
 ///|
-/// Whisper ASR standard configuration (16 kHz, 400 n_fft, 160 hop, 80 mel bins).
+/// Whisper-size framing preset (not a complete model frontend): (16 kHz, 400 n_fft, 160 hop, 80 mel bins).
 pub fn FeatureConfig::whisper() -> FeatureConfig {
   {
     sample_rate: 16000,
@@ -145,20 +145,6 @@ pub fn FeatureConfig::validate(self : FeatureConfig) -> Result[Unit, MelError] {
     self.f_max <= self.f_min ||
     self.f_max > nyquist {
     return Err(InvalidFrequencyRange(self.f_min, self.f_max))
-  }
-  Ok(())
-}
-
-///|
-/// Check mutable, publicly constructible matrix data at a package boundary.
-pub fn FeatureMatrix::validate(self : FeatureMatrix) -> Result[Unit, MelError] {
-  if self.n_rows < 0 || self.n_cols < 0 || self.data.length() != self.n_rows {
-    return Err(DimensionMismatch("Invalid matrix dimensions"))
-  }
-  for row in self.data {
-    if row.length() != self.n_cols {
-      return Err(DimensionMismatch("Ragged matrix"))
-    }
   }
   Ok(())
 }

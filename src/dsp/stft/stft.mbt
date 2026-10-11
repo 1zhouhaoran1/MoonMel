@@ -19,17 +19,27 @@ pub fn stft_spectrogram(
 
   let win = @window.create_window(config.window, win_length)
   let frame_buf : Array[Double] = Array::make(n_fft, 0.0)
+  let imaginary : Array[Double] = Array::make(n_fft, 0.0)
 
   for frame_idx in 0..<n_frames {
     let start = frame_idx * hop_length
     @framing.window_frame(audio, start, win, frame_buf)
-
-    match @fft.rfft_spectrum(frame_buf, n_fft, config.power) {
-      Ok(spec) =>
-        for bin_idx in 0..<n_bins {
-          result.set(bin_idx, frame_idx, spec[bin_idx])
-        }
+    imaginary.fill(0.0)
+    match @fft.transform_in_place(frame_buf, imaginary, n_fft, false) {
+      Ok(_) => ()
       Err(e) => return Err(e)
+    }
+    for bin_idx in 0..<n_bins {
+      let power = frame_buf[bin_idx] * frame_buf[bin_idx] +
+        imaginary[bin_idx] * imaginary[bin_idx]
+      let value = if config.power == 2.0 {
+        power
+      } else if config.power == 1.0 {
+        power.sqrt()
+      } else {
+        @math.pow(power, config.power / 2.0)
+      }
+      result.set(bin_idx, frame_idx, value)
     }
   }
 

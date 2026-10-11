@@ -1,5 +1,10 @@
 pkgtype(kind: "foreign_library")
 
+// Browser transport is linked only for web targets; the DSP library remains
+// available on Native through the facade and root packages.
+
+supported_targets = "+js+wasm+wasm-gc"
+
 import {
   "zhr/moonmel/src/facade",
   "moonbitlang/core/json",

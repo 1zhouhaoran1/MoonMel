@@ -30,7 +30,7 @@ The browser demo runs generated JavaScript from MoonBit. WASM is a supported lib
 
 ## Brand Commitments
 
-Retain MoonMel's name and its existing restrained dark studio and warm copper identity. The website is a local repository artifact; hosting has not been requested.
+The owner explicitly requested a new image-generated identity: warm ivory, near-black and vermilion, with an acoustic-bar/crescent emblem and custom MoonMel wordmark. The website is a local repository artifact; hosting has not been requested.
 
 ## Evidence on Hand
 

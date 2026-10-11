@@ -39,7 +39,7 @@
 - [ ] **WebAssembly SIMD 向量化加速**：针对蝶形运算和三角滤波投影进行 128 位 SIMD 原语优化。
 - [x] **任意长度 Bluestein 算法**：基于快速卷积的任意素数长度离散傅里叶变换。
 - [x] **常量 Q 变换 (Constant-Q Transform / CQT)**：对数几何频带抽取，恒定品质因数 $Q$ 分辨率。
-- [x] **多采样率多相重采样器 (Polyphase Resampler)**：预计算多相 FIR 滤波组，支持任意有理倍率（scipy.signal.resample_poly 对齐）。
+- [x] **多采样率多相重采样器 (Polyphase Resampler)**：预计算多相 FIR 滤波组，支持任意有理倍率（Hann 源坐标插值，不宣称与 SciPy 默认滤波器等价）。
 - [x] **谐波-冲击成分分离 (HPSS)**：二维中值滤波与软/硬掩蔽分离音频谐波与打击乐分量，计算帧能量比。
 - [x] **广播级响度计量 (ITU-R BS.1770-4 / EBU R128)**：级联 K-weighting IIR 滤波、门限积分响度 (LUFS)、响度范围 (LRA) 与 4 倍过采样 True-Peak 真实峰值估计。
 - [x] **音符起始检测与起始强度包络 (Onset Detection & SuperFlux)**：谱通量 (Spectral Flux)、频域极值滤波抗颤音 (SuperFlux) 与自适应双门限峰值拾取。

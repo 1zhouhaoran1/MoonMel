@@ -1,374 +1,43 @@
-# MoonMel API Specification
-
-[English](./API_SPECIFICATION.md) | [中文说明](../zh/API_SPECIFICATION.md)
-
-This document provides detailed function signatures, constructors, and usage contracts for the public API of MoonMel.
-
----
-
-## 1. Core Data Structures
-
-### 1.1 `AudioBuffer`
-Container for single-channel float PCM audio.
-
-```moonbit
-pub struct AudioBuffer {
-  samples : Array[Double]
-  sample_rate : Int
-}
-```
-
-- `AudioBuffer::new(samples : Array[Double], sample_rate : Int) -> Result[AudioBuffer, MelError]`
-  - Validates and constructs an audio container.
-- `AudioBuffer::length(self : AudioBuffer) -> Int`
-  - Returns total sample count.
-- `AudioBuffer::duration(self : AudioBuffer) -> Double`
-  - Returns audio duration in seconds.
-- `AudioBuffer::from_wav_bytes(bytes : Array[Byte]) -> Result[AudioBuffer, MelError]`
-  - Parses and constructs an `AudioBuffer` from raw WAV file bytes.
-
-### 1.2 `FeatureConfig`
-Hyperparameter configuration for STFT, Mel, and MFCC pipelines.
-
-```moonbit
-pub struct FeatureConfig {
-  sample_rate : Int       // Sample rate in Hz (default: 16000)
-  n_fft : Int             // FFT size (default: 1024)
-  hop_length : Int        // Stride between frames (default: 256)
-  win_length : Int        // Window length (default: 1024)
-  window : WindowType     // PeriodicHann, SymmetricHann, Hamming, Blackman, Rectangular
-  center : Bool           // If true, applies reflect padding of n_fft / 2 (default: true)
-  power : Double          // Spectrogram exponent (2.0 = power, 1.0 = magnitude)
-  n_mels : Int            // Number of Mel filterbank channels (default: 80)
-  f_min : Double          // Lowest frequency in Hz (default: 0.0)
-  f_max : Double          // Highest frequency in Hz (default: sample_rate / 2.0)
-  mel_scale : MelScale    // Slaney (default) or Htk
-  mel_norm : MelNorm      // Slaney (default) or None
-  log_scale : LogScale    // Db (default), NaturalLog, Log10
-  n_mfcc : Int            // Number of MFCC coefficients to retain (default: 13)
-  norm_ortho : Bool       // DCT-II orthogonal normalization (default: true)
-  ref_value : Double      // Reference power for dB calculation (default: 1.0)
-  amin : Double           // Numerical floor clamp (default: 1.0e-10)
-  top_db : Double         // Dynamic range cutoff in dB (default: 80.0)
-}
-```
-
-Constructors:
-- `FeatureConfig::default() -> FeatureConfig`
-- `FeatureConfig::whisper() -> FeatureConfig`
-- `FeatureConfig::validate(self : FeatureConfig) -> Result[Unit, MelError]`
-
-### 1.3 `FeatureMatrix`
-Two-dimensional matrix representing extracted features `[n_rows][n_cols]`.
-
-- `FeatureMatrix::zeros(n_rows : Int, n_cols : Int) -> FeatureMatrix`
-- `FeatureMatrix::at(self : FeatureMatrix, row : Int, col : Int) -> Double`
-- `FeatureMatrix::set(self : FeatureMatrix, row : Int, col : Int, val : Double) -> Unit`
-- `FeatureMatrix::get_row(self : FeatureMatrix, row : Int) -> Array[Double]`
-- `FeatureMatrix::get_col(self : FeatureMatrix, col : Int) -> Array[Double]`
-- `FeatureMatrix::transpose(self : FeatureMatrix) -> FeatureMatrix`
-- `FeatureMatrix::flatten(self : FeatureMatrix) -> Array[Double]`
-
----
-
-## 2. Feature Extraction Functions
-
-### 2.1 `stft`
-Computes the short-time Fourier transform power or magnitude spectrogram.
-
-```moonbit
-pub fn stft(
-  samples : Array[Double],
-  config~ : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- **Output shape**: `[n_fft / 2 + 1, n_frames]`
-
-### 2.2 `mel_spectrogram`
-Computes the linear energy Mel Spectrogram.
-
-```moonbit
-pub fn mel_spectrogram(
-  samples : Array[Double],
-  config~ : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- **Output shape**: `[n_mels, n_frames]`
-
-### 2.3 `log_mel_spectrogram`
-Computes the Log-Mel Spectrogram (dB, ln, or log10).
-
-```moonbit
-pub fn log_mel_spectrogram(
-  samples : Array[Double],
-  config~ : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- **Output shape**: `[n_mels, n_frames]`
-
-### 2.4 `mfcc`
-Computes Mel-Frequency Cepstral Coefficients.
-
-```moonbit
-pub fn mfcc(
-  samples : Array[Double],
-  config~ : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- **Output shape**: `[n_mfcc, n_frames]`
-
-### 2.5 `decode_wav`
-Parses raw PCM WAV file bytes.
-
-```moonbit
-pub fn decode_wav(bytes : Array[Byte]) -> Result[AudioBuffer, MelError]
-```
-- Supports 8-bit and 16-bit PCM; automatically averages stereo down to mono.
-
-### 2.6 `preemphasis` / `deemphasis`
-High-pass pre-emphasis filtering and exact inverse reconstruction.
-
-```moonbit
-pub fn preemphasis(samples : Array[Double], alpha? : Double = 0.97) -> Array[Double]
-pub fn deemphasis(samples : Array[Double], alpha? : Double = 0.97) -> Array[Double]
-```
-- $y[n] = x[n] - \alpha x[n-1]$ compensates high frequencies and spectral roll-off.
-
-### 2.7 `compute_delta`
-Calculates first-order (Delta) and second-order (Delta-Delta) temporal dynamic features.
-
-```moonbit
-pub fn compute_delta(
-  matrix : FeatureMatrix,
-  width? : Int = 9,
-  order? : Int = 1
-) -> Result[FeatureMatrix, MelError]
-```
-- Implements standard HTK / librosa polynomial approximation derivative; retains input matrix dimensions.
-
-### 2.8 `compute_rms` / `compute_energy`
-Extracts framed root-mean-square (RMS) energy and sum-of-squares total energy.
-
-```moonbit
-pub fn compute_rms(
-  audio : AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true
-) -> Result[FeatureMatrix, MelError]
-
-pub fn compute_energy(
-  audio : AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[1, n_frames]`.
-
-### 2.9 `resample` / `resample_linear`
-High-fidelity audio resampling (Windowed-Sinc bandlimited interpolation & fast linear interpolation).
-
-```moonbit
-pub fn resample(
-  samples : Array[Double],
-  orig_sr : Int,
-  target_sr : Int,
-  filter_size? : Int = 16
-) -> Result[Array[Double], MelError]
-
-pub fn resample_linear(
-  samples : Array[Double],
-  orig_sr : Int,
-  target_sr : Int
-) -> Result[Array[Double], MelError]
-```
-- Applies windowed-sinc interpolation with automatic Nyquist antialiasing low-pass filtering.
-
-### 2.10 `StreamingExtractor`
-Zero-allocation rolling buffer streaming feature extractor for live audio feeds.
-
-```moonbit
-pub fn create_streaming_extractor(
-  config? : FeatureConfig
-) -> Result[StreamingExtractor, MelError]
-
-pub fn StreamingExtractor::push_samples(self : StreamingExtractor, chunk : Array[Double]) -> Unit
-pub fn StreamingExtractor::available_frames(self : StreamingExtractor) -> Int
-pub fn StreamingExtractor::pop_mel_frames(self : StreamingExtractor) -> FeatureMatrix
-pub fn StreamingExtractor::pop_mfcc_frames(self : StreamingExtractor) -> FeatureMatrix
-pub fn StreamingExtractor::reset(self : StreamingExtractor) -> Unit
-```
-- Reuses internal FFT, power spectrum, and filterbank buffers; emits frames incrementally.
-
-### 2.11 `spectral_centroid`
-Extracts Spectral Centroid across frames, representing spectral center of mass and perceived brightness.
-
-```moonbit
-pub fn spectral_centroid(
-  samples : Array[Double],
-  config? : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[1, n_frames]`, in Hz.
-
-### 2.12 `spectral_rolloff`
-Extracts Spectral Rolloff frequency below which 85% of total spectral energy is contained.
-
-```moonbit
-pub fn spectral_rolloff(
-  samples : Array[Double],
-  config? : FeatureConfig = FeatureConfig::default(),
-  roll_percent? : Double = 0.85
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[1, n_frames]`.
-
-### 2.13 `spectral_flatness`
-Extracts Spectral Flatness (Wiener entropy), measuring noise-like versus tone-like spectral character.
-
-```moonbit
-pub fn spectral_flatness(
-  samples : Array[Double],
-  config? : FeatureConfig = FeatureConfig::default(),
-  amin? : Double = 1.0e-10
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[1, n_frames]`, range `[0.0, 1.0]`.
-
-### 2.14 `zero_crossing_rate`
-Extracts Zero-Crossing Rate (ZCR) across framed audio signals.
-
-```moonbit
-pub fn zero_crossing_rate(
-  audio : AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[1, n_frames]`.
-
-### 2.15 `multichannel_stft` / `multichannel_mel` / `multichannel_mfcc`
-Parallel independent feature extraction for multi-channel audio buffers.
-
-```moonbit
-pub fn multichannel_stft(
-  buffer : MultiChannelAudioBuffer,
-  config? : FeatureConfig = FeatureConfig::default()
-) -> Result[Array[FeatureMatrix], MelError]
-
-pub fn multichannel_mel(
-  buffer : MultiChannelAudioBuffer,
-  config? : FeatureConfig = FeatureConfig::default()
-) -> Result[Array[FeatureMatrix], MelError]
-
-pub fn multichannel_mfcc(
-  buffer : MultiChannelAudioBuffer,
-  config? : FeatureConfig = FeatureConfig::default()
-) -> Result[Array[FeatureMatrix], MelError]
-```
-- Returns an array of FeatureMatrix instances, one per channel.
-
-### 2.16 `interchannel_level_difference` (ILD) / `interchannel_phase_difference` (IPD)
-Spatial acoustic descriptors for stereo / multi-mic arrays.
-
-```moonbit
-pub fn interchannel_level_difference(
-  buffer : MultiChannelAudioBuffer,
-  ch1 : Int,
-  ch2 : Int,
-  config? : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-
-pub fn interchannel_phase_difference(
-  buffer : MultiChannelAudioBuffer,
-  ch1 : Int,
-  ch2 : Int,
-  config? : FeatureConfig = FeatureConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- ILD shape: `[n_bins, n_frames]`, in decibels (dB).
-- IPD shape: `[n_bins, n_frames]`, in radians `[-PI, PI]`, evaluated from complex cross-spectrum angle.
-
-### 2.17 `chroma_stft` & `chroma_filterbank`
-12-semitone Chromagram and Chroma filterbank for pitch-class profile analysis and musical chord recognition.
-
-```moonbit
-pub fn chroma_filterbank(
-  sample_rate : Int,
-  n_fft : Int,
-  tuning? : Double = 0.0,
-  f_min? : Double = 0.0
-) -> FeatureMatrix
-
-pub fn chroma_stft(
-  samples : Array[Double],
-  config? : FeatureConfig = FeatureConfig::default(),
-  norm? : ChromaNorm = ChromaNorm::None
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[12, n_frames]`, corresponding to semitones: C, C#, D, D#, E, F, F#, G, G#, A, A#, B.
-- Normalization options: `ChromaNorm::None`, `ChromaNorm::L1`, `ChromaNorm::L2`, `ChromaNorm::Max`.
-
-### 2.18 `fft_padded` & `rfft_padded`
-Forward and real FFT transforms with automatic zero-padding to next power of 2 for arbitrary input lengths.
-
-```moonbit
-pub fn fft_padded(
-  signal : Array[Complex]
-) -> Result[Array[Complex], MelError]
-
-pub fn rfft_padded(
-  frame : Array[Double],
-  power? : Double = 2.0
-) -> Result[Array[Double], MelError]
-```
-- Automatically pads signal/frame to next $2^k$ boundary, enabling non-power-of-two inputs.
-
-### 2.19 `dft`, `idft`, `bluestein_fft` & `bluestein_ifft`
-High-performance arbitrary-length discrete Fourier transform powered by Bluestein's Chirp Z-Transform algorithm.
-
-```moonbit
-pub fn dft(
-  signal : Array[Complex]
-) -> Result[Array[Complex], MelError]
-
-pub fn idft(
-  spectrum : Array[Complex]
-) -> Result[Array[Complex], MelError]
-
-pub fn bluestein_fft(
-  signal : Array[Complex]
-) -> Result[Array[Complex], MelError]
-
-pub fn bluestein_ifft(
-  spectrum : Array[Complex]
-) -> Result[Array[Complex], MelError]
-```
-- **Time Complexity**: Exact $O(N \log N)$ for arbitrary $N$, including prime numbers (3, 5, 7, 13, etc.).
-- Automatically routes to in-place Radix-2 Cooley-Tukey FFT when $N$ is a power of 2, and Bluestein fast convolution otherwise.
-
-### 2.20 `cqt` & `cqt_frequencies` (Constant-Q Transform)
-Constant-Q Transform extracting geometrically spaced time-frequency representations with constant Q quality factor.
-
-```moonbit
-pub struct CqtConfig {
-  sample_rate : Int       // Sample rate (default 16000)
-  hop_length : Int        // Hop length (default 512)
-  f_min : Double          // Minimum base frequency (default 32.703 Hz / C1)
-  n_bins : Int            // Total bins (default 84 / 7 octaves)
-  bins_per_octave : Int   // Bins per octave (default 12)
-  tuning : Double         // Tuning offset (default 0.0)
-  power : Double          // Spectrogram power (default 2.0)
-}
-
-pub fn cqt_frequencies(config : CqtConfig) -> Array[Double]
-
-pub fn cqt(
-  samples : Array[Double],
-  config? : CqtConfig = CqtConfig::default()
-) -> Result[FeatureMatrix, MelError]
-```
-- Output shape: `[n_bins, n_frames]` with geometric frequency distribution $f_k = f_{min} \cdot 2^{k / B}$.
-- Quality factor $Q = 1 / (2^{1/B} - 1)$, tailored for musical pitch and harmonic analysis.
+# Public API
+
+[中文](../zh/API_SPECIFICATION.md)
+
+The authoritative complete public signatures are generated by `moon info`: [root interface](../../pkg.generated.mbti), [facade interface](../../src/facade/pkg.generated.mbti), and each feature package's `pkg.generated.mbti`. The root module re-exports the facade without owning DSP implementations.
+
+## Core extraction
+
+| API | Input / result |
+| --- | --- |
+| `FeatureConfig::default()` | 16 kHz, 1024 FFT/window, 256 hop, 80 Mel bands, 13 MFCC, periodic Hann, reflect centering, power 2, Slaney, dB and orthonormal DCT |
+| `analyze(samples, config?)` | `Result[AnalysisResult, MelError]`; shared STFT, filterbank, Mel, Log-Mel, MFCC |
+| `stft(samples, config?)`, `stft_complex(samples, config)` | Real feature matrix or one-sided complex frames |
+| `mel_filterbank(config)`, `mel_spectrogram(samples, config?)` | Triangular filterbank or Mel features |
+| `log_mel_spectrogram(samples, config?)`, `mfcc(samples, config?)` | Configured log compression or cepstral coefficients |
+| `decode_wav(bytes)` | `Result[AudioBuffer, MelError]`; PCM 8/16-bit, arithmetic channel downmix |
+| `create_streaming_extractor(config?)` | Reusable incremental extractor; complete left-aligned frames |
+
+`AudioBuffer::new(samples, sample_rate)` constructs a validated buffer. No `AudioBuffer::mfcc()` or `AudioBuffer::from_wav_bytes()` method is implemented: use the facade functions shown above. Defaults describe 16 kHz input; update `sample_rate` and `f_max` for another rate. A Whisper-size preset exists, but it is not a complete Whisper normalization frontend.
+
+## Shapes and error boundaries
+
+Feature matrices are `[n_rows][n_cols]`, with feature/frequency rows and time columns. STFT has `n_fft / 2 + 1` bins; the odd-size final bin is below Nyquist. Complex STFT/ISTFT frames use `[time][frequency]`. `FeatureMatrix::validate()` checks public mutable shape metadata; low-level indexing assumes valid dimensions/indices.
+
+High-level transforms validate config and finite PCM. Config windows must satisfy `1 <= win_length <= n_fft`. Frequencies must be finite and inside `[0, sample_rate/2]`; dimensions/hop/Mel/MFCC must be positive; power/amin/reference must be finite positive; top_db must be finite nonnegative. Standalone FFT `fft`/`ifft` are radix-2, while `dft`/`idft` and STFT accept positive arbitrary sizes. Raw `fft_in_place` has explicit radix-2 and buffer preconditions; use the checked dispatcher for uncertain sizes.
+
+## Reusable stages
+
+Direct package imports expose `mel_from_spectrogram`, `apply_filterbank`, `log_mel_from_mel`, and `mfcc_from_log_mel`. They validate matrix shapes and let callers avoid repeated transforms. `analyze` is the normal facade entry for four core outputs; its filterbank is available for inspection.
+
+## Streaming
+
+`push_samples`, `available_frames`, `pop_mel_frames`, `pop_mfcc_frames`, and `reset` operate on a left-aligned timeline, even if `config.center` is true. Pops consume ready frames; selecting Mel and then MFCC does not return the same consumed frames twice. Incomplete tails remain buffered and are not padded/flushed. Hop gaps survive chunk boundaries. Log options and DCT normalization are honored; `top_db` is per returned matrix, so globally clipped offline MFCCs can differ across chunk batches.
+
+## Other feature families
+
+Spectral descriptors, energy/RMS, deltas, Chroma, CQT, HPSS, multichannel ILD/IPD, onset, LPC/LPCC, YIN, tempo, contrast, loudness and effects remain available through the root. Their individual generated interfaces specify optional labels and types. They have algorithm-specific conventions: deltas use repeated HTK regression with nearest edges; CQT is direct kernel correlation; spectral descriptors use the configured spectrum power; spectral contrast uses empirical peak/valley quantiles; loudness has finite silent sentinels and has not been certified against a full compliance suite. Consult the health report before asserting equivalence with a different library.
+
+## Browser transport
+
+`src/bindings/web` exports `process_audio`, `process_audio_config`, `process_wav_bytes` and `decode_wav_audio` for JS. Core analysis transport includes matrices, actual filterbank and STFT preview-bin indices. Success/failure envelopes always reflect the computation outcome and errors are JSON-escaped. WASM artifacts are build targets; the current demo explicitly uses generated JS. Browser preview/file limits belong to the UI domain, not the MoonBit library API.
+
+Browser transport declares only JS/WASM/WASM-GC support so Native builds do not try linking a browser foreign library as an executable. The core library and examples support Native.

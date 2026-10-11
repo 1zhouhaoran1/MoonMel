@@ -1,7 +1,7 @@
 ///|
 fn main {
   println("==================================================")
-  println(" MoonMel Audio DSP Benchmark (MoonBit 0.1.0)       ")
+  println(" MoonMel Audio Pipeline Demonstration       ")
   println("==================================================")
 
   let sr = 16000
@@ -63,6 +63,6 @@ fn main {
   }
 
   println("==================================================")
-  println(" Benchmark complete.")
+  println(" Demonstration complete.")
   println("==================================================")
 }

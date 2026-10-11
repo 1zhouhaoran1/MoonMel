@@ -1,3 +1,4 @@
+param([switch]$Build)
 $ErrorActionPreference = 'Stop'
 $repositoryRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $originalCompiler = $env:MOON_CC
@@ -14,7 +15,11 @@ try {
         $env:MOON_CC = $wrapperPath
     }
     Push-Location $repositoryRoot
-    try { & moon test --target native; $testExitCode = $LASTEXITCODE }
+    try {
+        if ($Build) { & moon build --target native --release }
+        else { & moon test --target native --deny-warn }
+        $testExitCode = $LASTEXITCODE
+    }
     finally { Pop-Location }
 } finally {
     $env:MOON_CC = $originalCompiler

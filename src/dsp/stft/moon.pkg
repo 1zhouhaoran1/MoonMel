@@ -1,10 +1,7 @@
 import {
+  "moonbitlang/core/math",
   "zhr/moonmel/src/core/types",
   "zhr/moonmel/src/dsp/window",
   "zhr/moonmel/src/dsp/fft",
   "zhr/moonmel/src/dsp/framing",
 }
-
-import {
-  "moonbitlang/core/math",
-} for "wbtest"

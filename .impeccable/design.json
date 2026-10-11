@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-11T16:16:24.405Z",
+  "title": "Design System: MoonMel",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Vermilion",
+        "tonalRamp": [
+          "oklch(15.00% 0.16378 32.11)",
+          "oklch(26.43% 0.16378 32.11)",
+          "oklch(37.86% 0.16378 32.11)",
+          "oklch(49.29% 0.16378 32.11)",
+          "oklch(60.71% 0.16378 32.11)",
+          "oklch(72.14% 0.16378 32.11)",
+          "oklch(83.57% 0.16378 32.11)",
+          "oklch(95.00% 0.16378 32.11)"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Deep Vermilion",
+        "tonalRamp": [
+          "oklch(15.00% 0.14228 32.23)",
+          "oklch(26.43% 0.14228 32.23)",
+          "oklch(37.86% 0.14228 32.23)",
+          "oklch(49.29% 0.14228 32.23)",
+          "oklch(60.71% 0.14228 32.23)",
+          "oklch(72.14% 0.14228 32.23)",
+          "oklch(83.57% 0.14228 32.23)",
+          "oklch(95.00% 0.14228 32.23)"
+        ]
+      },
+      "ivory-ground": {
+        "role": "neutral",
+        "displayName": "Warm Ivory",
+        "tonalRamp": [
+          "oklch(15.00% 0.00987 87.47)",
+          "oklch(26.43% 0.00987 87.47)",
+          "oklch(37.86% 0.00987 87.47)",
+          "oklch(49.29% 0.00987 87.47)",
+          "oklch(60.71% 0.00987 87.47)",
+          "oklch(72.14% 0.00987 87.47)",
+          "oklch(83.57% 0.00987 87.47)",
+          "oklch(95.00% 0.00987 87.47)"
+        ]
+      },
+      "charcoal-ink": {
+        "role": "neutral",
+        "displayName": "Charcoal Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.00867 75.20)",
+          "oklch(26.43% 0.00867 75.20)",
+          "oklch(37.86% 0.00867 75.20)",
+          "oklch(49.29% 0.00867 75.20)",
+          "oklch(60.71% 0.00867 75.20)",
+          "oklch(72.14% 0.00867 75.20)",
+          "oklch(83.57% 0.00867 75.20)",
+          "oklch(95.00% 0.00867 75.20)"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.01717 70.70)",
+          "oklch(26.43% 0.01717 70.70)",
+          "oklch(37.86% 0.01717 70.70)",
+          "oklch(49.29% 0.01717 70.70)",
+          "oklch(60.71% 0.01717 70.70)",
+          "oklch(72.14% 0.01717 70.70)",
+          "oklch(83.57% 0.01717 70.70)",
+          "oklch(95.00% 0.01717 70.70)"
+        ]
+      },
+      "field-surface": {
+        "role": "neutral",
+        "displayName": "Field Ivory",
+        "tonalRamp": [
+          "oklch(15.00% 0.00738 80.72)",
+          "oklch(26.43% 0.00738 80.72)",
+          "oklch(37.86% 0.00738 80.72)",
+          "oklch(49.29% 0.00738 80.72)",
+          "oklch(60.71% 0.00738 80.72)",
+          "oklch(72.14% 0.00738 80.72)",
+          "oklch(83.57% 0.00738 80.72)",
+          "oklch(95.00% 0.00738 80.72)"
+        ]
+      },
+      "fine-rule": {
+        "role": "neutral",
+        "displayName": "Warm Fine Rule",
+        "tonalRamp": [
+          "oklch(15.00% 0.01812 81.33)",
+          "oklch(26.43% 0.01812 81.33)",
+          "oklch(37.86% 0.01812 81.33)",
+          "oklch(49.29% 0.01812 81.33)",
+          "oklch(60.71% 0.01812 81.33)",
+          "oklch(72.14% 0.01812 81.33)",
+          "oklch(83.57% 0.01812 81.33)",
+          "oklch(95.00% 0.01812 81.33)"
+        ]
+      },
+      "selected-surface": {
+        "role": "neutral",
+        "displayName": "Selected Warm Surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.02676 61.97)",
+          "oklch(26.43% 0.02676 61.97)",
+          "oklch(37.86% 0.02676 61.97)",
+          "oklch(49.29% 0.02676 61.97)",
+          "oklch(60.71% 0.02676 61.97)",
+          "oklch(72.14% 0.02676 61.97)",
+          "oklch(83.57% 0.02676 61.97)",
+          "oklch(95.00% 0.02676 61.97)"
+        ]
+      },
+      "selected-ink": {
+        "role": "primary",
+        "displayName": "Selected Vermilion Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.14005 32.01)",
+          "oklch(26.43% 0.14005 32.01)",
+          "oklch(37.86% 0.14005 32.01)",
+          "oklch(49.29% 0.14005 32.01)",
+          "oklch(60.71% 0.14005 32.01)",
+          "oklch(72.14% 0.14005 32.01)",
+          "oklch(83.57% 0.14005 32.01)",
+          "oklch(95.00% 0.14005 32.01)"
+        ]
+      },
+      "comparison-surface": {
+        "role": "neutral",
+        "displayName": "Comparison Warm Surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.02233 74.08)",
+          "oklch(26.43% 0.02233 74.08)",
+          "oklch(37.86% 0.02233 74.08)",
+          "oklch(49.29% 0.02233 74.08)",
+          "oklch(60.71% 0.02233 74.08)",
+          "oklch(72.14% 0.02233 74.08)",
+          "oklch(83.57% 0.02233 74.08)",
+          "oklch(95.00% 0.02233 74.08)"
+        ]
+      },
+      "comparison-ink": {
+        "role": "neutral",
+        "displayName": "Comparison Warm Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.10708 35.05)",
+          "oklch(26.43% 0.10708 35.05)",
+          "oklch(37.86% 0.10708 35.05)",
+          "oklch(49.29% 0.10708 35.05)",
+          "oklch(60.71% 0.10708 35.05)",
+          "oklch(72.14% 0.10708 35.05)",
+          "oklch(83.57% 0.10708 35.05)",
+          "oklch(95.00% 0.10708 35.05)"
+        ]
+      },
+      "code-surface": {
+        "role": "neutral",
+        "displayName": "Code Warm Surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.01613 82.79)",
+          "oklch(26.43% 0.01613 82.79)",
+          "oklch(37.86% 0.01613 82.79)",
+          "oklch(49.29% 0.01613 82.79)",
+          "oklch(60.71% 0.01613 82.79)",
+          "oklch(72.14% 0.01613 82.79)",
+          "oklch(83.57% 0.01613 82.79)",
+          "oklch(95.00% 0.01613 82.79)"
+        ]
+      },
+      "code-ink": {
+        "role": "neutral",
+        "displayName": "Code Warm Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.12979 33.79)",
+          "oklch(26.43% 0.12979 33.79)",
+          "oklch(37.86% 0.12979 33.79)",
+          "oklch(49.29% 0.12979 33.79)",
+          "oklch(60.71% 0.12979 33.79)",
+          "oklch(72.14% 0.12979 33.79)",
+          "oklch(83.57% 0.12979 33.79)",
+          "oklch(95.00% 0.12979 33.79)"
+        ]
+      },
+      "plot-ground": {
+        "role": "neutral",
+        "displayName": "Operational Plot Ground",
+        "tonalRamp": [
+          "oklch(15.00% 0.00201 106.60)",
+          "oklch(26.43% 0.00201 106.60)",
+          "oklch(37.86% 0.00201 106.60)",
+          "oklch(49.29% 0.00201 106.60)",
+          "oklch(60.71% 0.00201 106.60)",
+          "oklch(72.14% 0.00201 106.60)",
+          "oklch(83.57% 0.00201 106.60)",
+          "oklch(95.00% 0.00201 106.60)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Section Display",
+        "purpose": "Large comparison and evidence headings; the artwork wordmark is separate."
+      },
+      "title": {
+        "displayName": "Developer Title",
+        "purpose": "Developer-entry subheading."
+      },
+      "body": {
+        "displayName": "Reading Body",
+        "purpose": "Narrative text in the locally bundled sans stack with Chinese fallback."
+      },
+      "label": {
+        "displayName": "Field Label",
+        "purpose": "Native-control labels."
+      },
+      "measurement": {
+        "displayName": "System Measurement",
+        "purpose": "Code, dimensions and measurements; tabular numerals for readouts."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "button-color-transition",
+        "value": "background-color .18s, color .18s",
+        "purpose": "Existing button hover transition; disabled by prefers-reduced-motion."
+      },
+      {
+        "name": "anchor-scroll",
+        "value": "smooth",
+        "purpose": "Existing document anchor scrolling; reduced motion switches to auto."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "intermediate-max",
+        "value": "900px"
+      },
+      {
+        "name": "mobile-max",
+        "value": "640px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Recalculate Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The primary calculation action; source text and enabled/disabled states match the playground.",
+      "html": "<button class=\"ds-primary\" type=\"button\">重新计算</button>",
+      "css": ".ds-primary{font-family:'Manrope Variable','Microsoft YaHei',sans-serif;line-height:1.65;font-size:13px;font-weight:650;min-height:42px;padding:8px 12px;border:1px solid var(--signal,#b63a25);border-radius:4px;background:var(--signal,#b63a25);color:var(--ink,#f1eee7);cursor:pointer;transition:background-color .18s,color .18s}.ds-primary:hover{background:#98301e;border-color:#a87660}.ds-primary:focus-visible{outline:2px solid var(--signal,#b63a25);outline-offset:4px;}.ds-primary:disabled{opacity:.45;cursor:default}.ds-primary:disabled:hover{background:transparent;border-color:var(--rule,#d4cdc1)}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "Secondary Audio Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined playback/microphone action with the shared native-control styling.",
+      "html": "<button class=\"ds-secondary\" type=\"button\">播放声音</button>",
+      "css": ".ds-secondary{font-family:'Manrope Variable','Microsoft YaHei',sans-serif;line-height:1.65;font-size:12px;min-height:42px;padding:8px 9px;border:1px solid var(--rule,#d4cdc1);border-radius:4px;background:transparent;color:var(--paper,#24211d);cursor:pointer;transition:background-color .18s,color .18s}.ds-secondary:hover{background:#eadbcf;border-color:#a87660}.ds-secondary:focus-visible{outline:2px solid var(--signal,#b63a25);outline-offset:4px;}.ds-secondary:disabled{opacity:.45;cursor:default}.ds-secondary:disabled:hover{background:transparent;border-color:var(--rule,#d4cdc1)}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}"
+    },
+    {
+      "name": "Feature View Switch",
+      "kind": "button",
+      "refersTo": "view-selected",
+      "description": "Static specimen of the actual three-button feature selector; aria-pressed shows the selected view.",
+      "html": "<div class=\"ds-switch\" role=\"group\" aria-label=\"特征视图\"><button type=\"button\" aria-pressed=\"true\">Log-Mel</button><button type=\"button\" aria-pressed=\"false\">STFT</button><button type=\"button\" aria-pressed=\"false\">MFCC</button></div>",
+      "css": ".ds-switch{display:flex;gap:4px}.ds-switch button{font-family:'Manrope Variable','Microsoft YaHei',sans-serif;line-height:1.65;font-size:12px;min-height:36px;padding:5px 13px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--paper,#24211d);cursor:pointer;transition:background-color .18s,color .18s}.ds-switch button:hover{background:#eadbcf;border-color:#a87660}.ds-switch button[aria-pressed=true]{background:#e7d6c8;color:#932d1c}.ds-switch button:focus-visible{outline:2px solid var(--signal,#b63a25);outline-offset:4px;}@media(prefers-reduced-motion:reduce){.ds-switch button{transition:none}}"
+    },
+    {
+      "name": "Native Select Field",
+      "kind": "input",
+      "refersTo": "select-field",
+      "description": "A native analysis-parameter select with the existing label, field tone and focus treatment.",
+      "html": "<label class=\"ds-field\">FFT 大小<select class=\"ds-select\"><option>256</option><option>400</option><option>512</option><option selected>1024</option><option>2048</option></select></label>",
+      "css": ".ds-field{font-family:'Manrope Variable','Microsoft YaHei',sans-serif;line-height:1.65;display:block;max-width:220px;font-size:12px;color:var(--muted,#6f675e)}.ds-select{display:block;width:100%;margin-top:7px;font-family:ui-monospace,Consolas,monospace;font-size:13px;min-height:42px;padding:8px 9px;border:1px solid var(--rule,#d4cdc1);border-radius:4px;background:var(--surface,#f8f5f0);color:var(--paper,#24211d);cursor:pointer}.ds-select:focus-visible{outline:2px solid var(--signal,#b63a25);outline-offset:4px;}"
+    },
+    {
+      "name": "Section Navigation",
+      "kind": "nav",
+      "refersTo": "section-navigation",
+      "description": "Direct laboratory, comparison and evidence links; mobile makes the navigation a full row.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"主导航\"><a href=\"#lab\">运行演示</a><a href=\"#comparison\">竞品差距</a><a href=\"#evidence\">验证依据</a></nav>",
+      "css": ".ds-nav{font-family:'Manrope Variable','Microsoft YaHei',sans-serif;line-height:1.65;display:flex;gap:30px;font-size:13px;color:var(--paper,#24211d)}.ds-nav a{color:inherit;text-decoration:none}.ds-nav a:hover{color:var(--signal,#b63a25)}.ds-nav a:focus-visible{outline:2px solid var(--signal,#b63a25);outline-offset:4px;}@media(max-width:900px){.ds-nav{gap:16px}}@media(max-width:640px){.ds-nav{width:100%;justify-content:space-between;font-size:12px;padding-top:7px}}"
+    },
+    {
+      "name": "Evidence Text Link",
+      "kind": "custom",
+      "refersTo": "text-link",
+      "description": "The small vermilion action link used for entering the lab and downloading the report.",
+      "html": "<a class=\"ds-link\" href=\"#evidence\">下载原始报告</a>",
+      "css": ".ds-link{font-family:'Manrope Variable','Microsoft YaHei',sans-serif;line-height:1.65;font-size:13px;color:var(--signal,#b63a25);text-decoration:none;border-bottom:1px solid #b67a61;padding-bottom:5px;display:inline-block}.ds-link:hover{color:var(--signal,#b63a25)}.ds-link:focus-visible{outline:2px solid var(--signal,#b63a25);outline-offset:4px;}"
+    },
+    {
+      "name": "Developer Code Panel",
+      "kind": "card",
+      "refersTo": "code-panel",
+      "description": "A flat code container, not a marketing card; this is the current MoonBit snippet with no runtime.",
+      "html": "<pre class=\"ds-code\"><code>let result = @moonmel.analyze(\n  samples, config=cfg,\n).unwrap()\n\n// STFT → Mel → Log-Mel → MFCC\nprintln(result.mfcc.n_cols)</code></pre>",
+      "css": ".ds-code{background:#e9e3d8;color:#852915;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.9;padding:24px;overflow-x:auto;margin:0}.ds-code code{font:inherit}"
+    },
+    {
+      "name": "Spectrum Palette Specimen",
+      "kind": "custom",
+      "refersTo": "plot-surface",
+      "description": "Illustrative strip of the five shipped heatmap stops on the actual canvas ground; no audio data or performance measurement is implied.",
+      "html": "<figure class=\"ds-plot\"><div class=\"ds-plot-sample\" role=\"img\" aria-label=\"热图五个色阶节点；非音频结果\"><span class=\"ds-stop-1\"></span><span class=\"ds-stop-2\"></span><span class=\"ds-stop-3\"></span><span class=\"ds-stop-4\"></span><span class=\"ds-stop-5\"></span></div><figcaption class=\"ds-plot-caption\">热图色阶节点 · 非音频结果</figcaption></figure>",
+      "css": ".ds-plot{margin:0;max-width:440px}.ds-plot-sample{display:flex;align-items:center;background:#121211;height:116px;padding:0 24px}.ds-plot-sample span{flex:1;height:28px}.ds-stop-1{background:rgb(21,20,18)}.ds-stop-2{background:rgb(79,47,35)}.ds-stop-3{background:rgb(169,58,31)}.ds-stop-4{background:rgb(220,147,85)}.ds-stop-5{background:rgb(247,231,190)}.ds-plot-caption{font-family:ui-monospace,Consolas,monospace;font-size:10px;color:var(--muted,#6f675e);margin-top:12px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Acoustic Bench",
+    "overview": "MoonMel combines a warm printed identity with a precise audio workbench. Ivory is the continuous page ground; charcoal carries reading and vermilion identifies actions, emphasis and the acoustic-bar/crescent emblem. The custom wordmark lives in the canonical artwork. The interface uses restrained typography, open sections and fine rules so the actual analysis remains easy to inspect.\n\nThe dark spectrum is an operational data surface within this light brand. Heat, axes, frame values and numerical tables explain computed results rather than decorate the page. Motion is limited to short button color transitions and anchor scrolling, with a reduced-motion override. This document records the implemented system; the playground's particular composition belongs in its [surface brief](.impeccable/surfaces/playground.md).",
+    "keyCharacteristics": [
+      "Warm ivory ground, charcoal reading color and one vermilion brand accent.",
+      "Canonical acoustic-bar/crescent emblem and custom raster wordmark.",
+      "Open sections, fine dividers and minimally rounded controls.",
+      "Dark, unsmoothed data heatmaps with explicit units and frame readouts.",
+      "Local measurements and scoped evidence presented beside their limits."
+    ],
+    "rules": [
+      {
+        "name": "The Data Color Rule",
+        "body": "Heatmap color represents the current matrix and its displayed range. The implemented five stops run from dark charcoal through warm red and amber to pale ivory; Log-Mel and STFT use a relative dB span (80 dB), while MFCC uses its observed coefficient range. Constant silence stays dark. Sidecar tonal ramps are synthesized preview aids, not additional shipped color tokens or the heatmap scale.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measurement Type Rule",
+        "body": "Use monospace for code, dimensions, parameters and measured values; keep narrative text and navigation in the sans-serif stack.",
+        "section": "typography"
+      },
+      {
+        "name": "The Result First Rule",
+        "body": "In the playground's mobile lab, preserve the implemented result-before-controls visual order so the computed artifact remains visible before detailed configuration.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Instrument Rule",
+        "body": "Keep controls and data regions flat; show interaction through color, borders and the visible focus outline instead of floating elevation.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** preserve the canonical acoustic-bar/crescent artwork and custom wordmark.",
+      "**Do** use ivory for the overall page and dark charcoal for the operational spectrum.",
+      "**Do** keep units, source identity, frame readouts and evidence limits beside their results.",
+      "**Do** preserve visible focus, the mobile table scroll cue and selected-view contrast.",
+      "**Do** describe the current browser engine as generated JavaScript in a Web Worker."
+    ],
+    "donts": [
+      "**Don't** replace the visible system with the unused dark studio theme from Tailwind configuration.",
+      "**Don't** add decorative card stacks or shadows to the current open, flat instrumentation.",
+      "**Don't** brighten constant silence into apparent signal energy.",
+      "**Don't** turn eight scoped reference configurations into a whole-library equivalence claim.",
+      "**Don't** invent competitor speed, size or quality rankings from local execution time."
+    ]
+  }
+}

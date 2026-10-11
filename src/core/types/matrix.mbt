@@ -88,3 +88,17 @@ pub fn FeatureMatrix::flatten(self : FeatureMatrix) -> Array[Double] {
 
 ///|
 pub extend FeatureMatrix with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+/// Check mutable, publicly constructible matrix data at a package boundary.
+pub fn FeatureMatrix::validate(self : FeatureMatrix) -> Result[Unit, MelError] {
+  if self.n_rows < 0 || self.n_cols < 0 || self.data.length() != self.n_rows {
+    return Err(DimensionMismatch("Invalid matrix dimensions"))
+  }
+  for row in self.data {
+    if row.length() != self.n_cols {
+      return Err(DimensionMismatch("Ragged matrix"))
+    }
+  }
+  Ok(())
+}

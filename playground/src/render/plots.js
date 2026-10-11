@@ -20,11 +20,13 @@ export function heatmap(canvas, matrix, view) {
   let high = -Infinity, low = Infinity;
   const transformed = matrix.map((row) => row.map((v) => view === 'stft_preview' ? 10 * Math.log10(Math.max(v, 1e-10)) : v));
   for (const row of transformed) for (const value of row) { high = Math.max(high, value); low = Math.min(low, value); }
-  if (view !== 'mfcc') low = high - 80;
+  // Constant silence retains an absolute floor instead of appearing as a peak.
+  const constant = high === low;
+  if (view !== 'mfcc') { if (constant) high = Math.max(0, high); low = high - 80; }
   const range = Math.max(high - low, 1e-12);
   const image = new ImageData(columns, rows);
   for (let y = 0; y < rows; y++) for (let x = 0; x < columns; x++) {
-    const rgb = color((transformed[rows - 1 - y][x] - low) / range);
+    const rgb = color(constant && view === 'mfcc' ? 0 : (transformed[rows - 1 - y][x] - low) / range);
     image.data.set([...rgb, 255], (y * columns + x) * 4);
   }
   const scratch = document.createElement('canvas'); scratch.width = columns; scratch.height = rows;
@@ -38,7 +40,7 @@ export function waveform(canvas, samples) {
   if (!samples?.length) return;
   let peak = 1;
   for (const sample of samples) peak = Math.max(peak, Math.abs(sample));
-  ctx.strokeStyle = '#c49368'; ctx.beginPath();
+  ctx.strokeStyle = '#9c3e28'; ctx.beginPath();
   // Map each pixel to its actual sample interval, including the final sample.
   for (let x = 0; x < width; x++) {
     const start = Math.floor(x * samples.length / width);
@@ -56,7 +58,7 @@ export function filterbank(canvas, matrix) {
   for (const row of matrix) for (const value of row) peak = Math.max(peak, value);
   ctx.lineWidth = 1;
   for (let r = 0; r < matrix.length; r++) {
-    ctx.strokeStyle = r % 2 ? '#947355' : '#d3a878'; ctx.beginPath();
+    ctx.strokeStyle = r % 2 ? '#7d6756' : '#973b24'; ctx.beginPath();
     for (let k = 0; k < bins; k++) {
       const x = k / Math.max(1, bins - 1) * width;
       const y = height - matrix[r][k] / peak * (height - 8);

@@ -1,78 +1,62 @@
-# MoonMel Architecture & System Design
+# Architecture
 
-[English](./ARCHITECTURE.md) | [中文说明](../zh/ARCHITECTURE.md)
+[中文](../zh/ARCHITECTURE.md)
 
-This document describes the layered package topology, memory model, and error propagation invariants of MoonMel.
-
----
-
-## 1. Architectural Philosophy
-
-1. **Anti-Flat Hierarchy**: Rejects cluttered single-folder structures in favor of distinct, focused subpackages.
-2. **Directed Acyclic Graph (DAG)**: Strict single-direction dependency flow prevents cyclic couplings.
-3. **Pure MoonBit Core**: Zero C library wrappers ensures uniform behavior across WebAssembly, JavaScript, and Native targets.
-4. **Ergonomic Facade**: The root module re-exports common functionality while preserving direct access to fine-grained subpackages.
-
----
-
-## 2. Package Topology
+## Dependency direction
 
 ```mermaid
-graph TD
-    A[src/core/types] --> B[src/dsp/window]
-    A --> C[src/dsp/fft]
-    A --> G[src/codec/wav]
-    B --> D[src/dsp/stft]
-    C --> D
-    D --> E[src/features/mel]
-    E --> F[src/features/mfcc]
-    A --> E
-    A --> F
-    
-    A --> Facade[Root Facade: zhr/moonmel]
-    B --> Facade
-    C --> Facade
-    D --> Facade
-    E --> Facade
-    F --> Facade
-    G --> Facade
-
-    Facade --> Web[src/bindings/web]
-    Facade --> CLI[cmd/main]
+flowchart TD
+  Types[core/types] --> Window[dsp/window]
+  Types --> FFT[dsp/fft]
+  Window --> Framing[dsp/framing]
+  Framing --> STFT[dsp/stft]
+  FFT --> STFT
+  STFT --> Mel[features/mel]
+  Mel --> MFCC[features/mfcc]
+  STFT --> Analysis[pipeline/analysis]
+  Mel --> Analysis
+  MFCC --> Analysis
+  Types --> WAV[codec/wav]
+  Analysis --> Facade[facade]
+  WAV --> Facade
+  Features[Other feature packages] --> Facade
+  Facade --> Root[zhr/moonmel re-exports]
+  Facade --> Web[bindings/web]
+  Root --> Example[examples/basic and cmd/main]
+  Web --> Worker[playground/engine worker]
+  Worker --> UI[playground UI and plots]
 ```
 
-### Subpackage Responsibilities
+Arrows indicate data/API provision toward consumers. The machine-checked dependency graph uses the inverse import relation: `node tools/quality/check-architecture.mjs` rejects cycles and dependencies into a higher layer. Core types have no internal project imports. Same-layer feature dependencies are permitted; no DSP package may import a feature, pipeline or facade package.
 
-| Package Path | Core Responsibility | Internal Dependencies |
-| :--- | :--- | :--- |
-| `src/core/types` | Data models, complex arithmetic, configuration, error types | None (Zero internal dependencies) |
-| `src/dsp/window` | Window functions, boundary reflect padding | `src/core/types` |
-| `src/dsp/fft` | In-place Radix-2 Cooley-Tukey FFT, bit-reversal | `src/core/types` |
-| `src/dsp/stft` | STFT framing, power spectrum, complex spectrogram | `src/core/types`, `src/dsp/window`, `src/dsp/fft` |
-| `src/features/mel` | Slaney/HTK Mel scales, filterbank generation, Mel projection | `src/core/types`, `src/dsp/stft` |
-| `src/features/mfcc` | Power-to-dB conversion, Log-Mel, DCT-II ortho, MFCC | `src/core/types`, `src/features/mel` |
-| `src/codec/wav` | RIFF PCM WAV parser and stereo-to-mono downmixing | `src/core/types` |
-| `src/bindings/web`| WebAssembly / JavaScript JSON bridge | Root facade `zhr/moonmel` |
-| Root Facade | Unified top-level API re-exports | All internal modules |
+| Layer | Packages / responsibility | Contract |
+| --- | --- | --- |
+| Core | `core/types`: errors, audio, config, matrix, complex files | Own data and validation, no algorithm orchestration |
+| DSP and codec | Windows, framing, FFT, STFT, filters, resampling, WAV | Transform signals and parse bounded bytes |
+| Features | Mel/MFCC and other feature families | Depend on DSP or other lower/same-layer features |
+| Pipeline | `pipeline/analysis` | One STFT and one filterbank, then ordered derived features |
+| Facade and bindings | `facade`, root re-exports, `bindings/web` | Ergonomic adapters and JSON transport; no copied DSP algorithms |
 
----
+## Shared analysis
 
-## 3. Memory & Performance Strategy
+`AnalysisResult` contains STFT, filterbank, Mel, Log-Mel and MFCC. Standalone feature calls remain compatible. Matrix-taking `mel.apply_filterbank`, `mel.mel_from_spectrogram`, `mfcc.log_mel_from_mel` and `mfcc.mfcc_from_log_mel` permit reuse without a second STFT. The DCT basis is computed once per matrix rather than once per frame.
 
-- **In-place Butterfly FFT**: Eliminates intermediate allocations during recursion stages, drastically minimizing WebAssembly garbage collection overhead.
-- **Preallocated Buffers**: Frame-by-frame STFT computations reuse preallocated real/imaginary buffers.
-- **Row-Major FeatureMatrix**: Features are stored in structured 2D matrices supporting efficient element access, slicing, and flattening.
+`framing.window_frame` puts a short window at `(n_fft - win_length) / 2` in a complete FFT frame and reads samples at that same offset. Offline and streaming framing share this implementation. STFT reuses real/imaginary buffers; arbitrary lengths dispatch to Bluestein and allocate its temporary arrays. The raw radix-2 kernel has strict power-of-two and buffer-length preconditions.
 
----
+## Matrix ownership and errors
 
-## 4. Error Handling Model
+Feature matrices store mutable rows with explicit dimensions. `validate()` checks dimensions and ragged rows at reusable stage boundaries; the low-level `at`/`set` operations assume valid indices. `Result[T, MelError]` carries public high-level failures. Config validation covers positive dimensions, window size, finite numerical parameters and frequency bounds. The web boundary returns `success:false` and safely escaped JSON for errors.
 
-MoonMel relies exclusively on `Result[T, MelError]` for predictable error propagation:
-- `EmptyAudio`: Input buffer contains no samples.
-- `InvalidSampleRate(Int)`: Sample rate is non-positive.
-- `InvalidFftSize(Int)`: FFT size is non-positive or not a power of two.
-- `InvalidHopLength(Int)`: Hop length is non-positive.
-- `InvalidMelBands(Int)`: Mel band count is non-positive.
-- `InvalidFrequencyRange(Double, Double)`: Frequency bounds are invalid or exceed Nyquist.
-- `DimensionMismatch(String)`: Mismatched time or frequency dimensions.
-- `WavParseError(String)`: Malformed WAV header or unsupported format.
+WAV parsing checks the declared RIFF container and each payload before indexing; format/layout consistency and complete PCM frames are required. Negative signed representations of hostile unsigned lengths are rejected. Data may precede format; duplicate data/format chunks are rejected.
+
+## Streaming semantics
+
+Streaming analyzes left-aligned complete FFT frames and ignores `config.center`; it does not synthesize offline reflection boundaries or flush an incomplete tail. A buffer cursor preserves gaps for `hop_length > n_fft`. FFT/window/filterbank storage is reused, but output matrices, buffer growth/compaction and Bluestein transforms allocate. MFCC log options and DCT normalization are honored. Decibel `top_db` clipping is relative to each emitted matrix, so independently emitted batches are not globally normalized like a single offline matrix.
+
+## Browser architecture
+
+`domain/signals` owns synthetic data and preview limits; `engine` owns request correlation, worker lifetime and the binding; `audio` owns playback and AudioWorklet capture; `render` owns plots and evidence; `main` coordinates DOM state. Source-loading identity is separate from analysis revisions, so parameter changes during file loading cannot discard the file. Synthetic rate changes do not reinterpret uploaded PCM. Microphone requests are throttled and numerical work does not block rendering.
+
+Generated JS is ignored and regenerated by `tools/build/sync-web.mjs` before dev/build. The demo honestly labels JavaScript execution. Its microphone is a rolling offline preview, not an incremental streaming API demonstration.
+
+Browser transport declares only JS/WASM/WASM-GC support so Native builds do not try linking a browser foreign library as an executable. The core library and examples support Native.

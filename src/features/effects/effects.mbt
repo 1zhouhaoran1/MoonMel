@@ -69,64 +69,38 @@ pub fn phase_vocoder(
 
   // Phase accumulator initialized from first frame
   let phase_acc : Array[Double] = Array::make(n_bins, 0.0)
-  let first_frame = Array::make(n_bins, @types.Complex::{ re: 0.0, im: 0.0, })
   for k in 0..<n_bins {
-    let re = frames[0][k].re
-    let im = frames[0][k].im
-    phase_acc[k] = @math.atan2(im, re)
-    first_frame[k] = frames[0][k]
+    phase_acc[k] = @math.atan2(frames[0][k].im, frames[0][k].re)
   }
-  out_frames[0] = first_frame
 
-  // Synthesis loop for subsequent frames
-  for m in 1..<out_frames_count {
+  // Emit with the accumulated phase from preceding synthesis steps, then
+  // advance using the current source-frame interval. The tail interpolates
+  // into a zero frame instead of repeating the last spectrum indefinitely.
+  for m in 0..<out_frames_count {
     let t = m.to_double() * rate
-    let f0 = t.to_int()
-    let mut f1 = f0 + 1
-    let mut alpha = t - f0.to_double()
-
-    let safe_f0 = if f0 >= n_frames - 1 {
-      f1 = n_frames - 1
-      alpha = 0.0
-      n_frames - 1
-    } else {
-      if f1 >= n_frames {
-        f1 = n_frames - 1
-      }
-      f0
-    }
-
-    let frame_m : Array[@types.Complex] = Array::make(n_bins, @types.Complex::{
-      re: 0.0,
-      im: 0.0,
-    })
-
+    let raw_f0 = t.floor().to_int()
+    let f0 = if raw_f0 < n_frames { raw_f0 } else { n_frames - 1 }
+    let alpha = t - f0.to_double()
+    let frame_m = Array::make(n_bins, @types.complex(0.0, 0.0))
     for k in 0..<n_bins {
-      let re0 = frames[safe_f0][k].re
-      let im0 = frames[safe_f0][k].im
-      let re1 = frames[f1][k].re
-      let im1 = frames[f1][k].im
-
-      let mag0 = (re0 * re0 + im0 * im0).sqrt()
-      let mag1 = (re1 * re1 + im1 * im1).sqrt()
-      let mag = (1.0 - alpha) * mag0 + alpha * mag1
-
-      let theta0 = @math.atan2(im0, re0)
-      let theta1 = @math.atan2(im1, re1)
-      let delta_theta = theta1 - theta0
-
-      // Instantaneous frequency deviation unwrapped to [-pi, pi]
-      let dphase = delta_theta - dphi_exp[k]
-      let wrapped = dphase - two_pi * (dphase / two_pi + 0.5).floor()
-      let freq_dev = dphi_exp[k] + wrapped
-
-      phase_acc[k] = phase_acc[k] + freq_dev
-
-      let syn_re = mag * @math.cos(phase_acc[k])
-      let syn_im = mag * @math.sin(phase_acc[k])
-      frame_m[k] = { re: syn_re, im: syn_im, }
+      let current = frames[f0][k]
+      let next = if f0 + 1 < n_frames {
+        frames[f0 + 1][k]
+      } else {
+        @types.complex(0.0, 0.0)
+      }
+      let magnitude = (1.0 - alpha) * current.abs() + alpha * next.abs()
+      frame_m[k] = @types.complex(
+        magnitude * @math.cos(phase_acc[k]),
+        magnitude * @math.sin(phase_acc[k]),
+      )
+      let phase_difference = @math.atan2(next.im, next.re) -
+        @math.atan2(current.im, current.re) -
+        dphi_exp[k]
+      let wrapped = phase_difference -
+        two_pi * (phase_difference / two_pi + 0.5).floor()
+      phase_acc[k] = phase_acc[k] + dphi_exp[k] + wrapped
     }
-
     out_frames[m] = frame_m
   }
 
@@ -202,7 +176,7 @@ pub fn pitch_shift(
 
   // Pitch scale factor s = 2^(n_steps / 12)
   let s = @math.pow(2.0, n_steps / 12.0)
-  if s <= 0.0 {
+  if !@types.is_finite(s) || s <= 0.0 {
     return Err(@types.MelError::DimensionMismatch("Invalid pitch shift step"))
   }
 

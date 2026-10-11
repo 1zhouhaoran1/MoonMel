@@ -9,6 +9,7 @@ dist/
 playground/src/generated/
 .impeccable/review/
 output/
+.playwright-cli/
 __pycache__/
 *.pyc
 

@@ -3,6 +3,9 @@ import { copyFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
+// Fail with a clear activation instruction before compiling with an older SDK.
+await import('../quality/check-toolchain.mjs');
+
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const build = spawnSync('moon', ['build', '--target', 'js', '--release'], {
   cwd: root, stdio: 'inherit', shell: false,

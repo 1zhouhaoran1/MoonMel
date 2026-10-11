@@ -9,16 +9,17 @@ import { renderEvidence } from './render/evidence.js';
 const element = (id) => document.getElementById(id);
 const engine = new AnalysisClient();
 const audio = new AudioSession();
-const state = { samples: null, sampleRate: 16000, source: 'synthetic', sourceName: '合成信号', result: null, view: 'log_mel', frame: 0, revision: 0, busy: false, pending: false, microphone: false, micStarting: false };
+const state = { samples: null, sampleRate: 16000, source: 'synthetic', sourceName: '合成信号', result: null, view: 'log_mel', frame: 0, revision: 0, inputRevision: 0, loadingAudio: false, busy: false, pending: false, microphone: false, micStarting: false };
 const config = () => ({ fft: Number(element('fft').value), hop: Number(element('hop').value), mels: Number(element('mels').value), mfcc: Number(element('mfcc').value) });
 function error(message) { element('error').textContent = message; element('error').hidden = !message; }
 function stopPlayback() { audio.stopPlayback(); element('play').textContent = '播放声音'; }
 function invalidate() {
   state.revision++; state.result = null;
-  for (const id of ['export-json', 'export-csv']) element(id).disabled = true;
+  for (const id of ['play', 'export-json', 'export-csv']) element(id).disabled = true;
   error('');
 }
 function synthetic() {
+  state.inputRevision++; state.loadingAudio = false;
   invalidate(); stopPlayback();
   state.source = 'synthetic'; state.sourceName = '合成 · ' + element('signal').selectedOptions[0].textContent.replace('合成 · ', '');
   state.sampleRate = Number(element('sample-rate').value);
@@ -60,10 +61,11 @@ function render() {
 }
 async function run() {
   state.pending = true;
-  if (state.busy) return;
+  if (state.busy || state.loadingAudio) return;
   state.busy = true;
   try {
     while (state.pending) {
+      if (state.loadingAudio) break;
       state.pending = false;
       const revision = state.revision;
       element('results').setAttribute('aria-busy', 'true'); element('compute-status').textContent = '正在计算';
@@ -78,7 +80,7 @@ async function run() {
         if (revision === state.revision) { error(failure.message); element('compute-status').textContent = '计算未完成'; }
       }
     }
-  } finally { state.busy = false; element('results').setAttribute('aria-busy', 'false'); }
+  } finally { state.busy = false; element('results').setAttribute('aria-busy', String(state.loadingAudio)); }
 }
 async function stopMicrophone() {
   state.microphone = false;
@@ -91,17 +93,26 @@ for (const id of ['signal', 'sample-rate', 'duration']) element(id).addEventList
 element('audio-file').addEventListener('change', async () => {
   const file = element('audio-file').files[0]; if (!file) return;
   await stopMicrophone(); stopPlayback(); invalidate();
-  const revision = state.revision;
+  const inputRevision = ++state.inputRevision;
+  state.loadingAudio = true;
+  element('results').setAttribute('aria-busy', 'true'); element('compute-status').textContent = '正在解码 WAV';
   try {
     if (file.size > 10 * 1024 * 1024) throw new Error('WAV 超过 10 MB，请截取较短的音频。');
     const bytes = await file.arrayBuffer();
     const { audio: decoded } = await engine.request({ type: 'decode', bytes }, [bytes]);
-    if (revision !== state.revision) return;
+    if (inputRevision !== state.inputRevision) return;
     state.samples = decoded.samples; state.sampleRate = decoded.sampleRate; state.source = 'file';
     state.sourceName = file.name + (decoded.totalSamples > decoded.samples.length ? '（前 10 秒）' : '');
     element('sample-rate').disabled = true; element('duration').disabled = true;
+    state.loadingAudio = false;
     run();
-  } catch (failure) { if (revision === state.revision) error(failure.message); }
+  } catch (failure) {
+    if (inputRevision === state.inputRevision) {
+      state.loadingAudio = false; state.pending = false;
+      element('audio-file').value = ''; element('results').setAttribute('aria-busy', 'false');
+      element('compute-status').textContent = 'WAV 未解码'; error(failure.message);
+    }
+  }
 });
 element('play').addEventListener('click', async () => {
   if (audio.source) { stopPlayback(); return; }
@@ -112,6 +123,7 @@ element('microphone').addEventListener('click', async () => {
   if (state.micStarting) return;
   if (state.microphone) { await stopMicrophone(); return; }
   state.micStarting = true; element('microphone').disabled = true; error(''); stopPlayback();
+  state.inputRevision++; state.loadingAudio = false;
   let rolling = new Float64Array(0), lastUpdate = 0;
   try {
     state.microphone = true;

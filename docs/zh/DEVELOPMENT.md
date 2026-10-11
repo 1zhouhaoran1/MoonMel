@@ -1,87 +1,50 @@
-# MoonMel 开发者构建与测试指南 (Development Guide)
+# 开发与测试
 
-[English](../en/DEVELOPMENT.md) | [中文说明](./DEVELOPMENT.md)
+[English](../en/DEVELOPMENT.md)
 
-本文档说明 MoonMel 本地开发环境准备、代码检查与格式化、全后端测试运行及基准测试复现流程。
+## 工具链
 
----
+要求 `moonc >= 0.10.14`、Node.js 22.12+ 或 24+、pnpm 11.14.0。`node tools/quality/check-toolchain.mjs` 检查版本。本机隔离 SDK 位于 `A:/DevEnv/SDKs/MoonBit/moonmel-current`，用 `. ./tools/dev/activate.ps1` 选择，不修改系统安装。
 
-## 1. 工具链要求与环境准备
-
-项目遵循 `A:\DevEnv` 统一工具链规范：
-- **MoonBit SDK**：`moon 0.1.20260904` 或更新版本，`moonc v0.10.12+1634b282e`。
-- **Node.js 与 包管理器**：Node 22+，使用 `pnpm`（`v11.14.0`）进行依赖管理。
-- **Python 科学验证环境**：Python 3.13（位于 `A:\DevEnv\Envs\moonmel_py`），预装 `librosa 1.0.0`、`numpy 2.5.3`、`scipy 1.18.1`。
-
----
-
-## 2. 代码检查与格式化
-
-在修改代码后，必须执行以下指令完成类型与语法检查：
-
-```bash
-# 检查所有模块的类型与语法正确性
-moon check
-
-# 更新接口定义文件并执行统一代码格式化
-moon info && moon fmt
+```sh
+moon info
+moon fmt
+moon check --deny-warn
+node tools/quality/check-architecture.mjs
+moon test --target wasm --deny-warn
+moon test --target wasm-gc --deny-warn
+moon test --target js --deny-warn
+moon test --target native --deny-warn
+moon run examples/basic --target js
 ```
 
----
+本机 Windows Native 使用 `pwsh -File tools/quality/test-native.ps1`。脚本为现有 MinGW GCC 补运行时声明，不修改 SDK 源码，退出时恢复 `MOON_CC`/`MOON_AR`。默认 MSVC 缺失头文件。Linux/macOS CI 使用正常本机编译器。
 
-## 3. 测试与验证执行
+## 演示页
 
-### 3.1 本地测试套件
-MoonMel 内置完整的单元测试、边界测试与端到端管道测试：
-
-```bash
-# 执行全套白盒与黑盒测试（默认 WASM 后端）
-moon test
-
-# 执行 JavaScript 后端编译与运行时测试
-moon test --target js
-
-# 执行 WebAssembly 后端测试
-moon test --target wasm
+```sh
+pnpm --dir playground install --frozen-lockfile
+pnpm --dir playground run dev
+pnpm --dir playground run build
+pnpm --dir playground test
 ```
 
-### 3.2 Python 权威真值对齐测试
-运行对照验证程序，生成 librosa 真值基准并验证一致性：
+启动与构建前自动执行 `tools/build/sync-web.mjs`。生成 JS 位于忽略目录 `playground/src/generated`，不要手工修改。生产输出 `playground/dist`。绑定测试覆盖错误输入、恶意 WAV 长度、解码音频重算、任意 FFT、短窗偏移。
 
-```bash
-# 生成 reference_vectors.json
-A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/validate_reference.py
+## 独立数值参考
 
-# 验证测试套件中与真值的数值断言
-moon test
+使用 uv 与隔离环境，不向共享基础解释器安装。Windows 新环境统一放在 `A:/DevEnv/Envs`：
+
+```powershell
+uv venv A:\DevEnv\Envs\moonmel_py --python 3.13
+uv pip install --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe -r tools/reference/requirements.txt
+& A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
----
+已有环境时跳过创建。其他平台在批准的环境目录创建隔离环境，再将解释器传给 `uv pip install --python`。脚本重新构建当前 JS，比较完整 Mel/Log-Mel/MFCC 与选定 STFT 频点，并记录实际版本和容差。旧 `validate_reference.py` 只生成抽查向量，生成向量本身不等于验证 MoonMel。
 
-## 4. 运行本地基准测试 (CLI)
+## CI 与发布
 
-```bash
-moon run cmd/main
-```
+`.github/workflows/ci.yml` 覆盖四目标检查、构建、测试与示例，再构建演示页和测试绑定。每个任务检查编译器门槛。远端通过状态看 GitHub Actions。Mooncakes 发布暂缓，当前以源码检出提供可复现运行路径。
 
-测试将自动对 1 秒与 10 秒 16 kHz 多频信号进行 STFT、Mel 及 MFCC 特征提取，并打印时频矩阵规模。
-
----
-
-## 5. WebAssembly Playground 启动与构建
-
-进入前端调试目录：
-
-```bash
-cd playground
-
-# 安装前端依赖
-pnpm install
-
-# 启动本地开发服务器（默认端口 5173）
-pnpm run dev
-
-# 编译生产优化包
-pnpm run build
-```
-编译产物输出至 `playground/dist/`，可直接部署到任何静态托管平台。
+使用同一 Windows 适配器构建 Native 发行产物：`pwsh -File tools/quality/test-native.ps1 -Build`。
