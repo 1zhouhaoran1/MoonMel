@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/tempo"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn tempogram(@types.AudioBuffer, @types.FeatureConfig, tempo_config? : TempoConfig) -> Result[TempogramResult, @types.MelError]
+
+pub fn tempogram_from_onset(Array[Double], Int, Int, config? : TempoConfig) -> TempogramResult
+
+// Errors
+
+// Types and methods
+pub(all) struct TempoConfig {
+  min_bpm : Double
+  max_bpm : Double
+  start_bpm : Double
+  std_bpm : Double
+  win_length : Int
+  hop_length : Int
+} derive(@debug.Debug)
+pub fn TempoConfig::default() -> Self
+
+pub(all) struct TempogramResult {
+  tempogram : @types.FeatureMatrix
+  tempi : Array[Double]
+  bpm : Double
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits

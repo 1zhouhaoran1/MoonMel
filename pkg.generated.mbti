@@ -11,6 +11,7 @@ import {
   "zhr/moonmel/src/features/onset",
   "zhr/moonmel/src/features/pitch",
   "zhr/moonmel/src/features/streaming",
+  "zhr/moonmel/src/features/tempo",
 }
 
 // Values
@@ -150,6 +151,10 @@ pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@
 
 pub fn super_flux(@types.FeatureMatrix, Int) -> Array[Double]
 
+pub fn tempogram(Array[Double], feature_config? : @types.FeatureConfig, tempo_config? : @tempo.TempoConfig) -> Result[@tempo.TempogramResult, @types.MelError]
+
+pub fn tempogram_from_onset(Array[Double], Int, Int, config? : @tempo.TempoConfig) -> @tempo.TempogramResult
+
 pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
 
 pub fn yin_frame(Array[Double], Int, f_min? : Double, f_max? : Double, threshold? : Double) -> (Double, Double, Double)
@@ -204,6 +209,10 @@ pub using @onset {type OnsetMethod}
 pub using @pitch {type PitchTrack}
 
 pub using @streaming {type StreamingExtractor}
+
+pub using @tempo {type TempoConfig}
+
+pub using @tempo {type TempogramResult}
 
 pub using @types {type WindowType}
 

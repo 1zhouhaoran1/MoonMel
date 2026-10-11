@@ -407,3 +407,11 @@ test "facade_pitch" {
   assert_true(track.f0.length() > 0)
   assert_true((track.f0[0] - 440.0).abs() < 2.0)
 }
+
+///|
+test "facade_tempo" {
+  let env = Array::make(200, 0.5)
+  let res = @moonmel.tempogram_from_onset(env, 16000, 512)
+  assert_true(res.tempogram.n_rows > 0)
+  assert_true(res.bpm > 0.0)
+}

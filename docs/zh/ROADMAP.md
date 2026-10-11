@@ -45,6 +45,7 @@
 - [x] **音符起始检测与起始强度包络 (Onset Detection & SuperFlux)**：谱通量 (Spectral Flux)、频域极值滤波抗颤音 (SuperFlux) 与自适应双门限峰值拾取。
 - [x] **线性预测编码与倒谱系数 (LPC & LPCC)**：Levinson-Durbin 递归求解全极点滤波器、反射系数 (PARCOR)、逆滤波预测残差与线性预测倒谱。
 - [x] **基频提取与音高追踪 (Pitch Tracking / YIN)**：差分函数、累积平均归一化差分函数 (CMNDF)、绝对阈值与抛物线亚采样插值。
+- [x] **节奏图与速度估计 (Tempogram & Tempo Estimation)**：局部自相关节奏图矩阵、对数正态先验加权与全局 BPM 速度估计。
 
 ---
 

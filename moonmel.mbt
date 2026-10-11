@@ -762,3 +762,35 @@ pub fn pitch_yin(
     Err(e) => Err(e)
   }
 }
+
+///|
+/// Re-export Tempo configuration.
+pub type TempoConfig = @tempo.TempoConfig
+
+///|
+/// Re-export Tempogram analysis result.
+pub type TempogramResult = @tempo.TempogramResult
+
+///|
+/// Re-export tempogram from onset envelope.
+pub fn tempogram_from_onset(
+  onset_env : Array[Double],
+  sample_rate : Int,
+  hop_length : Int,
+  config? : @tempo.TempoConfig = @tempo.TempoConfig::default(),
+) -> @tempo.TempogramResult {
+  @tempo.tempogram_from_onset(onset_env, sample_rate, hop_length, config~)
+}
+
+///|
+/// Re-export tempogram and tempo estimation on audio samples.
+pub fn tempogram(
+  samples : Array[Double],
+  feature_config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  tempo_config? : @tempo.TempoConfig = @tempo.TempoConfig::default(),
+) -> Result[@tempo.TempogramResult, @types.MelError] {
+  match @types.AudioBuffer::new(samples, feature_config.sample_rate) {
+    Ok(audio) => @tempo.tempogram(audio, feature_config, tempo_config~)
+    Err(e) => Err(e)
+  }
+}
