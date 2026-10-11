@@ -7,6 +7,7 @@ import {
   "zhr/moonmel/src/features/cqt",
   "zhr/moonmel/src/features/hpss",
   "zhr/moonmel/src/features/loudness",
+  "zhr/moonmel/src/features/onset",
   "zhr/moonmel/src/features/streaming",
 }
 
@@ -85,7 +86,15 @@ pub fn multichannel_mfcc(@types.MultiChannelAudioBuffer, config? : @types.Featur
 
 pub fn multichannel_stft(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
 
+pub fn onset_detect_audio(Array[Double], config? : @types.FeatureConfig, onset_config? : @onset.OnsetConfig, delta? : Double, wait? : Int) -> Result[Array[Int], @types.MelError]
+
+pub fn onset_strength(@types.FeatureMatrix, config? : @onset.OnsetConfig) -> Array[Double]
+
+pub fn onset_strength_audio(Array[Double], config? : @types.FeatureConfig, onset_config? : @onset.OnsetConfig) -> Result[Array[Double], @types.MelError]
+
 pub fn pad_reflect(Array[Double], Int) -> Array[Double]
+
+pub fn peak_pick(Array[Double], pre_max? : Int, post_max? : Int, pre_avg? : Int, post_avg? : Int, delta? : Double, wait? : Int) -> Array[Int]
 
 pub fn percussive_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
@@ -109,11 +118,15 @@ pub fn spectral_centroid(Array[Double], config? : @types.FeatureConfig) -> Resul
 
 pub fn spectral_flatness(Array[Double], config? : @types.FeatureConfig, amin? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
 
+pub fn spectral_flux(@types.FeatureMatrix) -> Array[Double]
+
 pub fn spectral_rolloff(Array[Double], config? : @types.FeatureConfig, roll_percent? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn stft(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@types.Complex]], @types.MelError]
+
+pub fn super_flux(@types.FeatureMatrix, Int) -> Array[Double]
 
 pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
 
@@ -157,6 +170,10 @@ pub using @types {type MelNorm}
 pub using @types {type MelScale}
 
 pub using @types {type MultiChannelAudioBuffer}
+
+pub using @onset {type OnsetConfig}
+
+pub using @onset {type OnsetMethod}
 
 pub using @streaming {type StreamingExtractor}
 

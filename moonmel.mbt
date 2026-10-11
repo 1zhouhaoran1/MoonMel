@@ -559,3 +559,86 @@ pub fn loudness_meter(
     Err(e) => Err(e)
   }
 }
+
+///|
+/// Re-export Onset method enum.
+pub type OnsetMethod = @onset.OnsetMethod
+
+///|
+/// Re-export Onset configuration.
+pub type OnsetConfig = @onset.OnsetConfig
+
+///|
+/// Re-export spectral flux computation.
+pub fn spectral_flux(spec : @types.FeatureMatrix) -> Array[Double] {
+  @onset.spectral_flux(spec)
+}
+
+///|
+/// Re-export SuperFlux computation.
+pub fn super_flux(
+  spec : @types.FeatureMatrix,
+  filter_size : Int,
+) -> Array[Double] {
+  @onset.super_flux(spec, filter_size)
+}
+
+///|
+/// Re-export onset strength envelope computation.
+pub fn onset_strength(
+  spec : @types.FeatureMatrix,
+  config? : @onset.OnsetConfig = @onset.OnsetConfig::default(),
+) -> Array[Double] {
+  @onset.onset_strength(spec, config)
+}
+
+///|
+/// Re-export adaptive peak picking.
+pub fn peak_pick(
+  envelope : Array[Double],
+  pre_max? : Int = 3,
+  post_max? : Int = 3,
+  pre_avg? : Int = 3,
+  post_avg? : Int = 3,
+  delta? : Double = 0.05,
+  wait? : Int = 3,
+) -> Array[Int] {
+  @onset.peak_pick(
+    envelope,
+    pre_max~,
+    post_max~,
+    pre_avg~,
+    post_avg~,
+    delta~,
+    wait~,
+  )
+}
+
+///|
+/// Re-export onset strength envelope directly from audio samples.
+pub fn onset_strength_audio(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  onset_config? : @onset.OnsetConfig = @onset.OnsetConfig::default(),
+) -> Result[Array[Double], @types.MelError] {
+  match @types.AudioBuffer::new(samples, config.sample_rate) {
+    Ok(audio) => @onset.onset_strength_audio(audio, config, onset_config~)
+    Err(e) => Err(e)
+  }
+}
+
+///|
+/// Re-export onset frame detection directly from audio samples.
+pub fn onset_detect_audio(
+  samples : Array[Double],
+  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  onset_config? : @onset.OnsetConfig = @onset.OnsetConfig::default(),
+  delta? : Double = 0.05,
+  wait? : Int = 3,
+) -> Result[Array[Int], @types.MelError] {
+  match @types.AudioBuffer::new(samples, config.sample_rate) {
+    Ok(audio) =>
+      @onset.onset_detect_audio(audio, config, onset_config~, delta~, wait~)
+    Err(e) => Err(e)
+  }
+}

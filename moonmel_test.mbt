@@ -365,3 +365,16 @@ test "facade_loudness" {
   let kw = @moonmel.apply_k_weighting(sig, sr)
   assert_eq(kw.length(), n_samples)
 }
+
+///|
+test "facade_onset" {
+  let sig = Array::make(4000, 0.0)
+  for i in 1000..<2000 {
+    sig[i] = 1.0
+  }
+  let env = @moonmel.onset_strength_audio(sig).unwrap()
+  assert_true(env.length() > 0)
+
+  let onsets = @moonmel.onset_detect_audio(sig).unwrap()
+  assert_true(onsets.length() > 0)
+}
