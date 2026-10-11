@@ -41,6 +41,7 @@
 - [x] **常量 Q 变换 (Constant-Q Transform / CQT)**：对数几何频带抽取，恒定品质因数 $Q$ 分辨率。
 - [x] **多采样率多相重采样器 (Polyphase Resampler)**：预计算多相 FIR 滤波组，支持任意有理倍率（scipy.signal.resample_poly 对齐）。
 - [x] **谐波-冲击成分分离 (HPSS)**：二维中值滤波与软/硬掩蔽分离音频谐波与打击乐分量，计算帧能量比。
+- [x] **广播级响度计量 (ITU-R BS.1770-4 / EBU R128)**：级联 K-weighting IIR 滤波、门限积分响度 (LUFS)、响度范围 (LRA) 与 4 倍过采样 True-Peak 真实峰值估计。
 
 ---
 

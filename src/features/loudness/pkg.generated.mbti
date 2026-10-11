@@ -1,0 +1,51 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/loudness"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn apply_k_weighting(Array[Double], Int) -> Array[Double]
+
+pub fn loudness_meter(@types.AudioBuffer) -> Result[LoudnessResult, @types.MelError]
+
+pub fn pre_filter_coeffs(Int) -> BiquadCoeffs
+
+pub fn rlb_filter_coeffs(Int) -> BiquadCoeffs
+
+pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
+
+// Errors
+
+// Types and methods
+pub(all) struct BiquadCoeffs {
+  b0 : Double
+  b1 : Double
+  b2 : Double
+  a1 : Double
+  a2 : Double
+} derive(@debug.Debug)
+
+pub(all) struct BiquadFilter {
+  coeffs : BiquadCoeffs
+  mut d1 : Double
+  mut d2 : Double
+} derive(@debug.Debug)
+pub fn BiquadFilter::filter_array(Self, Array[Double]) -> Array[Double]
+pub fn BiquadFilter::new(BiquadCoeffs) -> Self
+pub fn BiquadFilter::process_sample(Self, Double) -> Double
+pub fn BiquadFilter::reset(Self) -> Unit
+
+pub(all) struct LoudnessResult {
+  integrated : Double
+  loudness_range : Double
+  momentary_max : Double
+  short_term_max : Double
+  true_peak : Double
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits

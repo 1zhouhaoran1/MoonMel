@@ -517,3 +517,45 @@ pub fn harmonic_energy_ratio(result : @hpss.HpssResult) -> Array[Double] {
 pub fn percussive_energy_ratio(result : @hpss.HpssResult) -> Array[Double] {
   @hpss.percussive_energy_ratio(result)
 }
+
+///|
+/// Re-export Biquad filter coefficients.
+pub type BiquadCoeffs = @loudness.BiquadCoeffs
+
+///|
+/// Re-export Biquad filter state.
+pub type BiquadFilter = @loudness.BiquadFilter
+
+///|
+/// Re-export ITU-R BS.1770-4 / EBU R128 Loudness result.
+pub type LoudnessResult = @loudness.LoudnessResult
+
+///|
+/// Re-export K-weighting filtering.
+pub fn apply_k_weighting(
+  samples : Array[Double],
+  sample_rate : Int,
+) -> Array[Double] {
+  @loudness.apply_k_weighting(samples, sample_rate)
+}
+
+///|
+/// Re-export True Peak measurement in dBFS via 4x oversampling.
+pub fn true_peak_db(
+  samples : Array[Double],
+  sample_rate : Int,
+) -> Result[Double, @types.MelError] {
+  @loudness.true_peak_db(samples, sample_rate)
+}
+
+///|
+/// Re-export ITU-R BS.1770-4 Loudness Meter for audio samples.
+pub fn loudness_meter(
+  samples : Array[Double],
+  sample_rate? : Int = 48000,
+) -> Result[@loudness.LoudnessResult, @types.MelError] {
+  match @types.AudioBuffer::new(samples, sample_rate) {
+    Ok(audio) => @loudness.loudness_meter(audio)
+    Err(e) => Err(e)
+  }
+}

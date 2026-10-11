@@ -6,10 +6,13 @@ import {
   "zhr/moonmel/src/features/chroma",
   "zhr/moonmel/src/features/cqt",
   "zhr/moonmel/src/features/hpss",
+  "zhr/moonmel/src/features/loudness",
   "zhr/moonmel/src/features/streaming",
 }
 
 // Values
+pub fn apply_k_weighting(Array[Double], Int) -> Array[Double]
+
 pub fn bluestein_fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn bluestein_ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
@@ -62,6 +65,8 @@ pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, c
 
 pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
+pub fn loudness_meter(Array[Double], sample_rate? : Int) -> Result[@loudness.LoudnessResult, @types.MelError]
+
 pub fn median_filter_1d(Array[Double], Int) -> Array[Double]
 
 pub fn median_filter_freq(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
@@ -110,6 +115,8 @@ pub fn stft(Array[Double], config? : @types.FeatureConfig) -> Result[@types.Feat
 
 pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@types.Complex]], @types.MelError]
 
+pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
+
 pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
 // Errors
@@ -118,6 +125,10 @@ pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? :
 
 // Type aliases
 pub using @types {type AudioBuffer}
+
+pub using @loudness {type BiquadCoeffs}
+
+pub using @loudness {type BiquadFilter}
 
 pub using @chroma {type ChromaNorm}
 
@@ -134,6 +145,8 @@ pub using @hpss {type HpssConfig}
 pub using @hpss {type HpssResult}
 
 pub using @types {type LogScale}
+
+pub using @loudness {type LoudnessResult}
 
 pub using @hpss {type MaskMode}
 

@@ -15,6 +15,7 @@ import {
   "zhr/moonmel/src/features/chroma",
   "zhr/moonmel/src/features/cqt",
   "zhr/moonmel/src/features/hpss",
+  "zhr/moonmel/src/features/loudness",
   "zhr/moonmel/src/codec/wav",
 }
 

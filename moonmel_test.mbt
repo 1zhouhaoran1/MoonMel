@@ -349,3 +349,19 @@ test "facade_hpss" {
   let med1d = @moonmel.median_filter_1d([1.0, 50.0, 2.0], 3)
   assert_eq(med1d[1], 2.0)
 }
+
+///|
+test "facade_loudness" {
+  let sr = 48000
+  let n_samples = 4800
+  let sig = Array::make(n_samples, 0.0)
+  for i in 0..<n_samples {
+    sig[i] = @math.sin(i.to_double() * 0.1) * 0.5
+  }
+  let res = @moonmel.loudness_meter(sig, sample_rate=sr).unwrap()
+  assert_true(res.integrated < 0.0)
+  assert_true(res.true_peak < 0.0)
+
+  let kw = @moonmel.apply_k_weighting(sig, sr)
+  assert_eq(kw.length(), n_samples)
+}
