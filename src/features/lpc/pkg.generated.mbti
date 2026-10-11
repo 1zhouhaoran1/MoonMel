@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/lpc"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn autocorrelation(Array[Double], Int) -> Array[Double]
+
+pub fn levinson_durbin(Array[Double], Int) -> Result[LpcResult, @types.MelError]
+
+pub fn lpc(Array[Double], Int) -> Result[LpcResult, @types.MelError]
+
+pub fn lpc_features(Array[Double], Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn lpc_residual(Array[Double], Array[Double]) -> Array[Double]
+
+pub fn lpc_to_lpcc(Array[Double], Double, Int) -> Array[Double]
+
+pub fn lpcc_features(Array[Double], Int, Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+
+// Errors
+
+// Types and methods
+pub(all) struct LpcResult {
+  coeffs : Array[Double]
+  reflection : Array[Double]
+  prediction_error : Double
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits

@@ -43,6 +43,7 @@ This document tracks planned milestones and feature expansions for MoonMel.
 - [x] **Harmonic-Percussive Source Separation (HPSS)**: 2D median filtering with soft/hard Wiener masking to separate tonal harmonics and transient percussion.
 - [x] **Broadcast Loudness Metering (ITU-R BS.1770-4 / EBU R128)**: Cascaded K-weighting biquad IIR filtering, gated integrated loudness (LUFS), Loudness Range (LRA), and 4x oversampled True-Peak meter.
 - [x] **Onset Detection & Strength Envelope (SuperFlux)**: Spectral flux, frequency max-filtering for vibrato suppression (SuperFlux), and adaptive local threshold peak picking.
+- [x] **Linear Predictive Coding & Cepstral Coefficients (LPC & LPCC)**: Levinson-Durbin all-pole filter solving, reflection coefficients (PARCOR), inverse filtering prediction residual, and LPCC recursion.
 
 ---
 

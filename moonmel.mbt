@@ -642,3 +642,73 @@ pub fn onset_detect_audio(
     Err(e) => Err(e)
   }
 }
+
+///|
+/// Re-export LPC solver result.
+pub type LpcResult = @lpc.LpcResult
+
+///|
+/// Re-export biased autocorrelation.
+pub fn autocorrelation(samples : Array[Double], max_lag : Int) -> Array[Double] {
+  @lpc.autocorrelation(samples, max_lag)
+}
+
+///|
+/// Re-export Levinson-Durbin recursion.
+pub fn levinson_durbin(
+  r : Array[Double],
+  order : Int,
+) -> Result[@lpc.LpcResult, @types.MelError] {
+  @lpc.levinson_durbin(r, order)
+}
+
+///|
+/// Re-export LPC analysis on audio samples.
+pub fn lpc(
+  samples : Array[Double],
+  order : Int,
+) -> Result[@lpc.LpcResult, @types.MelError] {
+  @lpc.lpc(samples, order)
+}
+
+///|
+/// Re-export LPC to LPCC conversion.
+pub fn lpc_to_lpcc(
+  lpc_coeffs : Array[Double],
+  prediction_error : Double,
+  n_lpcc : Int,
+) -> Array[Double] {
+  @lpc.lpc_to_lpcc(lpc_coeffs, prediction_error, n_lpcc)
+}
+
+///|
+/// Re-export LPC residual filtering.
+pub fn lpc_residual(
+  samples : Array[Double],
+  lpc_coeffs : Array[Double],
+) -> Array[Double] {
+  @lpc.lpc_residual(samples, lpc_coeffs)
+}
+
+///|
+/// Re-export frame-wise LPC feature extraction.
+pub fn lpc_features(
+  samples : Array[Double],
+  order : Int,
+  frame_length : Int,
+  hop_length : Int,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @lpc.lpc_features(samples, order, frame_length, hop_length)
+}
+
+///|
+/// Re-export frame-wise LPCC feature extraction.
+pub fn lpcc_features(
+  samples : Array[Double],
+  order : Int,
+  n_lpcc : Int,
+  frame_length : Int,
+  hop_length : Int,
+) -> Result[@types.FeatureMatrix, @types.MelError] {
+  @lpc.lpcc_features(samples, order, n_lpcc, frame_length, hop_length)
+}

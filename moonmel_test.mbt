@@ -378,3 +378,17 @@ test "facade_onset" {
   let onsets = @moonmel.onset_detect_audio(sig).unwrap()
   assert_true(onsets.length() > 0)
 }
+
+///|
+test "facade_lpc" {
+  let sig = Array::make(500, 0.3)
+  let lpc_res = @moonmel.lpc(sig, 4).unwrap()
+  assert_eq(lpc_res.coeffs.length(), 4)
+
+  let lpcc = @moonmel.lpc_to_lpcc(lpc_res.coeffs, lpc_res.prediction_error, 8)
+  assert_eq(lpcc.length(), 8)
+
+  let lpc_mat = @moonmel.lpc_features(sig, 4, 128, 64).unwrap()
+  assert_eq(lpc_mat.n_rows, 4)
+  assert_true(lpc_mat.n_cols > 0)
+}

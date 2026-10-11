@@ -7,12 +7,15 @@ import {
   "zhr/moonmel/src/features/cqt",
   "zhr/moonmel/src/features/hpss",
   "zhr/moonmel/src/features/loudness",
+  "zhr/moonmel/src/features/lpc",
   "zhr/moonmel/src/features/onset",
   "zhr/moonmel/src/features/streaming",
 }
 
 // Values
 pub fn apply_k_weighting(Array[Double], Int) -> Array[Double]
+
+pub fn autocorrelation(Array[Double], Int) -> Array[Double]
 
 pub fn bluestein_fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
@@ -64,9 +67,21 @@ pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, c
 
 pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
+pub fn levinson_durbin(Array[Double], Int) -> Result[@lpc.LpcResult, @types.MelError]
+
 pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn loudness_meter(Array[Double], sample_rate? : Int) -> Result[@loudness.LoudnessResult, @types.MelError]
+
+pub fn lpc(Array[Double], Int) -> Result[@lpc.LpcResult, @types.MelError]
+
+pub fn lpc_features(Array[Double], Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn lpc_residual(Array[Double], Array[Double]) -> Array[Double]
+
+pub fn lpc_to_lpcc(Array[Double], Double, Int) -> Array[Double]
+
+pub fn lpcc_features(Array[Double], Int, Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn median_filter_1d(Array[Double], Int) -> Array[Double]
 
@@ -160,6 +175,8 @@ pub using @hpss {type HpssResult}
 pub using @types {type LogScale}
 
 pub using @loudness {type LoudnessResult}
+
+pub using @lpc {type LpcResult}
 
 pub using @hpss {type MaskMode}
 

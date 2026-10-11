@@ -43,6 +43,7 @@
 - [x] **谐波-冲击成分分离 (HPSS)**：二维中值滤波与软/硬掩蔽分离音频谐波与打击乐分量，计算帧能量比。
 - [x] **广播级响度计量 (ITU-R BS.1770-4 / EBU R128)**：级联 K-weighting IIR 滤波、门限积分响度 (LUFS)、响度范围 (LRA) 与 4 倍过采样 True-Peak 真实峰值估计。
 - [x] **音符起始检测与起始强度包络 (Onset Detection & SuperFlux)**：谱通量 (Spectral Flux)、频域极值滤波抗颤音 (SuperFlux) 与自适应双门限峰值拾取。
+- [x] **线性预测编码与倒谱系数 (LPC & LPCC)**：Levinson-Durbin 递归求解全极点滤波器、反射系数 (PARCOR)、逆滤波预测残差与线性预测倒谱。
 
 ---
 
