@@ -94,7 +94,7 @@ pub fn stft_complex(
 
   let n_frames = 1 + (audio_len - n_fft) / hop_length
   let n_bins = n_fft / 2 + 1
-  let frames : Array[Array[@types.Complex]] = []
+  let frames : Array[Array[@types.Complex]] = Array::make(n_frames, [])
 
   let win = @window.create_window(config.window, win_length)
   let re : Array[Double] = Array::make(n_fft, 0.0)
@@ -122,7 +122,7 @@ pub fn stft_complex(
     for k in 0..<n_bins {
       f[k] = { re: re[k], im: im[k], }
     }
-    frames.push(f)
+    frames[frame_idx] = f
   }
 
   Ok(frames)

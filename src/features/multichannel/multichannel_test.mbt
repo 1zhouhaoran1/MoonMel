@@ -98,3 +98,19 @@ test "interchannel_phase_difference_in_phase" {
   let mid_ipd = ipd.at(bin_440, ipd.n_cols / 2)
   assert_true(mid_ipd.abs() < 1.0e-4)
 }
+
+///|
+test "ipd_silence_guard_zero_phase" {
+  // Silent audio in both channels must yield strictly 0.0 IPD (safe from undefined atan2)
+  let ch0 = Array::make(1024, 0.0)
+  let ch1 = Array::make(1024, 0.0)
+  let multi = @types.MultiChannelAudioBuffer::new([ch0, ch1], 16000).unwrap()
+  let cfg = @types.FeatureConfig::default()
+  let ipd = @multichannel.interchannel_phase_difference(multi, 0, 1, config=cfg).unwrap()
+  assert_true(ipd.n_cols > 0)
+  for col in 0..<ipd.n_cols {
+    for row in 0..<ipd.n_rows {
+      assert_eq(ipd.at(row, col), 0.0)
+    }
+  }
+}

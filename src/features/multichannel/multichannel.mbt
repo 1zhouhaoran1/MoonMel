@@ -143,7 +143,13 @@ pub fn interchannel_phase_difference(
       // (r1 + j*i1) * (r2 - j*i2) = (r1*r2 + i1*i2) + j*(i1*r2 - r1*i2)
       let cross_re = comp1.re * comp2.re + comp1.im * comp2.im
       let cross_im = comp1.im * comp2.re - comp1.re * comp2.im
-      let ipd = @math.atan2(cross_im, cross_re)
+      let power1 = comp1.re * comp1.re + comp1.im * comp1.im
+      let power2 = comp2.re * comp2.re + comp2.im * comp2.im
+      let ipd = if power1 < 1.0e-12 || power2 < 1.0e-12 {
+        0.0
+      } else {
+        @math.atan2(cross_im, cross_re)
+      }
       out.set(k, f, ipd)
     }
   }

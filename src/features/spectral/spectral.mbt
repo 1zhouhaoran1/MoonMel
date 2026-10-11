@@ -136,12 +136,20 @@ pub fn zero_crossing_rate(
     return Ok(@types.FeatureMatrix::zeros(1, 0))
   }
 
-  // Handle center padding
+  // Handle center padding with edge replication (matching librosa edge mode)
   let (samples, eff_len) = if center {
     let pad = frame_length / 2
     let padded = Array::make(len + 2 * pad, 0.0)
+    let first = raw[0]
+    let last = raw[len - 1]
+    for i in 0..<pad {
+      padded[i] = first
+    }
     for i in 0..<len {
       padded[pad + i] = raw[i]
+    }
+    for i in 0..<pad {
+      padded[pad + len + i] = last
     }
     (padded, len + 2 * pad)
   } else {

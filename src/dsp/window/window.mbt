@@ -57,20 +57,21 @@ pub fn create_window(kind : @types.WindowType, n : Int) -> Array[Double] {
 
 ///|
 /// Helper to map an out-of-bounds index using reflect mode (d c b a | a b c d | c b a).
+/// O(1) modulo mapping to handle arbitrarily large padding widths with zero iteration overhead.
 pub fn reflect_index(idx : Int, len : Int) -> Int {
   if len <= 1 {
     return 0
   }
-  let mut i = idx
-  while i < 0 || i >= len {
-    if i < 0 {
-      i = -i
-    }
-    if i >= len {
-      i = 2 * (len - 1) - i
-    }
+  let period = 2 * (len - 1)
+  let mut m = idx % period
+  if m < 0 {
+    m = m + period
   }
-  i
+  if m < len {
+    m
+  } else {
+    period - m
+  }
 }
 
 ///|

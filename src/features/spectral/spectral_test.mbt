@@ -107,3 +107,20 @@ test "zero_crossing_rate_sine" {
   let mid_val = zcr.at(0, zcr.n_cols / 2)
   assert_true((mid_val - 0.125).abs() < 0.02)
 }
+
+///|
+test "zero_crossing_rate_negative_dc_no_false_crossings" {
+  // Negative DC signal must have strictly 0.0 zero-crossings across all frames
+  let sig_neg = Array::make(1024, -1.0)
+  let audio = @types.AudioBuffer::new(sig_neg, 16000).unwrap()
+  let zcr = @spectral.zero_crossing_rate(
+    audio,
+    frame_length=256,
+    hop_length=128,
+    center=true,
+  ).unwrap()
+  assert_true(zcr.n_cols > 0)
+  for col in 0..<zcr.n_cols {
+    assert_eq(zcr.at(0, col), 0.0)
+  }
+}

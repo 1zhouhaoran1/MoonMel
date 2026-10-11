@@ -22,3 +22,21 @@ test "window_reflect_padding" {
   assert_eq(padded[6], 3.0)
   assert_eq(padded[7], 2.0)
 }
+
+///|
+test "reflect_index_large_offsets" {
+  // len = 4, period = 6
+  assert_eq(reflect_index(0, 4), 0)
+  assert_eq(reflect_index(1, 4), 1)
+  assert_eq(reflect_index(2, 4), 2)
+  assert_eq(reflect_index(3, 4), 3)
+  assert_eq(reflect_index(-1, 4), 1)
+  assert_eq(reflect_index(-2, 4), 2)
+  assert_eq(reflect_index(-3, 4), 3)
+  assert_eq(reflect_index(4, 4), 2)
+  assert_eq(reflect_index(5, 4), 1)
+  assert_eq(reflect_index(6, 4), 0)
+  // Large offsets: -6000000 % 6 == 0
+  assert_eq(reflect_index(-6000000, 4), 0)
+  assert_eq(reflect_index(6000001, 4), 1)
+}
