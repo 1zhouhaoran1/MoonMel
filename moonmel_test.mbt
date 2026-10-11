@@ -392,3 +392,18 @@ test "facade_lpc" {
   assert_eq(lpc_mat.n_rows, 4)
   assert_true(lpc_mat.n_cols > 0)
 }
+
+///|
+test "facade_pitch" {
+  let sr = 16000
+  let n = 3200
+  let sig = Array::make(n, 0.0)
+  let pi2 = 2.0 * @math.PI
+  for i in 0..<n {
+    let t = i.to_double() / sr.to_double()
+    sig[i] = @math.sin(pi2 * 440.0 * t)
+  }
+  let track = @moonmel.pitch_yin(sig, sample_rate=sr).unwrap()
+  assert_true(track.f0.length() > 0)
+  assert_true((track.f0[0] - 440.0).abs() < 2.0)
+}

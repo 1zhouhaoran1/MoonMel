@@ -1,0 +1,38 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/pitch"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn cumulative_mean_normalized_difference(Array[Double]) -> Array[Double]
+
+pub fn difference_function(Array[Double], Int) -> Array[Double]
+
+pub fn pitch_yin(@types.AudioBuffer, config? : YinConfig) -> Result[PitchTrack, @types.MelError]
+
+pub fn yin_frame(Array[Double], Int, Double, Double, Double) -> (Double, Double, Double)
+
+// Errors
+
+// Types and methods
+pub(all) struct PitchTrack {
+  f0 : Array[Double]
+  voiced_prob : Array[Double]
+  periods : Array[Double]
+} derive(@debug.Debug)
+
+pub(all) struct YinConfig {
+  f_min : Double
+  f_max : Double
+  threshold : Double
+  frame_length : Int
+  hop_length : Int
+} derive(@debug.Debug)
+pub fn YinConfig::default() -> Self
+
+// Type aliases
+
+// Traits

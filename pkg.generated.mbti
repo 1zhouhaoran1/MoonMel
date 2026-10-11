@@ -9,6 +9,7 @@ import {
   "zhr/moonmel/src/features/loudness",
   "zhr/moonmel/src/features/lpc",
   "zhr/moonmel/src/features/onset",
+  "zhr/moonmel/src/features/pitch",
   "zhr/moonmel/src/features/streaming",
 }
 
@@ -41,6 +42,8 @@ pub fn create_streaming_extractor(config? : @types.FeatureConfig) -> Result[@str
 
 pub fn create_window(@types.WindowType, Int) -> Array[Double]
 
+pub fn cumulative_mean_normalized_difference(Array[Double]) -> Array[Double]
+
 pub fn dct_ii(Array[Double], Int, Bool) -> Array[Double]
 
 pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
@@ -48,6 +51,8 @@ pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
 pub fn deemphasis(Array[Double], alpha? : Double) -> Array[Double]
 
 pub fn dft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn difference_function(Array[Double], Int) -> Array[Double]
 
 pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
@@ -115,6 +120,8 @@ pub fn percussive_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
 pub fn pitch_class_name(Int) -> String
 
+pub fn pitch_yin(Array[Double], sample_rate? : Int, config? : @pitch.YinConfig) -> Result[@pitch.PitchTrack, @types.MelError]
+
 pub fn power_to_db(@types.FeatureMatrix, Double, Double, Double) -> @types.FeatureMatrix
 
 pub fn preemphasis(Array[Double], alpha? : Double) -> Array[Double]
@@ -144,6 +151,8 @@ pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@
 pub fn super_flux(@types.FeatureMatrix, Int) -> Array[Double]
 
 pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
+
+pub fn yin_frame(Array[Double], Int, f_min? : Double, f_max? : Double, threshold? : Double) -> (Double, Double, Double)
 
 pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -192,8 +201,12 @@ pub using @onset {type OnsetConfig}
 
 pub using @onset {type OnsetMethod}
 
+pub using @pitch {type PitchTrack}
+
 pub using @streaming {type StreamingExtractor}
 
 pub using @types {type WindowType}
+
+pub using @pitch {type YinConfig}
 
 // Traits

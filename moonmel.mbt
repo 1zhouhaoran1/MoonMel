@@ -712,3 +712,53 @@ pub fn lpcc_features(
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @lpc.lpcc_features(samples, order, n_lpcc, frame_length, hop_length)
 }
+
+///|
+/// Re-export YIN pitch tracking configuration.
+pub type YinConfig = @pitch.YinConfig
+
+///|
+/// Re-export Pitch tracking result.
+pub type PitchTrack = @pitch.PitchTrack
+
+///|
+/// Re-export YIN difference function.
+pub fn difference_function(
+  frame : Array[Double],
+  tau_max : Int,
+) -> Array[Double] {
+  @pitch.difference_function(frame, tau_max)
+}
+
+///|
+/// Re-export Cumulative Mean Normalized Difference Function (CMNDF).
+pub fn cumulative_mean_normalized_difference(
+  d : Array[Double],
+) -> Array[Double] {
+  @pitch.cumulative_mean_normalized_difference(d)
+}
+
+///|
+/// Re-export single-frame YIN pitch estimation.
+pub fn yin_frame(
+  frame : Array[Double],
+  sample_rate : Int,
+  f_min? : Double = 65.0,
+  f_max? : Double = 2093.0,
+  threshold? : Double = 0.1,
+) -> (Double, Double, Double) {
+  @pitch.yin_frame(frame, sample_rate, f_min, f_max, threshold)
+}
+
+///|
+/// Re-export YIN pitch tracking on audio samples.
+pub fn pitch_yin(
+  samples : Array[Double],
+  sample_rate? : Int = 16000,
+  config? : @pitch.YinConfig = @pitch.YinConfig::default(),
+) -> Result[@pitch.PitchTrack, @types.MelError] {
+  match @types.AudioBuffer::new(samples, sample_rate) {
+    Ok(audio) => @pitch.pitch_yin(audio, config~)
+    Err(e) => Err(e)
+  }
+}
