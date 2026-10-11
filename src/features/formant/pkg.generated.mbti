@@ -1,0 +1,45 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "zhr/moonmel/src/features/formant"
+
+import {
+  "moonbitlang/core/debug",
+  "zhr/moonmel/src/core/types",
+}
+
+// Values
+pub fn durand_kerner(Array[Double], max_iters? : Int, tol? : Double) -> Array[@types.Complex]
+
+pub fn formant_frequencies(Array[FormantFrame], Int, fallback? : Double) -> Array[Double]
+
+pub fn formant_track(Array[Double], Int, config? : FormantConfig) -> Result[Array[FormantFrame], @types.MelError]
+
+pub fn formants_frame(Array[Double], Int, config? : FormantConfig) -> Result[FormantFrame, @types.MelError]
+
+pub fn formants_from_lpc(Array[Double], Int, FormantConfig) -> FormantFrame
+
+// Errors
+
+// Types and methods
+pub(all) struct Formant {
+  frequency : Double
+  bandwidth : Double
+} derive(Eq, @debug.Debug)
+
+pub(all) struct FormantConfig {
+  lpc_order : Int
+  min_frequency : Double
+  max_frequency : Double
+  max_bandwidth : Double
+  pre_emphasis : Double
+  frame_length : Int
+  hop_length : Int
+} derive(@debug.Debug)
+pub fn FormantConfig::default() -> Self
+
+pub(all) struct FormantFrame {
+  formants : Array[Formant]
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits

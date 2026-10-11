@@ -411,3 +411,17 @@ pub fn Complex::abs2(self : Complex) -> Double {
 pub fn Complex::abs(self : Complex) -> Double {
   (self.re * self.re + self.im * self.im).sqrt()
 }
+
+///|
+/// Complex division self / other.
+pub fn Complex::div(self : Complex, other : Complex) -> Complex {
+  let denom = other.re * other.re + other.im * other.im
+  if denom == 0.0 {
+    { re: 0.0, im: 0.0, }
+  } else {
+    {
+      re: (self.re * other.re + self.im * other.im) / denom,
+      im: (self.im * other.re - self.re * other.im) / denom,
+    }
+  }
+}

@@ -26,6 +26,7 @@ pub(all) struct Complex {
 pub fn Complex::abs(Self) -> Double
 pub fn Complex::abs2(Self) -> Double
 pub fn Complex::add(Self, Self) -> Self
+pub fn Complex::div(Self, Self) -> Self
 pub fn Complex::mul(Self, Self) -> Self
 pub fn Complex::sub(Self, Self) -> Self
 

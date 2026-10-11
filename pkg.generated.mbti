@@ -6,6 +6,7 @@ import {
   "zhr/moonmel/src/features/chroma",
   "zhr/moonmel/src/features/contrast",
   "zhr/moonmel/src/features/cqt",
+  "zhr/moonmel/src/features/formant",
   "zhr/moonmel/src/features/hpss",
   "zhr/moonmel/src/features/loudness",
   "zhr/moonmel/src/features/lpc",
@@ -56,9 +57,17 @@ pub fn dft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelErr
 
 pub fn difference_function(Array[Double], Int) -> Array[Double]
 
+pub fn durand_kerner(Array[Double], max_iters? : Int, tol? : Double) -> Array[@types.Complex]
+
 pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
+
+pub fn formant_frequencies(Array[@formant.FormantFrame], Int, fallback? : Double) -> Array[Double]
+
+pub fn formant_track(Array[Double], sample_rate? : Int, config? : @formant.FormantConfig) -> Result[Array[@formant.FormantFrame], @types.MelError]
+
+pub fn formants_frame(Array[Double], Int, config? : @formant.FormantConfig) -> Result[@formant.FormantFrame, @types.MelError]
 
 pub fn harmonic_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
@@ -198,6 +207,12 @@ pub using @cqt {type CqtConfig}
 pub using @types {type FeatureConfig}
 
 pub using @types {type FeatureMatrix}
+
+pub using @formant {type Formant}
+
+pub using @formant {type FormantConfig}
+
+pub using @formant {type FormantFrame}
 
 pub using @hpss {type HpssConfig}
 

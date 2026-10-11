@@ -875,3 +875,53 @@ pub fn pitch_shift(
 ) -> Result[Array[Double], @types.MelError] {
   @effects.pitch_shift(samples, sample_rate, n_steps, config)
 }
+
+///|
+/// Re-export Formant types and configuration.
+pub type Formant = @formant.Formant
+
+///|
+pub type FormantFrame = @formant.FormantFrame
+
+///|
+pub type FormantConfig = @formant.FormantConfig
+
+///|
+/// Re-export Durand-Kerner polynomial root solver.
+pub fn durand_kerner(
+  coeffs : Array[Double],
+  max_iters? : Int = 80,
+  tol? : Double = 1.0e-9,
+) -> Array[@types.Complex] {
+  @formant.durand_kerner(coeffs, max_iters~, tol~)
+}
+
+///|
+/// Re-export Formant extraction on single audio frame.
+pub fn formants_frame(
+  frame : Array[Double],
+  sample_rate : Int,
+  config? : @formant.FormantConfig = @formant.FormantConfig::default(),
+) -> Result[@formant.FormantFrame, @types.MelError] {
+  @formant.formants_frame(frame, sample_rate, config~)
+}
+
+///|
+/// Re-export Formant tracking across entire audio signal.
+pub fn formant_track(
+  samples : Array[Double],
+  sample_rate? : Int = 16000,
+  config? : @formant.FormantConfig = @formant.FormantConfig::default(),
+) -> Result[Array[@formant.FormantFrame], @types.MelError] {
+  @formant.formant_track(samples, sample_rate, config~)
+}
+
+///|
+/// Re-export formant frequencies track extractor.
+pub fn formant_frequencies(
+  frames : Array[@formant.FormantFrame],
+  formant_idx : Int,
+  fallback? : Double = 0.0,
+) -> Array[Double] {
+  @formant.formant_frequencies(frames, formant_idx, fallback~)
+}

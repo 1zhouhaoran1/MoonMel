@@ -22,6 +22,7 @@ import {
   "zhr/moonmel/src/features/tempo",
   "zhr/moonmel/src/features/contrast",
   "zhr/moonmel/src/features/effects",
+  "zhr/moonmel/src/features/formant",
   "zhr/moonmel/src/codec/wav",
 }
 

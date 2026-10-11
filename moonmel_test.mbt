@@ -448,3 +448,15 @@ test "facade_effects_and_istft" {
   ).unwrap()
   assert_eq(pitched.length(), 1024)
 }
+
+///|
+test "facade_formant" {
+  let roots = @moonmel.durand_kerner([-5.0, 6.0])
+  assert_eq(roots.length(), 2)
+
+  let sig = Array::make(1600, 0.05)
+  let frames = @moonmel.formant_track(sig, sample_rate=16000).unwrap()
+  assert_true(frames.length() > 0)
+  let f1 = @moonmel.formant_frequencies(frames, 0)
+  assert_eq(f1.length(), frames.length())
+}
