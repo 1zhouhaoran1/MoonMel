@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/banner.png" alt="MoonMel — Audio Into Features" width="960" /></p>
 <p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.14+" src="https://img.shields.io/badge/moonc-0.10.14+-24211d?style=flat-square" /> <img alt="编译目标" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
 <p align="center">纯 MoonBit 音频特征引擎，复用 STFT、Mel、Log-Mel 与 MFCC 流水线。</p>
-<p align="center"><a href="README.md">English</a> · <a href="#从源码运行">运行</a> · <a href="docs/zh/API_SPECIFICATION.md">API</a> · <a href="docs/zh/ARCHITECTURE.md">架构</a> · <a href="docs/zh/HEALTH.md">健康报告</a></p>
+<p align="center"><a href="README.md">English</a> · <a href="https://1zhouhaoran1.github.io/MoonMel/">在线演示</a> · <a href="#从源码运行">运行</a> · <a href="docs/zh/API_SPECIFICATION.md">API</a> · <a href="docs/zh/ARCHITECTURE.md">架构</a> · <a href="docs/zh/HEALTH.md">健康报告</a></p>
 
 ## 从源码运行
 

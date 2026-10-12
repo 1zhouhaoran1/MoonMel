@@ -48,3 +48,7 @@ uv pip install --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe -r tools/re
 `.github/workflows/ci.yml` 覆盖四目标检查、构建、测试与示例，再构建演示页和测试绑定。每个任务检查编译器门槛。远端通过状态看 GitHub Actions。Mooncakes 发布暂缓，当前以源码检出提供可复现运行路径。
 
 使用同一 Windows 适配器构建 Native 发行产物：`pwsh -File tools/quality/test-native.ps1 -Build`。
+
+## GitHub Pages
+
+在线演示：https://1zhouhaoran1.github.io/MoonMel/ 。`.github/workflows/pages.yml` 在 main 的相关源码变化后重新生成 MoonBit 绑定、验证绑定并部署 Vite 输出。资源前缀来自 Pages 元数据，本地开发仍使用 `/`。可通过 `pnpm --dir playground run build --base /MoonMel/` 检查同样的构建。

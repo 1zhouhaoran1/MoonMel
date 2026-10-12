@@ -48,3 +48,7 @@ If this environment already exists, skip creation and use it. On Linux/macOS cho
 `.github/workflows/ci.yml` performs check, build, test and example execution for all four targets, then builds the demo and tests its bindings. The minimum compiler gate runs in each job. See GitHub Actions for actual remote results. Mooncakes publication is intentionally deferred; source checkout is the reproducible distribution path for now.
 
 To build release Native artifacts with the same Windows adapter: `pwsh -File tools/quality/test-native.ps1 -Build`.
+
+## GitHub Pages
+
+The live demo is https://1zhouhaoran1.github.io/MoonMel/. `.github/workflows/pages.yml` rebuilds MoonBit bindings, verifies browser bindings and deploys the Vite output after relevant main-branch changes. Its base URL comes from the Pages metadata; local dev stays at `/`. To inspect a matching local build, run `pnpm --dir playground run build --base /MoonMel/`.

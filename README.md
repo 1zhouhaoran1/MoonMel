@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/banner.png" alt="MoonMel — Audio Into Features" width="960" /></p>
 <p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.14+" src="https://img.shields.io/badge/moonc-0.10.14+-24211d?style=flat-square" /> <img alt="Targets" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
 <p align="center">Pure MoonBit audio feature extraction with reusable STFT, Mel, Log-Mel and MFCC stages.</p>
-<p align="center"><a href="README_zh.md">中文</a> · <a href="#run-from-source">Run</a> · <a href="docs/en/API_SPECIFICATION.md">API</a> · <a href="docs/en/ARCHITECTURE.md">Architecture</a> · <a href="docs/en/HEALTH.md">Health report</a></p>
+<p align="center"><a href="README_zh.md">中文</a> · <a href="https://1zhouhaoran1.github.io/MoonMel/">Live demo</a> · <a href="#run-from-source">Run</a> · <a href="docs/en/API_SPECIFICATION.md">API</a> · <a href="docs/en/ARCHITECTURE.md">Architecture</a> · <a href="docs/en/HEALTH.md">Health report</a></p>
 
 ## Run from source
 
