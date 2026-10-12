@@ -1,0 +1,46 @@
+# 更新日志
+
+[English](CHANGELOG.md)
+
+## [0.1.0] - 2026-10-12
+
+MoonMel 首个带 tag 的 GitHub 版本，提供纯 MoonBit 音频特征提取。
+
+### 新增
+
+- STFT、Mel、Log-Mel、MFCC 核心流水线，Slaney/HTK 滤波器与正交 DCT-II。
+- Radix-2/Bluestein 任意长度变换、复数 STFT/ISTFT、窗、滤波、重采样。
+- 能量、频谱描述、差分、流式、多声道 ILD/IPD、Chroma、CQT、HPSS。
+- 起音/节奏、LPC/LPCC、YIN 音高、共振峰、响度、变速/变调及 8/16 位 PCM WAV 解码。
+- 最小示例、中英文 API/架构/健康/验收文档与四目标 CI。
+
+### 调整
+
+- 明确核心契约、DSP 分帧、特征阶段、分析编排、门面与浏览器传输的层次。
+- `analyze` 复用单次 STFT 和滤波器组；复用 STFT 缓冲及每个矩阵的 DCT 基。
+- 浏览器按信号、Worker、音频、渲染分离，开发/构建/绑定测试前自动生成最新 MoonBit JS。
+- 更换暖白、炭黑、朱砂红品牌，提供可操作、可核查的桌面/手机演示，部署至 [GitHub Pages](https://1zhouhaoran1.github.io/MoonMel/)。
+
+### 修复
+
+- 短窗取样偏移、任意 FFT 调度、奇数逆变换、非法窗口与配置。
+- 流式短窗、大步长跨块间隔、频谱功率、对数配置及 DCT 归一化。
+- WAV 边界、缺失/重复块、不完整 PCM 帧；浏览器失败正确返回 `success:false` 并转义错误。
+- 重采样分数相位与抗混叠截止、LPC/共振峰符号、HPSS margin、频谱对比单位、静音节奏、相位累计与尾帧插值。
+- 多声道形状/采样率不匹配及 ILD 功率计算；上传期间参数变化、静音热图与手机对比表可发现性。
+
+### 验证
+
+- WASM、WASM-GC、JS 各 130 个测试通过；Native 128 个通过，排除两个仅用于浏览器传输的测试。
+- 五个绑定集成测试及八组确定性核心数值案例通过，已检查数值的最大绝对误差约 `2.3e-12`。
+- 比较全部 Mel/Log-Mel/MFCC 单元及每帧最多 64 个指定 STFT 频点；对齐周期 Hann、reflect、float64 Slaney 和正交 DCT-II。
+- 桌面/手机、Worker、实际 WAV 重算、导出、错误恢复及线上 Pages 已实测。
+
+### 要求与范围
+
+- `moonc >= 0.10.14`；浏览器构建需要 Node.js 22.12+ 或 24+、pnpm 11。
+- 线上页面使用 Worker 内生成的 JS，WASM 属于库编译目标。
+- 八组核心参考不代表全库等价或竞品速度排名，高级功能的规范认证仍有研究验证边界。
+- Release 提供 GitHub 源码归档；Mooncakes 发布仍暂缓。
+
+[0.1.0]: https://github.com/1zhouhaoran1/MoonMel/releases/tag/v0.1.0
