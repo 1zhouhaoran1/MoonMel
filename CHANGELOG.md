@@ -6,6 +6,7 @@
 
 ### Fixed
 
+- YIN keeps pitch, period and voicing confidence consistent when periodic audio is attenuated. CMNDF now normalizes every positive difference sum instead of treating quiet signals as silence; zero-difference frames remain unvoiced.
 - Delta normalization no longer overflows 32-bit integer squares in wide windows (for example, `width=100001`). The denominator now uses a constant-time floating-point sum-of-squares formula.
 - Add regression coverage for wide-window nearest-edge weights and repeated derivative padding, including input preservation.
 

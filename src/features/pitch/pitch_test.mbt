@@ -52,3 +52,57 @@ test "pitch_yin_audio_pipeline" {
   assert_true((track.f0[mid_frame] - target_f0).abs() < 1.0)
   assert_true(track.voiced_prob[mid_frame] > 0.8)
 }
+
+///|
+test "cmndf normalizes quiet nonzero differences" {
+  let cmndf = @pitch.cumulative_mean_normalized_difference([
+    0.0, 4.0e-200, 2.0e-200, 0.0,
+  ])
+  assert_eq(cmndf[0], 1.0)
+  assert_eq(cmndf[1], 1.0)
+  assert_true((cmndf[2] - 2.0 / 3.0).abs() < 1.0e-12)
+  assert_eq(cmndf[3], 0.0)
+}
+
+///|
+test "yin pitch and confidence are invariant to quiet signal gain" {
+  let sr = 16000
+  let samples = Array::make(2048, 0.0)
+  for i in 0..<samples.length() {
+    samples[i] = @math.sin(
+      2.0 * @math.PI * 440.0 * i.to_double() / sr.to_double(),
+    )
+  }
+  let (reference_f0, reference_prob, reference_period) = @pitch.yin_frame(
+    samples, sr, 65.0, 2093.0, 0.1,
+  )
+  assert_true((reference_f0 - 440.0).abs() < 1.0)
+  for gain in [1.0e-4, 1.0e-9] {
+    let quiet = samples.map(fn(sample) { sample * gain })
+    let audio = @types.AudioBuffer::new(quiet, sr).unwrap()
+    let track = @pitch.pitch_yin(audio).unwrap()
+    assert_eq(track.f0.length(), 1)
+    assert_true((track.f0[0] - reference_f0).abs() < 1.0e-9)
+    assert_true((track.voiced_prob[0] - reference_prob).abs() < 1.0e-12)
+    assert_true((track.periods[0] - reference_period).abs() < 1.0e-9)
+  }
+}
+
+///|
+test "yin keeps silence and constant frames unvoiced" {
+  let cmndf = @pitch.cumulative_mean_normalized_difference([0.0, 0.0, 0.0])
+  for value in cmndf {
+    assert_eq(value, 1.0)
+  }
+  for level in [0.0, 1.0e-9, 1.0] {
+    let (f0, prob, _) = @pitch.yin_frame(
+      Array::make(2048, level),
+      16000,
+      65.0,
+      2093.0,
+      0.1,
+    )
+    assert_eq(f0, 0.0)
+    assert_eq(prob, 0.0)
+  }
+}

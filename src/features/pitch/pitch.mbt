@@ -74,10 +74,12 @@ pub fn cumulative_mean_normalized_difference(
 
   for tau in 1..<len {
     running_sum = running_sum + d[tau]
-    if running_sum <= 1.0e-12 {
+    // A nonzero difference sum carries periodicity even at very low gain.
+    // Only an exactly zero sum needs the constant/silent-frame sentinel.
+    if running_sum <= 0.0 {
       cmndf[tau] = 1.0
     } else {
-      cmndf[tau] = d[tau] * tau.to_double() / running_sum
+      cmndf[tau] = d[tau] / running_sum * tau.to_double()
     }
   }
   cmndf
