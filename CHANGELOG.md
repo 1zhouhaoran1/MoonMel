@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+### Documentation
+
+- Align bilingual product, proposal, roadmap and documentation indexes with the generated-JS demo and eight-case core reference scope. Remove unsupported production/privacy/latency and competitor claims; distinguish implemented extensions from externally validated behavior and record downstream integration as pending evidence.
+
 ### Fixed
 
 - Spectral rolloff rejects non-finite fractions and values outside `[0, 1]`; spectral flatness rejects non-finite or nonpositive floors. Validation runs before the STFT, with valid endpoint and flat-spectrum regressions.

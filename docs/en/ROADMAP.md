@@ -1,56 +1,46 @@
 # MoonMel Engineering Roadmap
 
-[English](./ROADMAP.md) | [中文说明](../zh/ROADMAP.md)
+[中文](../zh/ROADMAP.md)
 
-This document tracks planned milestones and feature expansions for MoonMel.
+This roadmap separates implementation status from validation and release work. The first tagged release is v0.1.0; subsequent fixes are recorded under Unreleased in the [changelog](../../CHANGELOG.md). The groups below are capability inventories, not claims that v0.2.0 or v0.3.0 has been released.
 
----
+## Implemented core
 
-## Milestones
+- [x] Framing/windows/reflect padding, radix-2 and arbitrary-length Bluestein FFT, STFT and inverse STFT.
+- [x] Slaney/HTK Mel, configurable log compression and DCT-II MFCC with shared analysis intermediates.
+- [x] PCM 8/16-bit WAV decoding, layered packages, unified facade and a runnable minimal example.
+- [x] Eight deterministic core reference cases, four-target CI and a browser demo running generated MoonBit JS in a Web Worker.
 
-### Phase 1: 0.1.0 MVP (Current — 2026 Hackathon)
-- [x] Pure MoonBit in-place Radix-2 Cooley-Tukey FFT.
-- [x] Periodic and symmetric Hann windowing with reflect boundary padding.
-- [x] Slaney Mel scale triangular filterbank with area normalization.
-- [x] Power-to-dB Log-Mel compression with `amin` and `top_db` dynamic range protection.
-- [x] Orthogonal DCT-II and MFCC feature extraction.
-- [x] Pure MoonBit PCM WAV decoder (8-bit, 16-bit, stereo to mono).
-- [x] Numerical parity verification against Python `librosa 1.0.0` (15/15 passed).
-- [x] Layered decoupled package hierarchy (`src/core/types`, `src/dsp/*`, `src/features/*`, `src/codec/*`).
-- [x] Interactive browser playground with Vite and TailwindCSS.
+The [parity report](../../tools/reference/parity_report.json) checks all Mel/Log-Mel/MFCC cells and up to 64 indexed STFT bins per frame. It is not whole-library certification. WASM/WASM-GC are compilation targets; they are not the current browser engine.
 
----
+## Implemented extensions
 
-### Phase 2: 0.2.0 Algorithmic Expansions
-- [x] **Delta & Delta-Delta Coefficients**: First and second temporal cepstral derivatives.
-- [x] **Pre-emphasis & De-emphasis Filters**: High frequency spectral compensation and exact inverse reconstruction.
-- [x] **RMS & Frame Energy Extraction**: Time-domain and spectral frame root-mean-square energy.
-- [x] **High-Fidelity Audio Resampler**: Bandlimited windowed-sinc antialiasing and fast linear interpolation.
-- [x] **Streaming Feature Extraction**: Rolling-buffer streaming extraction for live audio (StreamingExtractor).
-- [x] **Live Microphone Input**: Real-time microphone capture via Web Audio API with animated spectrogram.
-- [x] **Spectral Descriptors**: Spectral Centroid, Spectral Rolloff, Spectral Flatness, and Zero-Crossing Rate (ZCR).
-- [x] **Multi-Channel Extraction**: Parallel processing for multichannel arrays and spatial acoustics (ILD & IPD).
+| Family | Available behavior and boundary |
+| --- | --- |
+| Delta, filtering, energy | Repeated HTK deltas with nearest-edge padding, pre/de-emphasis, time-domain frame energy and RMS |
+| Resampling | Linear, windowed-sinc, rational-factor polyphase and exact-length paths; no SciPy-default-filter parity claim |
+| Streaming | Incremental complete frames, hop-gap handling and configured Mel/MFCC; dB clipping remains per returned batch |
+| Browser audio | WAV playback and AudioWorklet microphone capture; microphone analysis uses rolling offline windows |
+| Spectral/multichannel | Centroid, rolloff, flatness, ZCR, per-channel extraction and ILD/IPD; no parallel-execution guarantee |
+| Chroma/CQT | Pitch-class projection/normalization and direct CQT kernels |
+| HPSS/contrast | Median masks and empirical peak/valley quantiles, with documented margin and unit conventions |
+| Onset/tempo | Spectral flux, SuperFlux, local peak picking, autocorrelation tempogram and BPM estimation |
+| Speech features | LPC/LPCC, residuals, YIN pitch and formants |
+| Loudness/effects | K-weighting, loudness gates, LRA, oversampled peak estimation and time/pitch effects; no complete standards-compliance or perceptual certification |
 
----
+These implementations have unit/regression coverage but not the same external reference coverage as the core pipeline. See the [health report](HEALTH.md) for algorithm-specific limits.
 
-### Phase 3: 0.3.0 Vectorization, Chroma & Arbitrary FFT
-- [x] **12-Semitone Chroma STFT (Chromagram)**: Pitch class extraction, Gaussian filterbanks, and L1/L2/Max frame normalizations.
-- [x] **Arbitrary-length Padded FFT / RFFT**: Automatic zero-padding eliminating $2^k$ input size restrictions.
-- [ ] **WebAssembly 128-bit SIMD**: SIMD acceleration for butterfly operations and filter projection.
-- [x] **Bluestein's FFT Algorithm**: Fast-convolution discrete Fourier transform for arbitrary prime lengths.
-- [x] **Constant-Q Transform (CQT)**: Geometrically-spaced frequency bins with constant Q quality factor.
-- [x] **Polyphase Resampler**: Precomputed polyphase FIR filter banks for rational-factor resampling (Hann-windowed source-grid interpolation; not scipy default-filter parity).
-- [x] **Harmonic-Percussive Source Separation (HPSS)**: 2D median filtering with soft/hard Wiener masking to separate tonal harmonics and transient percussion.
-- [x] **Broadcast Loudness Metering (ITU-R BS.1770-4 / EBU R128)**: Cascaded K-weighting biquad IIR filtering, gated integrated loudness (LUFS), Loudness Range (LRA), and 4x oversampled True-Peak meter.
-- [x] **Onset Detection & Strength Envelope (SuperFlux)**: Spectral flux, frequency max-filtering for vibrato suppression (SuperFlux), and adaptive local threshold peak picking.
-- [x] **Linear Predictive Coding & Cepstral Coefficients (LPC & LPCC)**: Levinson-Durbin all-pole filter solving, reflection coefficients (PARCOR), inverse filtering prediction residual, and LPCC recursion.
-- [x] **Fundamental Frequency F0 Pitch Tracking (YIN)**: Difference function, cumulative mean normalized difference (CMNDF), absolute dip thresholding, and parabolic subsample interpolation.
-- [x] **Tempogram & Tempo Estimation**: Local autocorrelation tempogram matrix, log-normal prior weighting, and global BPM tempo estimation.
-- [x] **Octave Spectral Contrast**: Multi-octave peak and valley quantile contrast extraction for timbre and texture discrimination.
+## Next evidence priorities
 
----
+- [ ] Add one independently useful downstream example based on a maintainer-confirmed need, using real audio and a reproducible expected outcome.
+- [ ] Expand external reference signals and parameter coverage for advanced features; add a compliance suite before making loudness-standard claims.
+- [ ] Establish reproducible device/input/parameter benchmarks before claiming latency targets or competitor rankings.
+- [ ] Measure streaming allocation and clipping behavior before promising real-time deployment properties.
 
-### Phase 4: 1.0.0 Production Ecosystem Release
-- [ ] Official release to Mooncakes package registry.
-- [ ] Interoperability wrappers for ONNX Runtime Web and Transformers.js.
-- [ ] Standardized feature extraction pipelines for open-source speech models (Whisper, Wav2Vec2).
+## Deferred or exploratory work
+
+- [ ] Publish to Mooncakes when the maintainer resumes registry publication.
+- [ ] Evaluate WASM browser execution and SIMD using measurements; retain the current JS engine until an alternative is implemented and verified.
+- [ ] Evaluate model-specific frontends/adapters only against an explicit model contract and end-to-end checks. Whisper-size framing alone is insufficient.
+
+No future version or completion date is promised by this inventory.

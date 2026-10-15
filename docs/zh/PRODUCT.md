@@ -1,57 +1,55 @@
 # MoonMel 产品规格说明书
 
-[English](../en/PRODUCT.md) | [中文说明](./PRODUCT.md)
+[English](../en/PRODUCT.md)
 
-本文档定义 MoonMel（2026 MoonBit Hackathon）的产品定位、核心价值、目标平台、验收边界与非目标。
+## 产品定位
 
----
+MoonMel 是 MoonBit 原生音频特征提取库，提供可验证的 STFT、Mel、Log-Mel 与 MFCC 流水线，将已有成熟算法通过 MoonBit 包和编译目标提供给开发者。
 
-## 1. 产品定位与核心价值
+目标读者是需要集成音频特征的 MoonBit 开发者，以及检查实现和可复现结果的黑客松评委。音频可视化、下游分类器的特征准备属于预期用途；项目不包含完整分类器或语音识别器。仓库目前展示特征提取能力，尚未提供独立下游应用采用它的证据。
 
-MoonMel 是一个基于 MoonBit 的轻量级、跨平台音频特征提取引擎，将 PCM 单声道音频信号转换为用于语音识别、声音分类及音频机器学习的基础特征（STFT 功率谱、Slaney Mel 频谱图、Log-Mel 频谱图及 MFCC 倒谱系数）。
+## 核心价值
 
-### 核心价值主张
+1. **MoonBit 集成**：DSP 算法使用 MoonBit 实现，通过统一门面和分层包提供接口。这是独立维护的库，不是官方标准库。
+2. **复用计算**：`analyze` 只计算一次 STFT 和滤波器组，再派生 Mel、Log-Mel 与 MFCC 矩阵。
+3. **可检查的证据**：在显式对齐参数后，用 librosa 比较确定性核心案例。高级算法另有验证边界。
+4. **本地演示**：当前浏览器演示在 Web Worker 中运行 MoonBit 生成的 JavaScript，分析不需要音频上传服务。这不构成通用隐私或延迟保证。
 
-1. **填补生态空白**：为 MoonBit 生态提供生产级音频数字信号处理（DSP）标准库。
-2. **边缘与浏览器端可用**：通过 WebAssembly（WASM）在浏览器端本地完成音频特征计算，零网络延迟，零隐私泄露风险。
-3. **确定性与科学验证**：核心数学逻辑经过 Python 科学计算栈（librosa, NumPy, SciPy）严格数值对齐，误差受控在浮点精度阈值内。
-4. **统一简洁 API**：提供符合 MoonBit 惯用风格的高层门面接口与细粒度分层子包。
+## 编译目标与演示
 
----
+| 目标 | 当前范围 |
+| --- | --- |
+| JS | 库的编译目标，也是当前浏览器演示实际使用的计算引擎 |
+| WASM / WASM-GC | CI 覆盖的库编译目标；当前演示不运行这些产物 |
+| Native | CI 覆盖的核心库及示例目标；排除浏览器传输包 |
 
-## 2. 目标平台与运行环境
+[在线演示](https://1zhouhaoran1.github.io/MoonMel/)支持合成信号、PCM WAV 输入、参数修改、矩阵检查及 JSON/CSV 导出。麦克风通过 AudioWorklet 采集并分析滚动窗口，与库的增量流式提取器不同。
 
-- **WebAssembly (WASM)**：浏览器 WebAssembly 运行环境及 Node.js / Wasmtime。
-- **JavaScript (JS)**：生成干净的 ES 模块（ESM），无缝集成 Web 前端项目。
-- **Native**：C / 原生机器码目标。
+## 核心能力
 
----
+| 模块 | 范围与约定 |
+| --- | --- |
+| 分帧 | 周期/对称 Hann、Hamming、Blackman、矩形窗；短窗居中；居中时使用 reflect 填充 |
+| STFT | Radix-2 或任意长度 Bluestein 变换；单边频点数 `floor(n_fft / 2) + 1`；可配置频谱幂次 |
+| Mel | Slaney/HTK 三角滤波器，可选 Slaney 面积归一化 |
+| Log-Mel | dB、自然对数或 log10；可配置下限、参考值及 dB 截断 |
+| MFCC | DCT-II，可配置正交归一化 |
+| WAV | RIFF 8/16 位 PCM 解码，按声道算术平均混合为单声道 |
 
-## 3. 核心能力矩阵
+重采样、流式、频谱描述及其他已实现扩展见[路线图](ROADMAP.md)。功能可用不代表全库数值等价或标准合规。
 
-| 模块 | 能力范围 | 算法约定 |
-| :--- | :--- | :--- |
-| **时域处理** | PCM 数据模型、分帧提取、窗函数、反射填充 | 支持 Periodic Hann、Symmetric Hann、Hamming、Blackman；`center=True` 镜像反射填充 |
-| **频谱分析** | 短时傅里叶变换（STFT）、单边功率谱 | 原地 Radix-2 Cooley-Tukey FFT，输出前 $N/2 + 1$ 个频率分量 |
-| **Mel 滤波器组** | Slaney 标度与 HTK 标度三角滤波器组 | 支持 Slaney 面积归一化，1 kHz 以下线性、1 kHz 以上对数 |
-| **对数压缩** | Log-Mel 频谱图提取 | 支持分贝转换（dB，基于 `amin` 与 `top_db` 截断）、自然对数及常用对数 |
-| **倒谱提取** | MFCC 提取 | DCT-II 正交归一化（`norm='ortho'`） |
-| **音频编解码** | WAV 音频解析 | 纯 MoonBit 实现的 RIFF 8-bit / 16-bit PCM 解码，多声道自动下混单声道 |
+## 证据与完成边界
 
----
+1. **可复现核心**：`moon run examples/basic --target js` 分析一秒信号并输出 STFT/Mel/Log-Mel/MFCC 形状。四目标 CI 执行检查、构建、测试及示例。
+2. **限定范围的参考比较**：[已记录报告](../../tools/reference/parity_report.json)对照 librosa 1.0.0、NumPy 2.5.3、SciPy 1.18.1，覆盖八组确定性案例。检查全部 Mel/Log-Mel/MFCC 单元及每帧最多 64 个明确索引的 STFT 频点；`atol=rtol=1e-7`，已记录最大绝对误差约 `2.3e-12`。
+3. **明确约定**：参考比较对齐周期 Hann、reflect 填充、float64 Slaney 滤波器和正交 DCT-II。不同库的默认参数可能产生不同结果。
+4. **性能边界**：没有同设备竞品跑分或固定延迟保证。页面计时包含特征计算、JSON 序列化/解析及 Worker 内准备，不含启动、跨线程传递与渲染。
 
-## 4. 质量与验收标准
+核心交付范围是可复用提取 API、可运行示例/演示及可复现检查。生产适用性和高级算法合规性仍需更多证据，见[健康报告](HEALTH.md)。
 
-1. **零外部 C 库依赖**：100% 纯 MoonBit 实现，保证跨平台编译一致性。
-2. **数值对齐**：STFT 与 MFCC 特征输出与 `librosa 1.0.0` 最大绝对误差低于 0.05。
-3. **真实端到端演示**：Playground 页面必须直接调用 MoonBit 编译目标，严禁用 JavaScript 重写伪造算法。
-4. **性能基准**：处理 1 秒 16 kHz 音频在现代浏览器或 Native 环境下处理耗时在数十毫秒以内。
+## 非目标与发布状态
 
----
-
-## 5. 非目标 (Out of Scope)
-
-本项目在 MVP 阶段明确不包含以下内容：
-- 不实现完整的端到端语音识别（ASR）深度学习模型推理（如 Whisper 解码器）。
-- 不提供音频重采样与有损音频编解码器（MP3、AAC、Opus）。
-- 不依赖外部云端 AI API。
+- 不包含完整 ASR/模型推理；Whisper 尺寸分帧预设不代表完整模型兼容前端。
+- 不实现 MP3、AAC、Opus 等有损编解码器；重采样已经实现。
+- 不提供云端 AI 服务，也不宣称替代整个 librosa/Meyda/Essentia.js 生态。
+- Mooncakes 发布按维护者要求暂缓；可从源码使用，已有 GitHub Release 与 Pages 演示。
