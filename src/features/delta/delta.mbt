@@ -18,10 +18,10 @@ fn delta_1d(row : Array[Double], width : Int) -> Array[Double] {
     return []
   }
   let n = width / 2
-  let mut denom = 0.0
-  for i in 1..<=n {
-    denom = denom + 2.0 * (i * i).to_double()
-  }
+  // Twice the sum of squared offsets. Convert before multiplication so wide
+  // windows cannot overflow Int when an offset exceeds 46340.
+  let half = n.to_double()
+  let denom = half * (half + 1.0) * (2.0 * half + 1.0) / 3.0
 
   let out : Array[Double] = Array::make(len, 0.0)
   for t in 0..<len {

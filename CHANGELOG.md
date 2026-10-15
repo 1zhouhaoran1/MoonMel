@@ -2,6 +2,13 @@
 
 [中文](CHANGELOG_zh.md)
 
+## Unreleased
+
+### Fixed
+
+- Delta normalization no longer overflows 32-bit integer squares in wide windows (for example, `width=100001`). The denominator now uses a constant-time floating-point sum-of-squares formula.
+- Add regression coverage for wide-window nearest-edge weights and repeated derivative padding, including input preservation.
+
 ## [0.1.0] - 2026-10-12
 
 First tagged GitHub release of MoonMel, a pure MoonBit audio feature extraction library.

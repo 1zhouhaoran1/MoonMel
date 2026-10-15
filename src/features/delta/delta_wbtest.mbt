@@ -49,3 +49,31 @@ test "delta: second order on linear ramp produces zero" {
     assert_true(d2.at(0, t).abs() < 1.0e-12)
   }
 }
+
+///|
+test "delta: wide windows preserve nearest-edge regression weights" {
+  let mat = @types.FeatureMatrix::new([[0.0, 1.0, 2.0]])
+  let width = 100001
+  let half = (width / 2).to_double()
+  let denom = half * (half + 1.0) * (2.0 * half + 1.0) / 3.0
+  let center = 3.0 / width.to_double()
+  let edge = (half * (half + 1.0) - 1.0) / denom
+  let d = compute_delta(mat, width~).unwrap()
+  assert_true((d.at(0, 1) / center - 1.0).abs() < 1.0e-12)
+  assert_true((d.at(0, 0) / edge - 1.0).abs() < 1.0e-12)
+  assert_true((d.at(0, 2) / edge - 1.0).abs() < 1.0e-12)
+}
+
+///|
+test "delta: nearest-edge padding applies at every derivative order" {
+  let mat = @types.FeatureMatrix::new([[0.0, 2.0, 4.0]])
+  let first = compute_delta(mat, width=3).unwrap()
+  let second = compute_delta(mat, width=3, order=2).unwrap()
+  let expected_first = [1.0, 2.0, 1.0]
+  let expected_second = [0.5, 0.0, -0.5]
+  for t in 0..<3 {
+    assert_true((first.at(0, t) - expected_first[t]).abs() < 1.0e-12)
+    assert_true((second.at(0, t) - expected_second[t]).abs() < 1.0e-12)
+    assert_eq(mat.at(0, t), 2.0 * t.to_double())
+  }
+}
