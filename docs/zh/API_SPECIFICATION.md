@@ -36,6 +36,8 @@ push、available、pop、reset 按左对齐时间线工作，即使 `center=true
 
 频谱描述、能量/RMS、差分、Chroma、CQT、HPSS、多声道、起音、LPC/LPCC、YIN、节奏、对比、响度、效果处理仍公开。精确标签和类型见各包接口。差分为重复 HTK 回归及最近边界，CQT 为直接核相关，频谱描述遵循配置功率，对比使用经验分位数，响度保留有限静音哨兵且未通过完整规范认证。跨库等价性应先查健康报告。
 
+`spectral_rolloff` 的 `roll_percent` 必须是 `[0, 1]` 内的有限数，包含两个端点。`spectral_flatness` 的 `amin` 必须为有限正数。不合法的值会在计算 STFT 前返回 `DimensionMismatch`。
+
 ## 浏览器传输
 
 web 绑定导出音频分析、显式配置分析、WAV 分析与 WAV 解码函数。返回实际矩阵、滤波器组与 STFT 预览索引。成功标识反映真实结果，错误字符串经过 JSON 转义。WASM 可构建，当前演示明确使用 JS。文件/预览限制属于 UI 域，不改变库 API。

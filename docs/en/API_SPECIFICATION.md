@@ -36,6 +36,8 @@ Direct package imports expose `mel_from_spectrogram`, `apply_filterbank`, `log_m
 
 Spectral descriptors, energy/RMS, deltas, Chroma, CQT, HPSS, multichannel ILD/IPD, onset, LPC/LPCC, YIN, tempo, contrast, loudness and effects remain available through the root. Their individual generated interfaces specify optional labels and types. They have algorithm-specific conventions: deltas use repeated HTK regression with nearest edges; CQT is direct kernel correlation; spectral descriptors use the configured spectrum power; spectral contrast uses empirical peak/valley quantiles; loudness has finite silent sentinels and has not been certified against a full compliance suite. Consult the health report before asserting equivalence with a different library.
 
+`spectral_rolloff` accepts a finite `roll_percent` in `[0, 1]`, including both endpoints. `spectral_flatness` requires a finite, positive `amin`. Invalid values return `DimensionMismatch` before computing the STFT.
+
 ## Browser transport
 
 `src/bindings/web` exports `process_audio`, `process_audio_config`, `process_wav_bytes` and `decode_wav_audio` for JS. Core analysis transport includes matrices, actual filterbank and STFT preview-bin indices. Success/failure envelopes always reflect the computation outcome and errors are JSON-escaped. WASM artifacts are build targets; the current demo explicitly uses generated JS. Browser preview/file limits belong to the UI domain, not the MoonBit library API.

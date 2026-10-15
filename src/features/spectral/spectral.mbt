@@ -38,11 +38,15 @@ pub fn spectral_centroid(
 ///|
 /// Extract Spectral Rolloff across frames.
 /// Frequency bin below which a specified percentage (default 85%) of total spectral energy is contained.
+/// roll_percent must be finite and in [0, 1], including both endpoints.
 pub fn spectral_rolloff(
   samples : Array[Double],
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
   roll_percent? : Double = 0.85,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
+  if !@types.is_finite(roll_percent) || roll_percent < 0.0 || roll_percent > 1.0 {
+    return Err(DimensionMismatch("roll_percent must be finite and in [0, 1]"))
+  }
   let stft_mat = match @stft.stft_spectrogram(samples, config) {
     Ok(m) => m
     Err(e) => return Err(e)
@@ -82,11 +86,15 @@ pub fn spectral_rolloff(
 ///|
 /// Extract Spectral Flatness across frames (Wiener entropy).
 /// Ratio of geometric mean to arithmetic mean of the power spectrum (1.0 = white noise, 0.0 = pure tone).
+/// amin must be finite and positive.
 pub fn spectral_flatness(
   samples : Array[Double],
   config? : @types.FeatureConfig = @types.FeatureConfig::default(),
   amin? : Double = 1.0e-10,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
+  if !@types.is_finite(amin) || amin <= 0.0 {
+    return Err(DimensionMismatch("amin must be finite and positive"))
+  }
   let stft_mat = match @stft.stft_spectrogram(samples, config) {
     Ok(m) => m
     Err(e) => return Err(e)
