@@ -44,10 +44,14 @@ pub fn spectral_flux(spec : @types.FeatureMatrix) -> Array[Double] {
 
 ///|
 /// SuperFlux: spectral difference relative to maximum-filtered previous frame (Boeck & Widmer 2013).
+/// Filter sizes <= 1 disable frequency spreading and use ordinary spectral flux.
 pub fn super_flux(
   spec : @types.FeatureMatrix,
   filter_size : Int,
 ) -> Array[Double] {
+  if filter_size <= 1 {
+    return spectral_flux(spec)
+  }
   let n_rows = spec.n_rows
   let n_cols = spec.n_cols
   let flux : Array[Double] = Array::make(n_cols, 0.0)
@@ -55,7 +59,7 @@ pub fn super_flux(
     return flux
   }
 
-  let radius = if filter_size > 1 { filter_size / 2 } else { 1 }
+  let radius = filter_size / 2
 
   for c in 1..<n_cols {
     let mut sum = 0.0

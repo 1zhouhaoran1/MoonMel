@@ -40,6 +40,8 @@ push、available、pop、reset 按左对齐时间线工作，即使 `center=true
 
 `chroma_from_spectrogram` 要求 `tuning` 有限，且 `f_min` 为 `[0, sample_rate / 2]` 内的有限数。非法调音值返回 `DimensionMismatch`，非法下限在访问滤波器组前返回 `InvalidFrequencyRange`。
 
+`super_flux` 在尺寸大于 1 时使用半径为 `filter_size / 2` 的频率邻域；尺寸不大于 1 时使用普通谱通量，不扩展频率邻域。该约定也适用于 `OnsetMethod::SuperFlux`。
+
 ## 浏览器传输
 
 web 绑定导出音频分析、显式配置分析、WAV 分析与 WAV 解码函数。返回实际矩阵、滤波器组与 STFT 预览索引。成功标识反映真实结果，错误字符串经过 JSON 转义。WASM 可构建，当前演示明确使用 JS。文件/预览限制属于 UI 域，不改变库 API。

@@ -40,6 +40,8 @@ Spectral descriptors, energy/RMS, deltas, Chroma, CQT, HPSS, multichannel ILD/IP
 
 `chroma_from_spectrogram` requires finite `tuning` and a finite `f_min` in `[0, sample_rate / 2]`. Invalid tuning returns `DimensionMismatch`; an invalid cutoff returns `InvalidFrequencyRange` before filterbank access.
 
+`super_flux` uses a frequency-neighborhood radius of `filter_size / 2` for sizes greater than one. Sizes of one or less use ordinary spectral flux, without frequency spreading; this also applies to `OnsetMethod::SuperFlux`.
+
 ## Browser transport
 
 `src/bindings/web` exports `process_audio`, `process_audio_config`, `process_wav_bytes` and `decode_wav_audio` for JS. Core analysis transport includes matrices, actual filterbank and STFT preview-bin indices. Success/failure envelopes always reflect the computation outcome and errors are JSON-escaped. WASM artifacts are build targets; the current demo explicitly uses generated JS. Browser preview/file limits belong to the UI domain, not the MoonBit library API.
