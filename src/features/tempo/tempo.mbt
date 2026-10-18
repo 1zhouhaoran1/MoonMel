@@ -37,7 +37,14 @@ fn log2(x : Double) -> Double {
 }
 
 ///|
+fn empty_tempogram() -> TempogramResult {
+  { tempogram: @types.FeatureMatrix::zeros(0, 0), tempi: [], bpm: 0.0, }
+}
+
+///|
 /// Compute autocorrelation tempogram and estimate global tempo from onset envelope.
+/// Only integer lags inside the inclusive BPM range and analysis window are used.
+/// Returns an empty result with bpm=0 when no such lag exists.
 pub fn tempogram_from_onset(
   onset_env : Array[Double],
   sample_rate : Int,
@@ -57,26 +64,27 @@ pub fn tempogram_from_onset(
     config.max_bpm <= config.min_bpm ||
     config.start_bpm <= 0.0 ||
     config.std_bpm <= 0.0 {
-    return {
-      tempogram: @types.FeatureMatrix::zeros(0, 0),
-      tempi: [],
-      bpm: 0.0,
-    }
+    return empty_tempogram()
   }
   let fps = sample_rate.to_double() / hop_length.to_double()
   let w_len = if config.win_length < len { config.win_length } else { len }
 
-  // Compute lag bounds corresponding to [min_bpm, max_bpm]
-  let mut tau_min = (60.0 * fps / config.max_bpm).to_int()
-  if tau_min < 1 {
-    tau_min = 1
+  // BPM decreases with lag: round the lower lag up and the upper lag down.
+  // Intersect in floating point before converting so tiny BPM bounds cannot
+  // overflow Int or invent a lag beyond the available window.
+  let lower_lag = (60.0 * fps / config.max_bpm).ceil()
+  let upper_lag = (60.0 * fps / config.min_bpm).floor()
+  let max_possible = w_len - 1
+  if lower_lag > max_possible.to_double() ||
+    upper_lag < 1.0 ||
+    upper_lag < lower_lag {
+    return empty_tempogram()
   }
-  let mut tau_max = (60.0 * fps / config.min_bpm).to_int() + 1
-  if tau_max >= w_len {
-    tau_max = w_len - 1
-  }
-  if tau_max < tau_min {
-    tau_max = tau_min
+  let tau_min = if lower_lag < 1.0 { 1 } else { lower_lag.to_int() }
+  let tau_max = if upper_lag >= max_possible.to_double() {
+    max_possible
+  } else {
+    upper_lag.to_int()
   }
 
   let n_lags = tau_max - tau_min + 1

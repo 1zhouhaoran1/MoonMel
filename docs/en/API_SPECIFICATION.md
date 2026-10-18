@@ -42,6 +42,8 @@ Spectral descriptors, energy/RMS, deltas, Chroma, CQT, HPSS, multichannel ILD/IP
 
 `super_flux` uses a frequency-neighborhood radius of `filter_size / 2` for sizes greater than one. Sizes of one or less use ordinary spectral flux, without frequency spreading; this also applies to `OnsetMethod::SuperFlux`.
 
+`tempogram_from_onset` intersects integer lags with the inclusive `[min_bpm, max_bpm]` interval and the analysis window. If no lag fits, it returns `bpm=0`, empty `tempi` and a `0 x 0` tempogram instead of inventing a candidate outside the requested range.
+
 ## Browser transport
 
 `src/bindings/web` exports `process_audio`, `process_audio_config`, `process_wav_bytes` and `decode_wav_audio` for JS. Core analysis transport includes matrices, actual filterbank and STFT preview-bin indices. Success/failure envelopes always reflect the computation outcome and errors are JSON-escaped. WASM artifacts are build targets; the current demo explicitly uses generated JS. Browser preview/file limits belong to the UI domain, not the MoonBit library API.

@@ -42,6 +42,8 @@ push、available、pop、reset 按左对齐时间线工作，即使 `center=true
 
 `super_flux` 在尺寸大于 1 时使用半径为 `filter_size / 2` 的频率邻域；尺寸不大于 1 时使用普通谱通量，不扩展频率邻域。该约定也适用于 `OnsetMethod::SuperFlux`。
 
+`tempogram_from_onset` 将整数延迟与包含端点的 `[min_bpm, max_bpm]` 区间及分析窗求交。没有可用延迟时返回 `bpm=0`、空 `tempi` 和 `0 x 0` 节奏图，不生成超出请求范围的候选。
+
 ## 浏览器传输
 
 web 绑定导出音频分析、显式配置分析、WAV 分析与 WAV 解码函数。返回实际矩阵、滤波器组与 STFT 预览索引。成功标识反映真实结果，错误字符串经过 JSON 转义。WASM 可构建，当前演示明确使用 JS。文件/预览限制属于 UI 域，不改变库 API。

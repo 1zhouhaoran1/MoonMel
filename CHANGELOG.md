@@ -10,6 +10,7 @@
 
 ### Fixed
 
+- Tempogram candidates now respect inclusive BPM limits using ceiling/floor lag bounds intersected with the analysis window. Empty or unrepresentable lag intervals return no tempo instead of an out-of-range estimate; exact endpoints and tiny finite BPM bounds have regressions.
 - SuperFlux filter sizes of one or less now use ordinary spectral flux instead of spreading across neighboring bins and suppressing real increases. Wider-window suppression and degenerate spectrogram shapes retain regression coverage.
 - Chroma spectrogram extraction returns errors for non-finite tuning and invalid frequency cutoffs before filterbank access, preventing an out-of-bounds failure. Cutoffs at zero and Nyquist and zero-frame matrix shapes remain supported.
 - Spectral rolloff rejects non-finite fractions and values outside `[0, 1]`; spectral flatness rejects non-finite or nonpositive floors. Validation runs before the STFT, with valid endpoint and flat-spectrum regressions.
