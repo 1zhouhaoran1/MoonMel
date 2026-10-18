@@ -38,6 +38,8 @@ Spectral descriptors, energy/RMS, deltas, Chroma, CQT, HPSS, multichannel ILD/IP
 
 `spectral_rolloff` accepts a finite `roll_percent` in `[0, 1]`, including both endpoints. `spectral_flatness` requires a finite, positive `amin`. Invalid values return `DimensionMismatch` before computing the STFT.
 
+`chroma_from_spectrogram` requires finite `tuning` and a finite `f_min` in `[0, sample_rate / 2]`. Invalid tuning returns `DimensionMismatch`; an invalid cutoff returns `InvalidFrequencyRange` before filterbank access.
+
 ## Browser transport
 
 `src/bindings/web` exports `process_audio`, `process_audio_config`, `process_wav_bytes` and `decode_wav_audio` for JS. Core analysis transport includes matrices, actual filterbank and STFT preview-bin indices. Success/failure envelopes always reflect the computation outcome and errors are JSON-escaped. WASM artifacts are build targets; the current demo explicitly uses generated JS. Browser preview/file limits belong to the UI domain, not the MoonBit library API.

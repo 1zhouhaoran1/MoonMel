@@ -87,6 +87,7 @@ pub fn chroma_filterbank(
 
 ///|
 /// Extracts 12-bin Chroma representation from a 2D power/magnitude spectrogram.
+/// tuning must be finite; f_min must be finite and in [0, sample_rate / 2].
 pub fn chroma_from_spectrogram(
   spectrogram : @types.FeatureMatrix,
   sample_rate : Int,
@@ -100,6 +101,13 @@ pub fn chroma_from_spectrogram(
   }
   if n_fft <= 0 {
     return Err(InvalidFftSize(n_fft))
+  }
+  if !@types.is_finite(tuning) {
+    return Err(DimensionMismatch("Chroma tuning must be finite"))
+  }
+  let nyquist = sample_rate.to_double() / 2.0
+  if !@types.is_finite(f_min) || f_min < 0.0 || f_min > nyquist {
+    return Err(InvalidFrequencyRange(f_min, nyquist))
   }
   match spectrogram.validate() {
     Ok(_) => ()

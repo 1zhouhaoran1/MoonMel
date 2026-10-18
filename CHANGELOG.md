@@ -10,6 +10,7 @@
 
 ### Fixed
 
+- Chroma spectrogram extraction returns errors for non-finite tuning and invalid frequency cutoffs before filterbank access, preventing an out-of-bounds failure. Cutoffs at zero and Nyquist and zero-frame matrix shapes remain supported.
 - Spectral rolloff rejects non-finite fractions and values outside `[0, 1]`; spectral flatness rejects non-finite or nonpositive floors. Validation runs before the STFT, with valid endpoint and flat-spectrum regressions.
 - YIN keeps pitch, period and voicing confidence consistent when periodic audio is attenuated. CMNDF now normalizes every positive difference sum instead of treating quiet signals as silence; zero-difference frames remain unvoiced.
 - Delta normalization no longer overflows 32-bit integer squares in wide windows (for example, `width=100001`). The denominator now uses a constant-time floating-point sum-of-squares formula.
