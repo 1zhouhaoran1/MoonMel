@@ -6,6 +6,7 @@
 
 ### Documentation
 
+- Rewrite the bilingual project proposal for reassessment, acknowledging the shared moon-certified baseline and documenting existing incremental extraction, frame synthesis, antialias resampling and multichannel analysis with pinned comparison sources and scoped test evidence.
 - Align bilingual product, proposal, roadmap and documentation indexes with the generated-JS demo and eight-case core reference scope. Remove unsupported production/privacy/latency and competitor claims; distinguish implemented extensions from externally validated behavior and record downstream integration as pending evidence.
 
 ### Fixed

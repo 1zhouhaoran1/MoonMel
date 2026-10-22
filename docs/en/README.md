@@ -9,7 +9,7 @@ Welcome to the MoonMel technical documentation library. This directory contains 
 ## Documentation Index
 
 - [Product Specification](./PRODUCT.md): Product positioning, core capability matrix, acceptance criteria, and non-goals.
-- [Proposal & Trade-offs](./PROPOSAL.md): Problem scope, engineering choices, numerical references and remaining evidence.
+- [Project Proposal](./PROPOSAL.md): Submission scope, use cases, source-backed moon-certified comparison and validation boundaries.
 - [Formal Specification](./SPEC.md): Mathematical formulations, discretization equations, matrix dimensions, and numerical stability.
 - [Architecture & Design](./ARCHITECTURE.md): Decoupled package dependency topology, memory layout, and error propagation.
 - [API Specification](./API_SPECIFICATION.md): Public structs, configuration parameters, and function signatures.

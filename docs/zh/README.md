@@ -9,7 +9,7 @@
 ## 文档索引
 
 - [产品规格说明书 (Product Specification)](./PRODUCT.md)：产品定位、核心能力矩阵、验收标准与非目标。
-- [立项选型报告 (Proposal & Trade-offs)](./PROPOSAL.md)：问题范围、工程选择、数值参考与待补证据。
+- [项目申报书 (Project Proposal)](./PROPOSAL.md)：申报范围、使用场景、附源码证据的 moon-certified 对照及验证边界。
 - [形式化技术规范 (Formal Specification)](./SPEC.md)：数学理论模型、离散化公式、矩阵维度与数值稳定性。
 - [系统架构设计 (Architecture)](./ARCHITECTURE.md)：低耦合包依赖拓扑图、内存管理与错误处理模型。
 - [API 详细接口手册 (API Specification)](./API_SPECIFICATION.md)：所有公开类型、结构体、配置项与函数签名。
