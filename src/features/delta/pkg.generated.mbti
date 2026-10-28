@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "zhr/moonmel/src/features/delta"
+package "1zhouhaoran1/moonmel/src/features/delta"
 
 import {
-  "zhr/moonmel/src/core/types",
+  "1zhouhaoran1/moonmel/src/core/types",
 }
 
 // Values

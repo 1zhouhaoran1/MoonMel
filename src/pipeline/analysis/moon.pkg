@@ -1,7 +1,7 @@
 import {
   "moonbitlang/core/debug",
-  "zhr/moonmel/src/core/types",
-  "zhr/moonmel/src/dsp/stft",
-  "zhr/moonmel/src/features/mel",
-  "zhr/moonmel/src/features/mfcc",
+  "1zhouhaoran1/moonmel/src/core/types",
+  "1zhouhaoran1/moonmel/src/dsp/stft",
+  "1zhouhaoran1/moonmel/src/features/mel",
+  "1zhouhaoran1/moonmel/src/features/mfcc",
 }

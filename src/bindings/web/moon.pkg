@@ -6,7 +6,7 @@ pkgtype(kind: "foreign_library")
 supported_targets = "+js+wasm+wasm-gc"
 
 import {
-  "zhr/moonmel/src/facade",
+  "1zhouhaoran1/moonmel/src/facade",
   "moonbitlang/core/json",
 }
 

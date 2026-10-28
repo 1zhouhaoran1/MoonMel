@@ -1,6 +1,6 @@
 import {
   "moonbitlang/core/debug",
-  "zhr/moonmel/src/core/types",
+  "1zhouhaoran1/moonmel/src/core/types",
 }
 
 import {

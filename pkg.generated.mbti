@@ -1,20 +1,20 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "zhr/moonmel"
+package "1zhouhaoran1/moonmel"
 
 import {
-  "zhr/moonmel/src/core/types",
-  "zhr/moonmel/src/features/chroma",
-  "zhr/moonmel/src/features/contrast",
-  "zhr/moonmel/src/features/cqt",
-  "zhr/moonmel/src/features/formant",
-  "zhr/moonmel/src/features/hpss",
-  "zhr/moonmel/src/features/loudness",
-  "zhr/moonmel/src/features/lpc",
-  "zhr/moonmel/src/features/onset",
-  "zhr/moonmel/src/features/pitch",
-  "zhr/moonmel/src/features/streaming",
-  "zhr/moonmel/src/features/tempo",
-  "zhr/moonmel/src/pipeline/analysis",
+  "1zhouhaoran1/moonmel/src/core/types",
+  "1zhouhaoran1/moonmel/src/features/chroma",
+  "1zhouhaoran1/moonmel/src/features/contrast",
+  "1zhouhaoran1/moonmel/src/features/cqt",
+  "1zhouhaoran1/moonmel/src/features/formant",
+  "1zhouhaoran1/moonmel/src/features/hpss",
+  "1zhouhaoran1/moonmel/src/features/loudness",
+  "1zhouhaoran1/moonmel/src/features/lpc",
+  "1zhouhaoran1/moonmel/src/features/onset",
+  "1zhouhaoran1/moonmel/src/features/pitch",
+  "1zhouhaoran1/moonmel/src/features/streaming",
+  "1zhouhaoran1/moonmel/src/features/tempo",
+  "1zhouhaoran1/moonmel/src/pipeline/analysis",
 }
 
 // Values

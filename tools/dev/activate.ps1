@@ -5,4 +5,16 @@ if (-not (Test-Path -LiteralPath (Join-Path $candidateHome 'bin\moonc.exe'))) {
 }
 $env:MOON_HOME = $candidateHome
 $env:PATH = (Join-Path $candidateHome 'bin') + ';' + $env:PATH
+
+# Sync credentials from user ~/.moon profile into isolated toolchain
+$userCred = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.moon\credentials.json'
+if (Test-Path -LiteralPath $userCred) {
+    Copy-Item -LiteralPath $userCred -Destination (Join-Path $candidateHome 'credentials.json') -Force
+}
+
+if ($env:MOONCAKE_TOKEN_1ZHOUHAORAN1) {
+    $env:MOONCAKE_TOKEN = $env:MOONCAKE_TOKEN_1ZHOUHAORAN1
+}
+$env:MOON_TOKEN = $env:MOONCAKE_TOKEN
+
 & moonc -v

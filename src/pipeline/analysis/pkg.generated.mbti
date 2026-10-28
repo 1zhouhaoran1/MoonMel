@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "zhr/moonmel/src/pipeline/analysis"
+package "1zhouhaoran1/moonmel/src/pipeline/analysis"
 
 import {
+  "1zhouhaoran1/moonmel/src/core/types",
   "moonbitlang/core/debug",
-  "zhr/moonmel/src/core/types",
 }
 
 // Values

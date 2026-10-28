@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "zhr/moonmel/src/core/types"
+package "1zhouhaoran1/moonmel/src/core/types"
 
 import {
   "moonbitlang/core/debug",

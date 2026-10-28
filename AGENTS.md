@@ -4,7 +4,7 @@ Follows global directives from `C:/Users/www17/AGENT.md`.
 
 ## 1. Project Information
 - **Project**: MoonMel — Audio Feature Extraction for MoonBit
-- **Module**: `zhr/moonmel`
+- **Module**: `1zhouhaoran1/moonmel`
 - **License**: MIT (Copyright 2026 zhr)
 - **Author**: zhr (3449002191@qq.com)
 - **Target Platforms**: WebAssembly (WASM), JavaScript (JS), Native

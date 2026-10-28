@@ -9,7 +9,7 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "zhr/moonmel"
+name = "1zhouhaoran1/moonmel"
 
 version = "0.1.0"
 

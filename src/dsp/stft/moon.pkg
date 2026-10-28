@@ -1,7 +1,7 @@
 import {
   "moonbitlang/core/math",
-  "zhr/moonmel/src/core/types",
-  "zhr/moonmel/src/dsp/window",
-  "zhr/moonmel/src/dsp/fft",
-  "zhr/moonmel/src/dsp/framing",
+  "1zhouhaoran1/moonmel/src/core/types",
+  "1zhouhaoran1/moonmel/src/dsp/window",
+  "1zhouhaoran1/moonmel/src/dsp/fft",
+  "1zhouhaoran1/moonmel/src/dsp/framing",
 }

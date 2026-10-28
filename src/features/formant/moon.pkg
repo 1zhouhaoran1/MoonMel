@@ -1,7 +1,7 @@
 import {
   "moonbitlang/core/debug",
   "moonbitlang/core/math",
-  "zhr/moonmel/src/core/types",
-  "zhr/moonmel/src/dsp/window",
-  "zhr/moonmel/src/features/lpc",
+  "1zhouhaoran1/moonmel/src/core/types",
+  "1zhouhaoran1/moonmel/src/dsp/window",
+  "1zhouhaoran1/moonmel/src/features/lpc",
 }
