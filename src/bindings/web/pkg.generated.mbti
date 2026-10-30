@@ -10,11 +10,11 @@ pub fn analyze_config(Array[Double], @types.FeatureConfig) -> String
 
 pub fn decode_wav_audio(Array[Byte]) -> String
 
-pub fn process_audio(Array[Double], Int, Int, Int, Int, Int) -> String
+pub fn process_audio(Array[Double], Int32, Int32, Int32, Int32, Int32) -> String
 
-pub fn process_audio_config(Array[Double], Int, Int, Int, Int, Int, Int, Bool, Double) -> String
+pub fn process_audio_config(Array[Double], Int32, Int32, Int32, Int32, Int32, Int32, Bool, Double) -> String
 
-pub fn process_wav_bytes(Array[Byte], Int, Int, Int, Int) -> String
+pub fn process_wav_bytes(Array[Byte], Int32, Int32, Int32, Int32) -> String
 
 // Errors
 

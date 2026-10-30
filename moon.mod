@@ -11,7 +11,7 @@
 
 name = "1zhouhaoran1/moonmel"
 
-version = "0.1.0"
+version = "0.1.6"
 
 readme = "README.md"
 

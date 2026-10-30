@@ -97,7 +97,7 @@ pub fn stft_complex(
 pub fn istft(
   frames : Array[Array[@types.Complex]],
   config : @types.FeatureConfig,
-  length : Int,
+  length : Int32,
 ) -> Result[Array[Double], @types.MelError] {
   match config.validate() {
     Ok(_) => ()

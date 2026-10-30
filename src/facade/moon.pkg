@@ -8,6 +8,7 @@ import {
   "1zhouhaoran1/moonmel/src/dsp/resample",
   "1zhouhaoran1/moonmel/src/features/mel",
   "1zhouhaoran1/moonmel/src/features/mfcc",
+  "1zhouhaoran1/moonmel/src/features/normalize",
   "1zhouhaoran1/moonmel/src/features/delta",
   "1zhouhaoran1/moonmel/src/features/energy",
   "1zhouhaoran1/moonmel/src/features/streaming",

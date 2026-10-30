@@ -3,13 +3,13 @@ let pi : Double = 3.14159265358979323846264338327950288
 
 ///|
 /// Checks whether an integer is a power of 2.
-pub fn is_power_of_two(n : Int) -> Bool {
+pub fn is_power_of_two(n : Int32) -> Bool {
   n > 0 && (n & (n - 1)) == 0
 }
 
 ///|
 /// Computes the smallest power of 2 that is >= n.
-pub fn next_power_of_two(n : Int) -> Int {
+pub fn next_power_of_two(n : Int32) -> Int32 {
   if n <= 1 {
     return 1
   }
@@ -24,7 +24,11 @@ pub fn next_power_of_two(n : Int) -> Int {
 
 ///|
 /// In-place bit-reversal permutation for separate real and imaginary arrays.
-fn bit_reverse_permute(re : Array[Double], im : Array[Double], n : Int) -> Unit {
+fn bit_reverse_permute(
+  re : Array[Double],
+  im : Array[Double],
+  n : Int32,
+) -> Unit {
   let mut j = 0
   for i = 0; i < n - 1; i = i + 1 {
     if i < j {
@@ -49,7 +53,7 @@ fn bit_reverse_permute(re : Array[Double], im : Array[Double], n : Int) -> Unit 
 pub fn fft_in_place(
   re : Array[Double],
   im : Array[Double],
-  n : Int,
+  n : Int32,
   inverse : Bool,
 ) -> Unit {
   // This low-level kernel is radix-2 only. Reject unsafe direct calls before
@@ -162,7 +166,7 @@ pub fn ifft(
 /// Compute one-sided power or magnitude spectrum of a real frame of size n_fft.
 pub fn rfft_spectrum(
   frame : Array[Double],
-  n_fft : Int,
+  n_fft : Int32,
   power : Double,
 ) -> Result[Array[Double], @types.MelError] {
   if n_fft <= 0 {
@@ -207,7 +211,7 @@ pub fn rfft_spectrum(
 pub fn transform_in_place(
   re : Array[Double],
   im : Array[Double],
-  n : Int,
+  n : Int32,
   inverse : Bool,
 ) -> Result[Unit, @types.MelError] {
   if n <= 0 {

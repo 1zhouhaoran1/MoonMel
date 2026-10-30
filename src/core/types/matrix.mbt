@@ -4,8 +4,8 @@
 /// and n_cols = number of time frames.
 pub(all) struct FeatureMatrix {
   data : Array[Array[Double]]
-  n_rows : Int
-  n_cols : Int
+  n_rows : Int32
+  n_cols : Int32
 } derive(Debug)
 
 ///|
@@ -18,7 +18,7 @@ pub fn FeatureMatrix::new(data : Array[Array[Double]]) -> FeatureMatrix {
 
 ///|
 /// Create an empty FeatureMatrix with given dimensions initialized to 0.0.
-pub fn FeatureMatrix::zeros(n_rows : Int, n_cols : Int) -> FeatureMatrix {
+pub fn FeatureMatrix::zeros(n_rows : Int32, n_cols : Int32) -> FeatureMatrix {
   let data : Array[Array[Double]] = Array::make(n_rows, [])
   for r in 0..<n_rows {
     data[r] = Array::make(n_cols, 0.0)
@@ -28,7 +28,11 @@ pub fn FeatureMatrix::zeros(n_rows : Int, n_cols : Int) -> FeatureMatrix {
 
 ///|
 /// Get value at (row, col).
-pub fn FeatureMatrix::at(self : FeatureMatrix, row : Int, col : Int) -> Double {
+pub fn FeatureMatrix::at(
+  self : FeatureMatrix,
+  row : Int32,
+  col : Int32,
+) -> Double {
   self.data[row][col]
 }
 
@@ -36,8 +40,8 @@ pub fn FeatureMatrix::at(self : FeatureMatrix, row : Int, col : Int) -> Double {
 /// Set value at (row, col).
 pub fn FeatureMatrix::set(
   self : FeatureMatrix,
-  row : Int,
-  col : Int,
+  row : Int32,
+  col : Int32,
   val : Double,
 ) -> Unit {
   self.data[row][col] = val
@@ -45,13 +49,19 @@ pub fn FeatureMatrix::set(
 
 ///|
 /// Get a row (e.g. one frequency or cepstral channel over all time frames).
-pub fn FeatureMatrix::get_row(self : FeatureMatrix, row : Int) -> Array[Double] {
+pub fn FeatureMatrix::get_row(
+  self : FeatureMatrix,
+  row : Int32,
+) -> Array[Double] {
   self.data[row]
 }
 
 ///|
 /// Get a column / time frame (all feature channels at time t).
-pub fn FeatureMatrix::get_col(self : FeatureMatrix, col : Int) -> Array[Double] {
+pub fn FeatureMatrix::get_col(
+  self : FeatureMatrix,
+  col : Int32,
+) -> Array[Double] {
   let frame : Array[Double] = Array::make(self.n_rows, 0.0)
   for r in 0..<self.n_rows {
     frame[r] = self.data[r][col]
@@ -101,4 +111,45 @@ pub fn FeatureMatrix::validate(self : FeatureMatrix) -> Result[Unit, MelError] {
     }
   }
   Ok(())
+}
+
+///|
+/// Join consecutive [feature][frame] batches, copying data into independent rows.
+/// Empty input yields 0×0; zero-column batches retain and must match feature count.
+pub fn FeatureMatrix::concat_frames(
+  batches : Array[FeatureMatrix],
+) -> Result[FeatureMatrix, MelError] {
+  if batches.is_empty() {
+    return Ok(FeatureMatrix::zeros(0, 0))
+  }
+  let rows = batches[0].n_rows
+  let mut columns = 0
+  for batch in batches {
+    match batch.validate() {
+      Ok(_) => ()
+      Err(error) => return Err(error)
+    }
+    if batch.n_rows != rows {
+      return Err(
+        DimensionMismatch("Feature counts differ between frame batches"),
+      )
+    }
+    if batch.n_cols > 2147483647 - columns {
+      return Err(
+        DimensionMismatch("Concatenated frame count exceeds Int32 range"),
+      )
+    }
+    columns = columns + batch.n_cols
+  }
+  let output = FeatureMatrix::zeros(rows, columns)
+  let mut offset = 0
+  for batch in batches {
+    for row in 0..<rows {
+      for col in 0..<batch.n_cols {
+        output.set(row, offset + col, batch.at(row, col))
+      }
+    }
+    offset = offset + batch.n_cols
+  }
+  Ok(output)
 }

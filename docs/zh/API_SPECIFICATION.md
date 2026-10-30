@@ -13,7 +13,9 @@
 | `stft`、`stft_complex` | 实数特征矩阵或单边复数帧 |
 | `mel_filterbank`、`mel_spectrogram` | 三角滤波器组或 Mel 特征 |
 | `log_mel_spectrogram`、`mfcc` | 按配置对数压缩或倒谱系数 |
-| `decode_wav(bytes)` | 8/16 位 PCM，算术平均混合为单声道 |
+| `decode_wav(bytes)` | 8/16/24/32 位整数 PCM，算术平均混合为单声道 |
+| `decode_wav_multichannel(bytes)` | 保留文件中的声道顺序，返回多声道音频 |
+| `cmvn(matrix, normalize_variance?, variance_floor?)` | 离线逐行均值及可选总体方差归一化 |
 | `create_streaming_extractor` | 复用状态，处理左对齐完整帧 |
 
 `AudioBuffer::new` 构建验证过的音频。没有 `AudioBuffer::mfcc()`、`AudioBuffer::from_wav_bytes()`；使用上述函数。改变采样率时同步更新 `sample_rate` 与 `f_max`。Whisper 尺寸预设不等于完整模型归一化前端。
@@ -31,6 +33,16 @@
 ## 流式
 
 push、available、pop、reset 按左对齐时间线工作，即使 `center=true`。pop 会消费帧，先取 Mel 再取 MFCC 不会重复返回已消费帧。尾部不足帧不会自动补齐。大步长跨块间隔被保留。对数、DCT 配置有效；top_db 每批矩阵独立裁剪，不能宣称分批 MFCC 等于整段离线全局裁剪。
+
+0.1.6 建议对用户输入使用 `try_push_samples(chunk)`：先校验整块有限性，再写入缓冲，返回 `Result[Unit, MelError]`，空块为空操作；旧 `push_samples` 仍是不检查输入的低层入口。`buffered_samples()` 返回不含待跨越步长间隔的保留样本数。`pop_features()` 返回 `Result[StreamingFeatures, MelError]`，一次消费后从共享 Mel 派生同批 `mel`、`log_mel`、`mfcc`；无完整帧时返回对应行数的零列矩阵。
+
+`FeatureMatrix::concat_frames(batches)` 沿时间列拼接，不与输入共享数组。各批必须形状合法且特征行数一致，包括零列批次；空列表返回 0×0。保留尾部包含帧重叠样本，`reset()` 会丢弃它们。示例使用 NaturalLog，避免每批 dB 截断影响分块/离线对照。
+
+## CMVN 与 WAV 约定
+
+`cmvn` 不修改输入，按整段所有时间列计算每个特征行的统计量。默认归一化方差，使用除以帧数的总体方差，`variance_floor=1e-10`，单位为输入单位的平方；设 `normalize_variance=false` 仅减均值。常数行变为零，空矩阵保留形状；不规则矩阵、非有限值及非正/非有限下限返回 `DimensionMismatch`。缩放后的矩累积避免大有限值溢出，无法表示的中心化结果返回错误。这不是说话人统计或在线滑窗 CMVN，也不表示与 Kaldi 模型兼容。通用约定参考 [Kaldi 的 CMVN 说明](https://kaldi-asr.org/doc/transform.html)，未复制其源码。
+
+WAV 接受小端 RIFF 格式标签 1：8 位无符号、16/24/32 位有符号整数，按 `2^(bits-1)` 缩放；两种解码共享有界块解析及格式校验。浮点、压缩和 extensible 格式明确拒绝。单声道入口按全部声道平均，保留声道入口不重新解释空间布局。格式布局依据 [Microsoft WAVE 说明](https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatex)。
 
 ## 扩展功能
 

@@ -4,7 +4,7 @@ let test_cqt_pi : Double = 3.14159265358979323846
 ///|
 fn synth_sine(
   freq : Double,
-  sample_rate : Int,
+  sample_rate : Int32,
   duration : Double,
 ) -> Array[Double] {
   let num_samples = (duration * sample_rate.to_double()).to_int()

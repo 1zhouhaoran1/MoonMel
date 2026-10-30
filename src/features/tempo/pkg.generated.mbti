@@ -9,7 +9,7 @@ import {
 // Values
 pub fn tempogram(@types.AudioBuffer, @types.FeatureConfig, tempo_config? : TempoConfig) -> Result[TempogramResult, @types.MelError]
 
-pub fn tempogram_from_onset(Array[Double], Int, Int, config? : TempoConfig) -> TempogramResult
+pub fn tempogram_from_onset(Array[Double], Int32, Int32, config? : TempoConfig) -> TempogramResult
 
 // Errors
 
@@ -19,8 +19,8 @@ pub(all) struct TempoConfig {
   max_bpm : Double
   start_bpm : Double
   std_bpm : Double
-  win_length : Int
-  hop_length : Int
+  win_length : Int32
+  hop_length : Int32
 } derive(@debug.Debug)
 pub fn TempoConfig::default() -> Self
 pub fn TempoConfig::to_repr(Self) -> @debug.Repr

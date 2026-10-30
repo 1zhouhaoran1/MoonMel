@@ -2,7 +2,7 @@
 /// Re-export STFT spectrogram extraction.
 pub fn stft(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @stft.stft_spectrogram(samples, config)
 }
@@ -18,13 +18,13 @@ pub fn stft_complex(
 
 ///|
 /// Re-export Window generator.
-pub fn create_window(kind : @types.WindowType, n : Int) -> Array[Double] {
+pub fn create_window(kind : @types.WindowType, n : Int32) -> Array[Double] {
   @window.create_window(kind, n)
 }
 
 ///|
 /// Re-export Reflect padding.
-pub fn pad_reflect(samples : Array[Double], pad_width : Int) -> Array[Double] {
+pub fn pad_reflect(samples : Array[Double], pad_width : Int32) -> Array[Double] {
   @window.pad_reflect(samples, pad_width)
 }
 
@@ -56,7 +56,7 @@ pub fn fft_padded(
 /// Re-export Real FFT spectrum with zero-padding for arbitrary length frames.
 pub fn rfft_padded(
   frame : Array[Double],
-  power? : Double = 2.0,
+  power~ : Double = 2.0,
 ) -> Result[Array[Double], @types.MelError] {
   @fft.rfft_padded(frame, power)
 }
@@ -97,8 +97,8 @@ pub fn idft(
 /// Re-export Inverse STFT (ISTFT) time-domain audio reconstruction.
 pub fn istft(
   frames : Array[Array[@types.Complex]],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  length? : Int = 0,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  length~ : Int32 = 0,
 ) -> Result[Array[Double], @types.MelError] {
   @stft.istft(frames, config, length)
 }

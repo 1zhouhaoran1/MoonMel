@@ -12,8 +12,8 @@ let two_pi : Double = 2.0 * pi
 pub fn phase_vocoder(
   frames : Array[Array[@types.Complex]],
   rate : Double,
-  hop_length : Int,
-  n_fft : Int,
+  hop_length : Int32,
+  n_fft : Int32,
 ) -> Result[Array[Array[@types.Complex]], @types.MelError] {
   if !@types.is_finite(rate) || rate <= 0.0 {
     return Err(
@@ -153,7 +153,7 @@ pub fn time_stretch(
 /// `n_steps < 0`: pitch shifts down (e.g. -12 = 1 octave lower).
 pub fn pitch_shift(
   samples : Array[Double],
-  sr : Int,
+  sr : Int32,
   n_steps : Double,
   config : @types.FeatureConfig,
 ) -> Result[Array[Double], @types.MelError] {

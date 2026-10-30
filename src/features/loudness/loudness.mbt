@@ -60,7 +60,7 @@ fn log10(x : Double) -> Double {
 
 ///|
 /// Compute Stage 1 High-Shelf (Pre-filter) coefficients for given sample rate (ITU-R BS.1770-4).
-pub fn pre_filter_coeffs(sample_rate : Int) -> BiquadCoeffs {
+pub fn pre_filter_coeffs(sample_rate : Int32) -> BiquadCoeffs {
   if sample_rate == 48000 {
     return {
       b0: 1.53512485958697,
@@ -88,7 +88,7 @@ pub fn pre_filter_coeffs(sample_rate : Int) -> BiquadCoeffs {
 
 ///|
 /// Compute Stage 2 High-Pass (RLB weighting) coefficients for given sample rate (ITU-R BS.1770-4).
-pub fn rlb_filter_coeffs(sample_rate : Int) -> BiquadCoeffs {
+pub fn rlb_filter_coeffs(sample_rate : Int32) -> BiquadCoeffs {
   if sample_rate == 48000 {
     return {
       b0: 1.0,
@@ -115,7 +115,7 @@ pub fn rlb_filter_coeffs(sample_rate : Int) -> BiquadCoeffs {
 /// Apply cascaded K-weighting filters (Pre-filter then RLB weighting filter) to audio samples.
 pub fn apply_k_weighting(
   samples : Array[Double],
-  sample_rate : Int,
+  sample_rate : Int32,
 ) -> Array[Double] {
   let stage1 = BiquadFilter::new(pre_filter_coeffs(sample_rate))
   let stage2 = BiquadFilter::new(rlb_filter_coeffs(sample_rate))
@@ -172,7 +172,7 @@ fn sort_doubles(arr : Array[Double]) -> Unit {
 /// Calculate True Peak in dBFS via 4x oversampling.
 pub fn true_peak_db(
   samples : Array[Double],
-  sample_rate : Int,
+  sample_rate : Int32,
 ) -> Result[Double, @types.MelError] {
   if sample_rate <= 0 || sample_rate > 536870911 {
     return Err(InvalidSampleRate(sample_rate))

@@ -3,7 +3,7 @@
 /// The sample position and window position share the same offset.
 pub fn window_frame(
   samples : Array[Double],
-  start : Int,
+  start : Int32,
   window : Array[Double],
   output : Array[Double],
 ) -> Unit {

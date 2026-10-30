@@ -34,7 +34,7 @@ MoonMel 是 MoonBit 原生音频特征提取库，提供可验证的 STFT、Mel�
 | Mel | Slaney/HTK 三角滤波器，可选 Slaney 面积归一化 |
 | Log-Mel | dB、自然对数或 log10；可配置下限、参考值及 dB 截断 |
 | MFCC | DCT-II，可配置正交归一化 |
-| WAV | RIFF 8/16 位 PCM 解码，按声道算术平均混合为单声道 |
+| WAV | RIFF 格式标签 1 的 8/16/24/32 位整数 PCM，支持单声道混合或保留声道 |
 
 重采样、流式、频谱描述及其他已实现扩展见[路线图](ROADMAP.md)。功能可用不代表全库数值等价或标准合规。
 

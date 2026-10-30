@@ -8,8 +8,8 @@ pub(all) enum MaskMode {
 ///|
 /// Configuration parameters for Harmonic-Percussive Source Separation (HPSS).
 pub(all) struct HpssConfig {
-  kernel_harm : Int
-  kernel_perc : Int
+  kernel_harm : Int32
+  kernel_perc : Int32
   power : Double
   margin_harm : Double
   margin_perc : Double
@@ -40,7 +40,7 @@ pub(all) struct HpssResult {
 
 ///|
 /// In-place insertion sort on double array slice [0..<len].
-fn sort_in_place(buf : Array[Double], len : Int) -> Unit {
+fn sort_in_place(buf : Array[Double], len : Int32) -> Unit {
   for i in 1..<len {
     let key = buf[i]
     let mut j = i - 1
@@ -56,7 +56,7 @@ fn sort_in_place(buf : Array[Double], len : Int) -> Unit {
 /// 1D median filter with edge clamping boundary conditions.
 pub fn median_filter_1d(
   arr : Array[Double],
-  kernel_size : Int,
+  kernel_size : Int32,
 ) -> Array[Double] {
   let len = arr.length()
   if len <= 1 || kernel_size <= 1 {
@@ -96,7 +96,7 @@ pub fn median_filter_1d(
 /// Median filter along time axis (each frequency row filtered across time columns).
 pub fn median_filter_time(
   matrix : @types.FeatureMatrix,
-  kernel_size : Int,
+  kernel_size : Int32,
 ) -> @types.FeatureMatrix {
   let n_rows = matrix.n_rows
   let n_cols = matrix.n_cols
@@ -115,7 +115,7 @@ pub fn median_filter_time(
 /// Median filter along frequency axis (each time frame filtered across frequency bins).
 pub fn median_filter_freq(
   matrix : @types.FeatureMatrix,
-  kernel_size : Int,
+  kernel_size : Int32,
 ) -> @types.FeatureMatrix {
   let n_rows = matrix.n_rows
   let n_cols = matrix.n_cols

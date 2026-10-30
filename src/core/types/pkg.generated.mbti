@@ -17,11 +17,11 @@ pub fn validate_samples(Array[Double]) -> Result[Unit, MelError]
 // Types and methods
 pub(all) struct AudioBuffer {
   samples : Array[Double]
-  sample_rate : Int
+  sample_rate : Int32
 } derive(@debug.Debug)
 pub fn AudioBuffer::duration(Self) -> Double
-pub fn AudioBuffer::length(Self) -> Int
-pub fn AudioBuffer::new(Array[Double], Int) -> Result[Self, MelError]
+pub fn AudioBuffer::length(Self) -> Int32
+pub fn AudioBuffer::new(Array[Double], Int32) -> Result[Self, MelError]
 pub fn AudioBuffer::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Complex {
@@ -39,20 +39,20 @@ pub fn Complex::sub(Self, Self) -> Self
 pub fn Complex::to_repr(Self) -> @debug.Repr
 
 pub(all) struct FeatureConfig {
-  sample_rate : Int
-  n_fft : Int
-  hop_length : Int
-  win_length : Int
+  sample_rate : Int32
+  n_fft : Int32
+  hop_length : Int32
+  win_length : Int32
   window : WindowType
   center : Bool
   power : Double
-  n_mels : Int
+  n_mels : Int32
   f_min : Double
   f_max : Double
   mel_scale : MelScale
   mel_norm : MelNorm
   log_scale : LogScale
-  n_mfcc : Int
+  n_mfcc : Int32
   norm_ortho : Bool
   ref_value : Double
   amin : Double
@@ -65,19 +65,20 @@ pub fn FeatureConfig::whisper() -> Self
 
 pub(all) struct FeatureMatrix {
   data : Array[Array[Double]]
-  n_rows : Int
-  n_cols : Int
+  n_rows : Int32
+  n_cols : Int32
 } derive(@debug.Debug)
-pub fn FeatureMatrix::at(Self, Int, Int) -> Double
+pub fn FeatureMatrix::at(Self, Int32, Int32) -> Double
+pub fn FeatureMatrix::concat_frames(Array[Self]) -> Result[Self, MelError]
 pub fn FeatureMatrix::flatten(Self) -> Array[Double]
-pub fn FeatureMatrix::get_col(Self, Int) -> Array[Double]
-pub fn FeatureMatrix::get_row(Self, Int) -> Array[Double]
+pub fn FeatureMatrix::get_col(Self, Int32) -> Array[Double]
+pub fn FeatureMatrix::get_row(Self, Int32) -> Array[Double]
 pub fn FeatureMatrix::new(Array[Array[Double]]) -> Self
-pub fn FeatureMatrix::set(Self, Int, Int, Double) -> Unit
+pub fn FeatureMatrix::set(Self, Int32, Int32, Double) -> Unit
 pub fn FeatureMatrix::to_repr(Self) -> @debug.Repr
 pub fn FeatureMatrix::transpose(Self) -> Self
 pub fn FeatureMatrix::validate(Self) -> Result[Unit, MelError]
-pub fn FeatureMatrix::zeros(Int, Int) -> Self
+pub fn FeatureMatrix::zeros(Int32, Int32) -> Self
 
 pub(all) enum LogScale {
   Db
@@ -90,10 +91,10 @@ pub fn LogScale::to_repr(Self) -> @debug.Repr
 
 pub(all) enum MelError {
   EmptyAudio
-  InvalidSampleRate(Int)
-  InvalidFftSize(Int)
-  InvalidHopLength(Int)
-  InvalidMelBands(Int)
+  InvalidSampleRate(Int32)
+  InvalidFftSize(Int32)
+  InvalidHopLength(Int32)
+  InvalidMelBands(Int32)
   InvalidFrequencyRange(Double, Double)
   DimensionMismatch(String)
   WavParseError(String)
@@ -123,13 +124,13 @@ pub fn MelScale::to_repr(Self) -> @debug.Repr
 
 pub(all) struct MultiChannelAudioBuffer {
   channels : Array[Array[Double]]
-  sample_rate : Int
+  sample_rate : Int32
 } derive(@debug.Debug)
-pub fn MultiChannelAudioBuffer::channel(Self, Int) -> Result[AudioBuffer, MelError]
+pub fn MultiChannelAudioBuffer::channel(Self, Int32) -> Result[AudioBuffer, MelError]
 pub fn MultiChannelAudioBuffer::duration(Self) -> Double
-pub fn MultiChannelAudioBuffer::length(Self) -> Int
-pub fn MultiChannelAudioBuffer::new(Array[Array[Double]], Int) -> Result[Self, MelError]
-pub fn MultiChannelAudioBuffer::num_channels(Self) -> Int
+pub fn MultiChannelAudioBuffer::length(Self) -> Int32
+pub fn MultiChannelAudioBuffer::new(Array[Array[Double]], Int32) -> Result[Self, MelError]
+pub fn MultiChannelAudioBuffer::num_channels(Self) -> Int32
 pub fn MultiChannelAudioBuffer::to_mono(Self) -> AudioBuffer
 pub fn MultiChannelAudioBuffer::to_repr(Self) -> @debug.Repr
 

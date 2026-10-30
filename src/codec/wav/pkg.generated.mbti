@@ -8,6 +8,8 @@ import {
 // Values
 pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
 
+pub fn decode_wav_multichannel(Array[Byte]) -> Result[@types.MultiChannelAudioBuffer, @types.MelError]
+
 // Errors
 
 // Types and methods

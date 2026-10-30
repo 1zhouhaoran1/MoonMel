@@ -2,13 +2,15 @@
 
 [中文](../zh/ROADMAP.md)
 
-This roadmap separates implementation status from validation and release work. The first tagged release is v0.1.0; subsequent fixes are recorded under Unreleased in the [changelog](../../CHANGELOG.md). The groups below are capability inventories, not claims that v0.2.0 or v0.3.0 has been released.
+This roadmap separates implementation status from validation and release work. The first tagged release is v0.1.0; subsequent changes are recorded in the [changelog](../../CHANGELOG.md). The groups below are capability inventories, not claims that v0.2.0 or v0.3.0 has been released.
+
+Version 0.1.6 combines six development increments. See the [development series](DEVELOPMENT_SERIES.md) for the changes and local evidence.
 
 ## Implemented core
 
 - [x] Framing/windows/reflect padding, radix-2 and arbitrary-length Bluestein FFT, STFT and inverse STFT.
 - [x] Slaney/HTK Mel, configurable log compression and DCT-II MFCC with shared analysis intermediates.
-- [x] PCM 8/16-bit WAV decoding, layered packages, unified facade and a runnable minimal example.
+- [x] PCM 8/16/24/32-bit integer WAV decoding, channel-preserving entry point, layered packages, unified facade and runnable examples.
 - [x] Eight deterministic core reference cases, four-target CI and a browser demo running generated MoonBit JS in a Web Worker.
 
 The [parity report](../../tools/reference/parity_report.json) checks all Mel/Log-Mel/MFCC cells and up to 64 indexed STFT bins per frame. It is not whole-library certification. WASM/WASM-GC are compilation targets; they are not the current browser engine.
@@ -19,7 +21,8 @@ The [parity report](../../tools/reference/parity_report.json) checks all Mel/Log
 | --- | --- |
 | Delta, filtering, energy | Repeated HTK deltas with nearest-edge padding, pre/de-emphasis, time-domain frame energy and RMS |
 | Resampling | Linear, windowed-sinc, rational-factor polyphase and exact-length paths; no SciPy-default-filter parity claim |
-| Streaming | Incremental complete frames, hop-gap handling and configured Mel/MFCC; dB clipping remains per returned batch |
+| Streaming | Complete frames, hop gaps, checked chunks, aligned Mel/Log-Mel/MFCC and frame concatenation; dB clipping remains per batch |
+| Normalization | Offline utterance row-wise CMVN, optional variance normalization; no online-window or complete-model frontend claim |
 | Browser audio | WAV playback and AudioWorklet microphone capture; microphone analysis uses rolling offline windows |
 | Spectral/multichannel | Centroid, rolloff, flatness, ZCR, per-channel extraction and ILD/IPD; no parallel-execution guarantee |
 | Chroma/CQT | Pitch-class projection/normalization and direct CQT kernels |

@@ -2,11 +2,11 @@
 /// Web transport only: algorithms and orchestration belong to lower layers.
 pub fn process_audio(
   samples : Array[Double],
-  sample_rate : Int,
-  n_fft : Int,
-  hop_length : Int,
-  n_mels : Int,
-  n_mfcc : Int,
+  sample_rate : Int32,
+  n_fft : Int32,
+  hop_length : Int32,
+  n_mels : Int32,
+  n_mfcc : Int32,
 ) -> String {
   let cfg = {
     ..@facade.FeatureConfig::default(),
@@ -25,12 +25,12 @@ pub fn process_audio(
 /// Explicit framing options for reproducible browser and reference analyses.
 pub fn process_audio_config(
   samples : Array[Double],
-  sample_rate : Int,
-  n_fft : Int,
-  hop_length : Int,
-  win_length : Int,
-  n_mels : Int,
-  n_mfcc : Int,
+  sample_rate : Int32,
+  n_fft : Int32,
+  hop_length : Int32,
+  win_length : Int32,
+  n_mels : Int32,
+  n_mfcc : Int32,
   center : Bool,
   power : Double,
 ) -> String {
@@ -113,10 +113,10 @@ pub fn decode_wav_audio(bytes : Array[Byte]) -> String {
 ///|
 pub fn process_wav_bytes(
   bytes : Array[Byte],
-  n_fft : Int,
-  hop_length : Int,
-  n_mels : Int,
-  n_mfcc : Int,
+  n_fft : Int32,
+  hop_length : Int32,
+  n_mels : Int32,
+  n_mfcc : Int32,
 ) -> String {
   match @facade.decode_wav(bytes) {
     Ok(audio) =>

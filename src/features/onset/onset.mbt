@@ -2,7 +2,7 @@
 /// Onset strength computation method.
 pub(all) enum OnsetMethod {
   SpectralFlux
-  SuperFlux(Int) // Frequency filter window size (radius = size / 2)
+  SuperFlux(Int32) // Frequency filter window size (radius = size / 2)
   Energy
 } derive(Eq, Debug)
 
@@ -47,7 +47,7 @@ pub fn spectral_flux(spec : @types.FeatureMatrix) -> Array[Double] {
 /// Filter sizes <= 1 disable frequency spreading and use ordinary spectral flux.
 pub fn super_flux(
   spec : @types.FeatureMatrix,
-  filter_size : Int,
+  filter_size : Int32,
 ) -> Array[Double] {
   if filter_size <= 1 {
     return spectral_flux(spec)
@@ -139,15 +139,15 @@ pub fn onset_strength(
 /// Adaptive local threshold peak picking for onset detection (librosa.util.peak_pick aligned).
 pub fn peak_pick(
   envelope : Array[Double],
-  pre_max? : Int = 3,
-  post_max? : Int = 3,
-  pre_avg? : Int = 3,
-  post_avg? : Int = 3,
-  delta? : Double = 0.05,
-  wait? : Int = 3,
-) -> Array[Int] {
+  pre_max~ : Int32 = 3,
+  post_max~ : Int32 = 3,
+  pre_avg~ : Int32 = 3,
+  post_avg~ : Int32 = 3,
+  delta~ : Double = 0.05,
+  wait~ : Int32 = 3,
+) -> Array[Int32] {
   let len = envelope.length()
-  let peaks : Array[Int] = []
+  let peaks : Array[Int32] = []
   if len == 0 {
     return peaks
   }
@@ -203,7 +203,7 @@ pub fn peak_pick(
 pub fn onset_strength_audio(
   audio : @types.AudioBuffer,
   config : @types.FeatureConfig,
-  onset_config? : OnsetConfig = OnsetConfig::default(),
+  onset_config~ : OnsetConfig = OnsetConfig::default(),
 ) -> Result[Array[Double], @types.MelError] {
   match @stft.stft_spectrogram(audio.samples, config) {
     Ok(spec) => Ok(onset_strength(spec, onset_config))
@@ -216,10 +216,10 @@ pub fn onset_strength_audio(
 pub fn onset_detect_audio(
   audio : @types.AudioBuffer,
   config : @types.FeatureConfig,
-  onset_config? : OnsetConfig = OnsetConfig::default(),
-  delta? : Double = 0.05,
-  wait? : Int = 3,
-) -> Result[Array[Int], @types.MelError] {
+  onset_config~ : OnsetConfig = OnsetConfig::default(),
+  delta~ : Double = 0.05,
+  wait~ : Int32 = 3,
+) -> Result[Array[Int32], @types.MelError] {
   match onset_strength_audio(audio, config, onset_config~) {
     Ok(env) => Ok(peak_pick(env, delta~, wait~))
     Err(e) => Err(e)

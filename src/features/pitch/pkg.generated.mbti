@@ -9,11 +9,11 @@ import {
 // Values
 pub fn cumulative_mean_normalized_difference(Array[Double]) -> Array[Double]
 
-pub fn difference_function(Array[Double], Int) -> Array[Double]
+pub fn difference_function(Array[Double], Int32) -> Array[Double]
 
 pub fn pitch_yin(@types.AudioBuffer, config? : YinConfig) -> Result[PitchTrack, @types.MelError]
 
-pub fn yin_frame(Array[Double], Int, Double, Double, Double) -> (Double, Double, Double)
+pub fn yin_frame(Array[Double], Int32, Double, Double, Double) -> (Double, Double, Double)
 
 // Errors
 
@@ -29,8 +29,8 @@ pub(all) struct YinConfig {
   f_min : Double
   f_max : Double
   threshold : Double
-  frame_length : Int
-  hop_length : Int
+  frame_length : Int32
+  hop_length : Int32
 } derive(@debug.Debug)
 pub fn YinConfig::default() -> Self
 pub fn YinConfig::to_repr(Self) -> @debug.Repr

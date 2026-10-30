@@ -10,7 +10,7 @@ pub fn mel_filterbank(
 /// Re-export Mel Spectrogram extraction.
 pub fn mel_spectrogram(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @mel.mel_spectrogram(samples, config)
 }
@@ -19,7 +19,7 @@ pub fn mel_spectrogram(
 /// Re-export Log-Mel Spectrogram extraction.
 pub fn log_mel_spectrogram(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @mfcc.log_mel_spectrogram(samples, config)
 }
@@ -28,7 +28,7 @@ pub fn log_mel_spectrogram(
 /// Re-export MFCC extraction.
 pub fn mfcc(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @mfcc.mfcc(samples, config)
 }
@@ -48,7 +48,7 @@ pub fn power_to_db(
 /// Re-export DCT-II calculation.
 pub fn dct_ii(
   input : Array[Double],
-  n_out : Int,
+  n_out : Int32,
   norm_ortho : Bool,
 ) -> Array[Double] {
   @mfcc.dct_ii(input, n_out, norm_ortho)
@@ -58,8 +58,8 @@ pub fn dct_ii(
 /// Re-export Delta / Delta-Delta dynamic feature calculation.
 pub fn compute_delta(
   matrix : @types.FeatureMatrix,
-  width? : Int = 9,
-  order? : Int = 1,
+  width~ : Int32 = 9,
+  order~ : Int32 = 1,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @delta.compute_delta(matrix, width~, order~)
 }
@@ -68,9 +68,9 @@ pub fn compute_delta(
 /// Re-export Root Mean Square (RMS) frame energy extraction.
 pub fn compute_rms(
   audio : @types.AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true,
+  frame_length~ : Int32 = 2048,
+  hop_length~ : Int32 = 512,
+  center~ : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @energy.compute_rms(audio, frame_length~, hop_length~, center~)
 }
@@ -79,9 +79,9 @@ pub fn compute_rms(
 /// Re-export total frame sum-of-squares energy extraction.
 pub fn compute_energy(
   audio : @types.AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true,
+  frame_length~ : Int32 = 2048,
+  hop_length~ : Int32 = 512,
+  center~ : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @energy.compute_energy(audio, frame_length~, hop_length~, center~)
 }
@@ -90,7 +90,7 @@ pub fn compute_energy(
 /// Re-export Spectral Centroid extraction.
 pub fn spectral_centroid(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @spectral.spectral_centroid(samples, config~)
 }
@@ -99,8 +99,8 @@ pub fn spectral_centroid(
 /// Re-export Spectral Rolloff extraction.
 pub fn spectral_rolloff(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  roll_percent? : Double = 0.85,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  roll_percent~ : Double = 0.85,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @spectral.spectral_rolloff(samples, config~, roll_percent~)
 }
@@ -109,8 +109,8 @@ pub fn spectral_rolloff(
 /// Re-export Spectral Flatness extraction.
 pub fn spectral_flatness(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  amin? : Double = 1.0e-10,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  amin~ : Double = 1.0e-10,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @spectral.spectral_flatness(samples, config~, amin~)
 }
@@ -119,9 +119,9 @@ pub fn spectral_flatness(
 /// Re-export Zero-Crossing Rate extraction.
 pub fn zero_crossing_rate(
   audio : @types.AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true,
+  frame_length~ : Int32 = 2048,
+  hop_length~ : Int32 = 512,
+  center~ : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @spectral.zero_crossing_rate(audio, frame_length~, hop_length~, center~)
 }
@@ -132,17 +132,17 @@ pub type ChromaNorm = @chroma.ChromaNorm
 
 ///|
 /// Re-export pitch class name mapping.
-pub fn pitch_class_name(idx : Int) -> String {
+pub fn pitch_class_name(idx : Int32) -> String {
   @chroma.pitch_class_name(idx)
 }
 
 ///|
 /// Re-export Chroma filterbank generation.
 pub fn chroma_filterbank(
-  sample_rate : Int,
-  n_fft : Int,
-  tuning? : Double = 0.0,
-  f_min? : Double = 0.0,
+  sample_rate : Int32,
+  n_fft : Int32,
+  tuning~ : Double = 0.0,
+  f_min~ : Double = 0.0,
 ) -> @types.FeatureMatrix {
   @chroma.chroma_filterbank(sample_rate, n_fft, tuning, f_min)
 }
@@ -151,11 +151,11 @@ pub fn chroma_filterbank(
 /// Re-export Chroma from spectrogram.
 pub fn chroma_from_spectrogram(
   spectrogram : @types.FeatureMatrix,
-  sample_rate : Int,
-  n_fft : Int,
-  norm? : @chroma.ChromaNorm = @chroma.ChromaNorm::None,
-  tuning? : Double = 0.0,
-  f_min? : Double = 0.0,
+  sample_rate : Int32,
+  n_fft : Int32,
+  norm~ : @chroma.ChromaNorm = @chroma.ChromaNorm::None,
+  tuning~ : Double = 0.0,
+  f_min~ : Double = 0.0,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @chroma.chroma_from_spectrogram(
     spectrogram, sample_rate, n_fft, norm, tuning, f_min,
@@ -166,8 +166,8 @@ pub fn chroma_from_spectrogram(
 /// Re-export 12-bin Chroma STFT feature extraction.
 pub fn chroma_stft(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  norm? : @chroma.ChromaNorm = @chroma.ChromaNorm::None,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  norm~ : @chroma.ChromaNorm = @chroma.ChromaNorm::None,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @chroma.chroma_stft(samples, config, norm)
 }
@@ -186,7 +186,7 @@ pub fn cqt_frequencies(config : @cqt.CqtConfig) -> Array[Double] {
 /// Re-export Constant-Q Transform (CQT) feature extraction.
 pub fn cqt(
   samples : Array[Double],
-  config? : @cqt.CqtConfig = @cqt.CqtConfig::default(),
+  config~ : @cqt.CqtConfig = @cqt.CqtConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   @cqt.cqt(samples, config~)
 }
@@ -207,7 +207,7 @@ pub type HpssResult = @hpss.HpssResult
 /// Re-export 1D median filter.
 pub fn median_filter_1d(
   arr : Array[Double],
-  kernel_size : Int,
+  kernel_size : Int32,
 ) -> Array[Double] {
   @hpss.median_filter_1d(arr, kernel_size)
 }
@@ -216,7 +216,7 @@ pub fn median_filter_1d(
 /// Re-export 2D median filter along time axis.
 pub fn median_filter_time(
   matrix : @types.FeatureMatrix,
-  kernel_size : Int,
+  kernel_size : Int32,
 ) -> @types.FeatureMatrix {
   @hpss.median_filter_time(matrix, kernel_size)
 }
@@ -225,7 +225,7 @@ pub fn median_filter_time(
 /// Re-export 2D median filter along frequency axis.
 pub fn median_filter_freq(
   matrix : @types.FeatureMatrix,
-  kernel_size : Int,
+  kernel_size : Int32,
 ) -> @types.FeatureMatrix {
   @hpss.median_filter_freq(matrix, kernel_size)
 }
@@ -234,7 +234,7 @@ pub fn median_filter_freq(
 /// Re-export Harmonic-Percussive Source Separation (HPSS) on spectrogram.
 pub fn hpss(
   spec : @types.FeatureMatrix,
-  config? : @hpss.HpssConfig = @hpss.HpssConfig::default(),
+  config~ : @hpss.HpssConfig = @hpss.HpssConfig::default(),
 ) -> @hpss.HpssResult {
   @hpss.hpss(spec, config)
 }
@@ -243,8 +243,8 @@ pub fn hpss(
 /// Re-export HPSS directly from PCM audio samples.
 pub fn hpss_from_audio(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  hpss_config? : @hpss.HpssConfig = @hpss.HpssConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  hpss_config~ : @hpss.HpssConfig = @hpss.HpssConfig::default(),
 ) -> Result[@hpss.HpssResult, @types.MelError] {
   match @types.AudioBuffer::new(samples, config.sample_rate) {
     Ok(audio) => @hpss.hpss_from_audio(audio, config, hpss_config)
@@ -282,7 +282,7 @@ pub fn spectral_flux(spec : @types.FeatureMatrix) -> Array[Double] {
 /// Re-export SuperFlux computation.
 pub fn super_flux(
   spec : @types.FeatureMatrix,
-  filter_size : Int,
+  filter_size : Int32,
 ) -> Array[Double] {
   @onset.super_flux(spec, filter_size)
 }
@@ -291,7 +291,7 @@ pub fn super_flux(
 /// Re-export onset strength envelope computation.
 pub fn onset_strength(
   spec : @types.FeatureMatrix,
-  config? : @onset.OnsetConfig = @onset.OnsetConfig::default(),
+  config~ : @onset.OnsetConfig = @onset.OnsetConfig::default(),
 ) -> Array[Double] {
   @onset.onset_strength(spec, config)
 }
@@ -300,13 +300,13 @@ pub fn onset_strength(
 /// Re-export adaptive peak picking.
 pub fn peak_pick(
   envelope : Array[Double],
-  pre_max? : Int = 3,
-  post_max? : Int = 3,
-  pre_avg? : Int = 3,
-  post_avg? : Int = 3,
-  delta? : Double = 0.05,
-  wait? : Int = 3,
-) -> Array[Int] {
+  pre_max~ : Int32 = 3,
+  post_max~ : Int32 = 3,
+  pre_avg~ : Int32 = 3,
+  post_avg~ : Int32 = 3,
+  delta~ : Double = 0.05,
+  wait~ : Int32 = 3,
+) -> Array[Int32] {
   @onset.peak_pick(
     envelope,
     pre_max~,
@@ -322,8 +322,8 @@ pub fn peak_pick(
 /// Re-export onset strength envelope directly from audio samples.
 pub fn onset_strength_audio(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  onset_config? : @onset.OnsetConfig = @onset.OnsetConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  onset_config~ : @onset.OnsetConfig = @onset.OnsetConfig::default(),
 ) -> Result[Array[Double], @types.MelError] {
   match @types.AudioBuffer::new(samples, config.sample_rate) {
     Ok(audio) => @onset.onset_strength_audio(audio, config, onset_config~)
@@ -335,11 +335,11 @@ pub fn onset_strength_audio(
 /// Re-export onset frame detection directly from audio samples.
 pub fn onset_detect_audio(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  onset_config? : @onset.OnsetConfig = @onset.OnsetConfig::default(),
-  delta? : Double = 0.05,
-  wait? : Int = 3,
-) -> Result[Array[Int], @types.MelError] {
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  onset_config~ : @onset.OnsetConfig = @onset.OnsetConfig::default(),
+  delta~ : Double = 0.05,
+  wait~ : Int32 = 3,
+) -> Result[Array[Int32], @types.MelError] {
   match @types.AudioBuffer::new(samples, config.sample_rate) {
     Ok(audio) =>
       @onset.onset_detect_audio(audio, config, onset_config~, delta~, wait~)
@@ -359,9 +359,9 @@ pub type TempogramResult = @tempo.TempogramResult
 /// Re-export tempogram from onset envelope.
 pub fn tempogram_from_onset(
   onset_env : Array[Double],
-  sample_rate : Int,
-  hop_length : Int,
-  config? : @tempo.TempoConfig = @tempo.TempoConfig::default(),
+  sample_rate : Int32,
+  hop_length : Int32,
+  config~ : @tempo.TempoConfig = @tempo.TempoConfig::default(),
 ) -> @tempo.TempogramResult {
   @tempo.tempogram_from_onset(onset_env, sample_rate, hop_length, config~)
 }
@@ -370,8 +370,8 @@ pub fn tempogram_from_onset(
 /// Re-export tempogram and tempo estimation on audio samples.
 pub fn tempogram(
   samples : Array[Double],
-  feature_config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  tempo_config? : @tempo.TempoConfig = @tempo.TempoConfig::default(),
+  feature_config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  tempo_config~ : @tempo.TempoConfig = @tempo.TempoConfig::default(),
 ) -> Result[@tempo.TempogramResult, @types.MelError] {
   match @types.AudioBuffer::new(samples, feature_config.sample_rate) {
     Ok(audio) => @tempo.tempogram(audio, feature_config, tempo_config~)
@@ -387,9 +387,9 @@ pub type ContrastConfig = @contrast.ContrastConfig
 /// Re-export Octave Spectral Contrast from magnitude spectrogram.
 pub fn spectral_contrast(
   spec : @types.FeatureMatrix,
-  sample_rate : Int,
-  n_fft : Int,
-  config? : @contrast.ContrastConfig = @contrast.ContrastConfig::default(),
+  sample_rate : Int32,
+  n_fft : Int32,
+  config~ : @contrast.ContrastConfig = @contrast.ContrastConfig::default(),
 ) -> @types.FeatureMatrix {
   @contrast.spectral_contrast(spec, sample_rate, n_fft, config~)
 }
@@ -398,8 +398,8 @@ pub fn spectral_contrast(
 /// Re-export Octave Spectral Contrast directly from audio samples.
 pub fn spectral_contrast_audio(
   samples : Array[Double],
-  feature_config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  contrast_config? : @contrast.ContrastConfig = @contrast.ContrastConfig::default(),
+  feature_config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  contrast_config~ : @contrast.ContrastConfig = @contrast.ContrastConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   match @types.AudioBuffer::new(samples, feature_config.sample_rate) {
     Ok(audio) =>

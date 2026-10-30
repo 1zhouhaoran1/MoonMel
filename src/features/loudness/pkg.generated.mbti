@@ -7,15 +7,15 @@ import {
 }
 
 // Values
-pub fn apply_k_weighting(Array[Double], Int) -> Array[Double]
+pub fn apply_k_weighting(Array[Double], Int32) -> Array[Double]
 
 pub fn loudness_meter(@types.AudioBuffer) -> Result[LoudnessResult, @types.MelError]
 
-pub fn pre_filter_coeffs(Int) -> BiquadCoeffs
+pub fn pre_filter_coeffs(Int32) -> BiquadCoeffs
 
-pub fn rlb_filter_coeffs(Int) -> BiquadCoeffs
+pub fn rlb_filter_coeffs(Int32) -> BiquadCoeffs
 
-pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
+pub fn true_peak_db(Array[Double], Int32) -> Result[Double, @types.MelError]
 
 // Errors
 

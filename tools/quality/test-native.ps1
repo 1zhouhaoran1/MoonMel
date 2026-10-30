@@ -1,28 +1,15 @@
 param([switch]$Build)
 $ErrorActionPreference = 'Stop'
 $repositoryRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$originalCompiler = $env:MOON_CC
-$originalArchiver = $env:MOON_AR
+Push-Location $repositoryRoot
 try {
-    if ($IsWindows -and -not $env:MOON_CC) {
-        $compilerPath = (Get-Command gcc -ErrorAction Stop).Source
-        $env:MOON_AR = (Get-Command ar -ErrorAction Stop).Source
-        $buildDirectory = Join-Path $repositoryRoot '_build'
-        New-Item -ItemType Directory -Path $buildDirectory -Force | Out-Null
-        $wrapperPath = Join-Path $buildDirectory 'gcc-native.cmd'
-        # MoonBit's Windows random runtime needs the MinGW rand_s declaration.
-        Set-Content -LiteralPath $wrapperPath -Encoding ascii -Value "@echo off`r`n`"$compilerPath`" -D_CRT_RAND_S %*"
-        $env:MOON_CC = $wrapperPath
-    }
-    Push-Location $repositoryRoot
-    try {
-        if ($Build) { & moon build --target native --release }
-        else { & moon test --target native --deny-warn }
-        $testExitCode = $LASTEXITCODE
-    }
-    finally { Pop-Location }
+    # Let Moon select its supported native compiler. MoonBit 0.10.18 requires
+    # MSVC on Windows; a MinGW wrapper cannot compile the complete runtime.
+    # Explicit caller MOON_CC/MOON_AR settings remain untouched.
+    if ($Build) { & moon build --target native --release }
+    else { & moon test --target native --deny-warn }
+    $testExitCode = $LASTEXITCODE
 } finally {
-    $env:MOON_CC = $originalCompiler
-    $env:MOON_AR = $originalArchiver
+    Pop-Location
 }
 exit $testExitCode

@@ -8,7 +8,10 @@ pub(all) struct LpcResult {
 
 ///|
 /// Compute biased autocorrelation sequence up to max_lag.
-pub fn autocorrelation(samples : Array[Double], max_lag : Int) -> Array[Double] {
+pub fn autocorrelation(
+  samples : Array[Double],
+  max_lag : Int32,
+) -> Array[Double] {
   let len = samples.length()
   if max_lag < 0 {
     return []
@@ -33,7 +36,7 @@ pub fn autocorrelation(samples : Array[Double], max_lag : Int) -> Array[Double] 
 /// Solve LPC all-pole filter via Levinson-Durbin recursion algorithm.
 pub fn levinson_durbin(
   r : Array[Double],
-  order : Int,
+  order : Int32,
 ) -> Result[LpcResult, @types.MelError] {
   if order <= 0 {
     return Err(DimensionMismatch("LPC order must be positive: \{order}"))
@@ -104,7 +107,7 @@ pub fn levinson_durbin(
 /// Direct LPC analysis on a frame of audio samples.
 pub fn lpc(
   samples : Array[Double],
-  order : Int,
+  order : Int32,
 ) -> Result[LpcResult, @types.MelError] {
   if samples.is_empty() {
     return Err(EmptyAudio)
@@ -121,7 +124,7 @@ pub fn lpc(
 pub fn lpc_to_lpcc(
   lpc_coeffs : Array[Double],
   prediction_error : Double,
-  n_lpcc : Int,
+  n_lpcc : Int32,
 ) -> Array[Double] {
   let p = lpc_coeffs.length()
   if n_lpcc <= 0 {
@@ -199,9 +202,9 @@ pub fn lpc_residual(
 /// Extract frame-wise LPC feature matrix [order x n_frames].
 pub fn lpc_features(
   samples : Array[Double],
-  order : Int,
-  frame_length : Int,
-  hop_length : Int,
+  order : Int32,
+  frame_length : Int32,
+  hop_length : Int32,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   let len = samples.length()
   if len == 0 {
@@ -245,10 +248,10 @@ pub fn lpc_features(
 /// Extract frame-wise Linear Prediction Cepstral Coefficients (LPCC) matrix [n_lpcc x n_frames].
 pub fn lpcc_features(
   samples : Array[Double],
-  order : Int,
-  n_lpcc : Int,
-  frame_length : Int,
-  hop_length : Int,
+  order : Int32,
+  n_lpcc : Int32,
+  frame_length : Int32,
+  hop_length : Int32,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   let len = samples.length()
   if len == 0 {

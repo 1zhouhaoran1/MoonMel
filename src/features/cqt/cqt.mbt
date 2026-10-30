@@ -6,11 +6,11 @@ let cqt_pi : Double = 3.14159265358979323846264338327950288
 ///|
 /// Configuration for Constant-Q Transform.
 pub(all) struct CqtConfig {
-  sample_rate : Int
-  hop_length : Int
+  sample_rate : Int32
+  hop_length : Int32
   f_min : Double
-  n_bins : Int
-  bins_per_octave : Int
+  n_bins : Int32
+  bins_per_octave : Int32
   tuning : Double
   power : Double
 } derive(Eq, Debug)
@@ -77,7 +77,7 @@ pub fn cqt_frequencies(config : CqtConfig) -> Array[Double] {
 ///|
 /// Precomputed CQT filter kernel for a single frequency bin.
 priv struct CqtKernel {
-  n_samples : Int
+  n_samples : Int32
   kernel_re : Array[Double]
   kernel_im : Array[Double]
 }
@@ -126,7 +126,7 @@ fn build_cqt_kernels(
 /// Returns FeatureMatrix of shape [n_bins, n_frames].
 pub fn cqt(
   samples : Array[Double],
-  config? : CqtConfig = CqtConfig::default(),
+  config~ : CqtConfig = CqtConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   match config.validate() {
     Ok(_) => ()

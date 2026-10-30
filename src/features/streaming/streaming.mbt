@@ -8,16 +8,24 @@ pub(all) struct StreamingExtractor {
   window : Array[Double]
   filterbank : @types.FeatureMatrix
   mut buffer : Array[Double]
-  mut buffer_start : Int
+  mut buffer_start : Int32
   fft_re : Array[Double]
   fft_im : Array[Double]
   spec_buffer : Array[Double]
 }
 
 ///|
+/// Three views of the same consumed batch. dB clipping is local to this batch.
+pub(all) struct StreamingFeatures {
+  mel : @types.FeatureMatrix
+  log_mel : @types.FeatureMatrix
+  mfcc : @types.FeatureMatrix
+}
+
+///|
 /// Create a new streaming extractor with precomputed window and filterbank.
 pub fn StreamingExtractor::new(
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[StreamingExtractor, @types.MelError] {
   match config.validate() {
     Ok(_) => ()
@@ -56,8 +64,37 @@ pub fn StreamingExtractor::push_samples(
 }
 
 ///|
+/// Validate a complete chunk before appending any samples. Empty chunks are no-ops.
+/// Use this API for untrusted input; legacy push_samples accepts unchecked PCM.
+pub fn StreamingExtractor::try_push_samples(
+  self : StreamingExtractor,
+  chunk : Array[Double],
+) -> Result[Unit, @types.MelError] {
+  if chunk.is_empty() {
+    return Ok(())
+  }
+  match @types.validate_samples(chunk) {
+    Ok(_) => ()
+    Err(error) => return Err(error)
+  }
+  self.push_samples(chunk)
+  Ok(())
+}
+
+///|
+/// Number of retained samples, excluding any pending gap for hop > n_fft.
+pub fn StreamingExtractor::buffered_samples(self : StreamingExtractor) -> Int32 {
+  let count = self.buffer.length() - self.buffer_start
+  if count > 0 {
+    count
+  } else {
+    0
+  }
+}
+
+///|
 /// Returns the number of ready full frames available for extraction.
-pub fn StreamingExtractor::available_frames(self : StreamingExtractor) -> Int {
+pub fn StreamingExtractor::available_frames(self : StreamingExtractor) -> Int32 {
   let n_fft = self.config.n_fft
   let hop = self.config.hop_length
   let len = self.buffer.length() - self.buffer_start
@@ -141,15 +178,28 @@ pub fn StreamingExtractor::pop_mel_frames(
 pub fn StreamingExtractor::pop_mfcc_frames(
   self : StreamingExtractor,
 ) -> @types.FeatureMatrix {
+  match self.pop_features() {
+    Ok(features) => features.mfcc
+    Err(_) => abort("Validated streaming feature batch is inconsistent")
+  }
+}
+
+///|
+/// Consume ready frames once and derive Mel, Log-Mel and MFCC from shared Mel data.
+/// Calling separate pop methods consumes different batches; use this for aligned outputs.
+pub fn StreamingExtractor::pop_features(
+  self : StreamingExtractor,
+) -> Result[StreamingFeatures, @types.MelError] {
   let mel_mat = self.pop_mel_frames()
   let log_mel = match @mfcc.log_mel_from_mel(mel_mat, self.config) {
     Ok(value) => value
-    Err(_) => abort("Validated streaming Mel matrix is inconsistent")
+    Err(error) => return Err(error)
   }
-  match @mfcc.mfcc_from_log_mel(log_mel, self.config) {
+  let mfcc = match @mfcc.mfcc_from_log_mel(log_mel, self.config) {
     Ok(value) => value
-    Err(_) => abort("Validated streaming Log-Mel matrix is inconsistent")
+    Err(error) => return Err(error)
   }
+  Ok({ mel: mel_mat, log_mel, mfcc, })
 }
 
 ///|

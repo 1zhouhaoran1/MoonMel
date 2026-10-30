@@ -6,9 +6,9 @@ import {
 }
 
 // Values
-pub fn compute_energy(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn compute_energy(@types.AudioBuffer, frame_length? : Int32, hop_length? : Int32, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn compute_rms(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn compute_rms(@types.AudioBuffer, frame_length? : Int32, hop_length? : Int32, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
 // Errors
 

@@ -4,7 +4,7 @@ pub let pi : Double = 3.14159265358979323846264338327950288
 
 ///|
 /// Generate a window array of length `n` based on WindowType.
-pub fn create_window(kind : @types.WindowType, n : Int) -> Array[Double] {
+pub fn create_window(kind : @types.WindowType, n : Int32) -> Array[Double] {
   if n <= 0 {
     return []
   }
@@ -58,7 +58,7 @@ pub fn create_window(kind : @types.WindowType, n : Int) -> Array[Double] {
 ///|
 /// Helper to map an out-of-bounds index using reflect mode (d c b a | a b c d | c b a).
 /// O(1) modulo mapping to handle arbitrarily large padding widths with zero iteration overhead.
-pub fn reflect_index(idx : Int, len : Int) -> Int {
+pub fn reflect_index(idx : Int32, len : Int32) -> Int32 {
   if len <= 1 {
     return 0
   }
@@ -76,7 +76,7 @@ pub fn reflect_index(idx : Int, len : Int) -> Int {
 
 ///|
 /// Pad audio samples using reflect padding, matching librosa center=True.
-pub fn pad_reflect(samples : Array[Double], pad_width : Int) -> Array[Double] {
+pub fn pad_reflect(samples : Array[Double], pad_width : Int32) -> Array[Double] {
   let len = samples.length()
   if pad_width <= 0 || len == 0 {
     return samples.copy()

@@ -7,15 +7,15 @@ import {
 }
 
 // Values
-pub fn durand_kerner(Array[Double], max_iters? : Int, tol? : Double) -> Array[@types.Complex]
+pub fn durand_kerner(Array[Double], max_iters? : Int32, tol? : Double) -> Array[@types.Complex]
 
-pub fn formant_frequencies(Array[FormantFrame], Int, fallback? : Double) -> Array[Double]
+pub fn formant_frequencies(Array[FormantFrame], Int32, fallback? : Double) -> Array[Double]
 
-pub fn formant_track(Array[Double], Int, config? : FormantConfig) -> Result[Array[FormantFrame], @types.MelError]
+pub fn formant_track(Array[Double], Int32, config? : FormantConfig) -> Result[Array[FormantFrame], @types.MelError]
 
-pub fn formants_frame(Array[Double], Int, config? : FormantConfig) -> Result[FormantFrame, @types.MelError]
+pub fn formants_frame(Array[Double], Int32, config? : FormantConfig) -> Result[FormantFrame, @types.MelError]
 
-pub fn formants_from_lpc(Array[Double], Int, FormantConfig) -> FormantFrame
+pub fn formants_from_lpc(Array[Double], Int32, FormantConfig) -> FormantFrame
 
 // Errors
 
@@ -29,13 +29,13 @@ pub fn Formant::not_equal(Self, Self) -> Bool
 pub fn Formant::to_repr(Self) -> @debug.Repr
 
 pub(all) struct FormantConfig {
-  lpc_order : Int
+  lpc_order : Int32
   min_frequency : Double
   max_frequency : Double
   max_bandwidth : Double
   pre_emphasis : Double
-  frame_length : Int
-  hop_length : Int
+  frame_length : Int32
+  hop_length : Int32
 } derive(@debug.Debug)
 pub fn FormantConfig::default() -> Self
 pub fn FormantConfig::to_repr(Self) -> @debug.Repr

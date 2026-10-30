@@ -115,7 +115,7 @@ pub fn log_mel_from_mel(
 /// Compute Discrete Cosine Transform Type-II (DCT-II).
 pub fn dct_ii(
   input : Array[Double],
-  n_out : Int,
+  n_out : Int32,
   norm_ortho : Bool,
 ) -> Array[Double] {
   let n_in = input.length()

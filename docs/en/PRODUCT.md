@@ -34,7 +34,7 @@ The [online demo](https://1zhouhaoran1.github.io/MoonMel/) supports synthetic si
 | Mel | Slaney/HTK triangular filters and optional Slaney area normalization |
 | Log-Mel | dB, natural log or log10; configured floor/reference and dB clipping |
 | MFCC | DCT-II, with configurable orthonormal scaling |
-| WAV | RIFF PCM 8/16-bit decoding and arithmetic channel downmix to mono |
+| WAV | RIFF format-tag 1 integer PCM 8/16/24/32-bit; mono downmix or preserved channels |
 
 Resampling, streaming, spectral descriptors and other implemented extensions are listed in the [roadmap](ROADMAP.md). Availability is not a claim of whole-library numerical equivalence or standards compliance.
 

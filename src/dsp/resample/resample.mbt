@@ -5,8 +5,8 @@
 /// Fast and lightweight, suitable for small sample rate adjustments or low-power embedded environments.
 pub fn resample_linear(
   samples : Array[Double],
-  orig_sr : Int,
-  target_sr : Int,
+  orig_sr : Int32,
+  target_sr : Int32,
 ) -> Result[Array[Double], @types.MelError] {
   if orig_sr <= 0 {
     return Err(@types.MelError::InvalidSampleRate(orig_sr))
@@ -57,9 +57,9 @@ pub fn resample_linear(
 /// Automatically applies Nyquist antialiasing low-pass filter during downsampling.
 pub fn resample_sinc(
   samples : Array[Double],
-  orig_sr : Int,
-  target_sr : Int,
-  filter_size? : Int = 16,
+  orig_sr : Int32,
+  target_sr : Int32,
+  filter_size~ : Int32 = 16,
 ) -> Result[Array[Double], @types.MelError] {
   if filter_size <= 0 {
     return Err(DimensionMismatch("filter_size must be positive"))
@@ -150,7 +150,7 @@ pub fn resample_sinc(
 
 ///|
 /// Greatest common divisor for rational resampling factor reduction.
-fn gcd(a : Int, b : Int) -> Int {
+fn gcd(a : Int32, b : Int32) -> Int32 {
   let mut x = if a < 0 { -a } else { a }
   let mut y = if b < 0 { -b } else { b }
   while y != 0 {
@@ -170,9 +170,9 @@ fn gcd(a : Int, b : Int) -> Int {
 /// Uses precomputed polyphase FIR filter banks for fast, artifact-free up/downsampling.
 pub fn resample_polyphase(
   samples : Array[Double],
-  orig_sr : Int,
-  target_sr : Int,
-  half_len? : Int = 10,
+  orig_sr : Int32,
+  target_sr : Int32,
+  half_len~ : Int32 = 10,
 ) -> Result[Array[Double], @types.MelError] {
   if half_len <= 0 {
     return Err(DimensionMismatch("half_len must be positive"))
@@ -275,8 +275,8 @@ pub fn resample_polyphase(
 /// Production-grade audio resampler automatically choosing optimal algorithm.
 pub fn resample(
   samples : Array[Double],
-  orig_sr : Int,
-  target_sr : Int,
+  orig_sr : Int32,
+  target_sr : Int32,
 ) -> Result[Array[Double], @types.MelError] {
   resample_polyphase(samples, orig_sr, target_sr)
 }
@@ -285,8 +285,8 @@ pub fn resample(
 /// Resamples arbitrary audio signal to an exact target length using windowed-sinc interpolation.
 pub fn resample_to_length(
   samples : Array[Double],
-  target_len : Int,
-  filter_size? : Int = 16,
+  target_len : Int32,
+  filter_size~ : Int32 = 16,
 ) -> Result[Array[Double], @types.MelError] {
   if filter_size <= 0 {
     return Err(DimensionMismatch("filter_size must be positive"))

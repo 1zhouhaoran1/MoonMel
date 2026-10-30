@@ -5,7 +5,9 @@
 
 ## 从源码运行
 
-安装 [MoonBit](https://www.moonbitlang.com/download/)，要求 `moonc >= 0.10.16`。浏览器演示另需 Node.js 22.12+ 或 24+、pnpm 11。0.1.0 已发布到 mooncakes.io：`moon add 1zhouhaoran1/moonmel` 可加入现有项目。
+安装 [MoonBit](https://www.moonbitlang.com/download/)，要求 `moonc >= 0.10.16`。浏览器演示另需 Node.js 22.12+ 或 24+、pnpm 11。使用 `moon add 1zhouhaoran1/moonmel@0.1.6` 从 mooncakes.io 安装 0.1.6。
+
+**0.1.6** 合并了 0.1.0 后的六轮增量，见[开发记录](docs/zh/DEVELOPMENT_SERIES.md)。下述新增 API 需要 0.1.6 或本仓库源码。
 
 ```sh
 git clone https://github.com/1zhouhaoran1/MoonMel.git
@@ -40,7 +42,7 @@ pnpm --dir playground run dev
 | 操作 | 实际结果 |
 | --- | --- |
 | 选择正弦、扫频、混合或静音 | 显示 MoonBit 计算的频谱与输入波形 |
-| 上传 8/16 位 PCM WAV | 使用 MoonMel 解析，多声道混合为单声道，预览前十秒 |
+| 上传 8/16/24/32 位整数 PCM WAV | 使用 MoonMel 解析，多声道混合为单声道，预览前十秒 |
 | 更改 FFT、步长、Mel、MFCC | 对当前真实输入重新计算 |
 | 切换 Log-Mel、STFT、MFCC | 鼠标或图上左右键检查时间帧数值 |
 | 播放、麦克风、导出 | 听输入、分析滚动一秒窗口、下载 JSON/CSV |
@@ -58,6 +60,14 @@ println(result.mfcc.n_cols)
 `analyze` 只计算一次 STFT 与滤波器组，依次派生 Mel、Log-Mel、MFCC。已有独立接口及扩展特征接口保留。WAV 使用 `@moonmel.decode_wav(bytes)`，再分析 `audio.samples`；配置采样率和频率上限必须与解码后的音频一致。
 
 特征矩阵为 `[特征行][时间帧]`，复数 STFT 为 `[时间帧][频点]`。用户输入要处理 `Result` 错误，不应直接 `unwrap`。公开原始矩阵与低层内核仍有前置条件。
+
+需要保留文件声道时使用 `decode_wav_multichannel(bytes)`。流式输入可用 `try_push_samples` 整块校验，调用一次 `pop_features` 获取同批 Mel/Log-Mel/MFCC，用 `FeatureMatrix::concat_frames` 拼接各批时间帧，再以 `cmvn` 归一化特征。原有单声道及单独 pop 接口保留。运行完整示例：
+
+```sh
+moon run examples/streaming --target js
+```
+
+示例自行生成双声道 PCM16 音频，断言流式与离线 MFCC 数值一致，再执行整段 CMVN。[API 约定](docs/zh/API_SPECIFICATION.md)说明每批 dB 截断及未补齐尾帧的边界；浮点 WAV 和 WAVE_FORMAT_EXTENSIBLE 暂不支持。
 
 ## 数值证据与边界
 
@@ -86,7 +96,7 @@ pnpm --dir playground test
 
 [CI 工作流](.github/workflows/ci.yml) 覆盖 WASM、WASM-GC、JS、Native 的检查、构建、测试与基本示例，另构建演示页并验证浏览器绑定。配置文件存在不等于远端运行通过，实际状态以 GitHub Actions 为准。
 
-Windows Native 可执行 `pwsh -File tools/quality/test-native.ps1`；没有显式编译器设置时选择现有 MinGW GCC，结束后恢复环境。本机默认 MSVC 发现结果指向缺失头文件，暂不可直接使用。
+MoonBit 0.10.18 的 Windows Native 运行时要求 MSVC。安装完整的 Visual Studio C++ 工具和 Windows SDK 头文件/库后，运行 `pwsh -File tools/quality/test-native.ps1` 测试，添加 `-Build` 进行发行构建。脚本使用 Moon 的编译器选择机制，不再强制不兼容的 MinGW 回退。本地与 CI 结果见验收记录。
 
 独立 Python 验证可使用项目已准备环境：
 
@@ -94,7 +104,7 @@ Windows Native 可执行 `pwsh -File tools/quality/test-native.ps1`；没有显�
 & A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
-[开发指南](docs/zh/DEVELOPMENT.md) 提供可移植 uv 设置，[验收清单](docs/zh/ACCEPTANCE.md) 对应九项指南，[健康报告](docs/zh/HEALTH.md) 列出审查范围和剩余限制。模块已以 `1zhouhaoran1/moonmel` 0.1.0 发布到 mooncakes.io。
+[开发指南](docs/zh/DEVELOPMENT.md) 提供可移植 uv 设置，[验收清单](docs/zh/ACCEPTANCE.md) 对应九项指南，[健康报告](docs/zh/HEALTH.md) 列出审查范围和剩余限制。本次发行模块为 `1zhouhaoran1/moonmel` 0.1.6。
 
 ## 许可证
 

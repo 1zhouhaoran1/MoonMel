@@ -13,11 +13,11 @@ pub fn hpss(@types.FeatureMatrix, HpssConfig) -> HpssResult
 
 pub fn hpss_from_audio(@types.AudioBuffer, @types.FeatureConfig, HpssConfig) -> Result[HpssResult, @types.MelError]
 
-pub fn median_filter_1d(Array[Double], Int) -> Array[Double]
+pub fn median_filter_1d(Array[Double], Int32) -> Array[Double]
 
-pub fn median_filter_freq(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
+pub fn median_filter_freq(@types.FeatureMatrix, Int32) -> @types.FeatureMatrix
 
-pub fn median_filter_time(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
+pub fn median_filter_time(@types.FeatureMatrix, Int32) -> @types.FeatureMatrix
 
 pub fn percussive_energy_ratio(HpssResult) -> Array[Double]
 
@@ -25,8 +25,8 @@ pub fn percussive_energy_ratio(HpssResult) -> Array[Double]
 
 // Types and methods
 pub(all) struct HpssConfig {
-  kernel_harm : Int
-  kernel_perc : Int
+  kernel_harm : Int32
+  kernel_perc : Int32
   power : Double
   margin_harm : Double
   margin_perc : Double

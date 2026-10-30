@@ -6,7 +6,7 @@ import {
 }
 
 // Values
-pub fn istft(Array[Array[@types.Complex]], @types.FeatureConfig, Int) -> Result[Array[Double], @types.MelError]
+pub fn istft(Array[Array[@types.Complex]], @types.FeatureConfig, Int32) -> Result[Array[Double], @types.MelError]
 
 pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@types.Complex]], @types.MelError]
 

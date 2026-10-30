@@ -9,7 +9,7 @@ import {
 // Values
 pub fn quantile_sorted(Array[Double], Double) -> Double
 
-pub fn spectral_contrast(@types.FeatureMatrix, Int, Int, config? : ContrastConfig) -> @types.FeatureMatrix
+pub fn spectral_contrast(@types.FeatureMatrix, Int32, Int32, config? : ContrastConfig) -> @types.FeatureMatrix
 
 pub fn spectral_contrast_audio(@types.AudioBuffer, @types.FeatureConfig, contrast_config? : ContrastConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -17,7 +17,7 @@ pub fn spectral_contrast_audio(@types.AudioBuffer, @types.FeatureConfig, contras
 
 // Types and methods
 pub(all) struct ContrastConfig {
-  n_bands : Int
+  n_bands : Int32
   f_min : Double
   quantile : Double
   linear : Bool

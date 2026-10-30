@@ -16,7 +16,7 @@ $targetCred = Join-Path $userHome '.moon\credentials.json'
 Copy-Item -LiteralPath $sourceCred -Destination $targetCred -Force
 
 # 2. Update isolated SDK credentials if present
-$candidateHome = 'A:\DevEnv\SDKs\MoonBit\moonmel-current'
+$candidateHome = if ($env:MOON_HOME) { $env:MOON_HOME } else { 'A:\DevEnv\SDKs\MoonBit\latest-20261030' }
 if (Test-Path -LiteralPath $candidateHome) {
     Copy-Item -LiteralPath $sourceCred -Destination (Join-Path $candidateHome 'credentials.json') -Force
 }

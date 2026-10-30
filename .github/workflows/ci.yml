@@ -34,12 +34,19 @@ jobs:
           node tools/quality/check-architecture.mjs
       - name: Check
         run: moon check --target ${{ matrix.target }} --deny-warn
+      - name: Format and architecture regression checks
+        if: matrix.target == 'js'
+        run: |
+          moon fmt --check
+          node --test tools/quality/check-architecture.test.mjs
       - name: Build
         run: moon build --target ${{ matrix.target }} --release
       - name: Test
         run: moon test --target ${{ matrix.target }} --deny-warn
       - name: Runnable example
-        run: moon run examples/basic --target ${{ matrix.target }}
+        run: |
+          moon run examples/basic --target ${{ matrix.target }}
+          moon run examples/streaming --target ${{ matrix.target }}
 
   playground:
     runs-on: ubuntu-latest

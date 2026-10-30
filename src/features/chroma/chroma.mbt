@@ -9,7 +9,7 @@ pub(all) enum ChromaNorm {
 
 ///|
 /// Returns standard pitch class name for index 0..=11 (0 = C, 9 = A, etc.).
-pub fn pitch_class_name(idx : Int) -> String {
+pub fn pitch_class_name(idx : Int32) -> String {
   let note_idx = (idx % 12 + 12) % 12
   match note_idx {
     0 => "C"
@@ -32,8 +32,8 @@ pub fn pitch_class_name(idx : Int) -> String {
 /// Generates a 12-bin Chroma filterbank projecting frequency bins to 12 semitones.
 /// Returns a FeatureMatrix of shape [12, n_bins].
 pub fn chroma_filterbank(
-  sample_rate : Int,
-  n_fft : Int,
+  sample_rate : Int32,
+  n_fft : Int32,
   tuning : Double,
   f_min : Double,
 ) -> @types.FeatureMatrix {
@@ -90,8 +90,8 @@ pub fn chroma_filterbank(
 /// tuning must be finite; f_min must be finite and in [0, sample_rate / 2].
 pub fn chroma_from_spectrogram(
   spectrogram : @types.FeatureMatrix,
-  sample_rate : Int,
-  n_fft : Int,
+  sample_rate : Int32,
+  n_fft : Int32,
   norm : ChromaNorm,
   tuning : Double,
   f_min : Double,

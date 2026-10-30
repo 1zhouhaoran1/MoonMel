@@ -38,6 +38,26 @@ test('hostile unsigned chunk sizes never hang or index beyond the file', { timeo
     assert.equal(JSON.parse(decode_wav_audio(bytes)).success, false);
   }
 });
+test('wide integer PCM reaches browser decode and analysis with signed values intact', () => {
+  for (const bits of [24, 32]) {
+    const width = bits / 8;
+    const bytes = new Uint8Array(44 + width * 2);
+    bytes.set(wav().subarray(0, 44));
+    const view = new DataView(bytes.buffer);
+    view.setUint32(4, bytes.length - 8, true);
+    view.setUint32(28, 16000 * width, true);
+    view.setUint16(32, width, true);
+    view.setUint16(34, bits, true);
+    view.setUint32(40, width * 2, true);
+    bytes[44 + width - 1] = 0x40;
+    bytes[44 + width * 2 - 1] = 0xc0;
+    const audio = JSON.parse(decode_wav_audio(bytes));
+    assert.equal(audio.success, true);
+    assert.deepEqual(audio.samples, [0.5, -0.5]);
+    assert.deepEqual(JSON.parse(process_wav_bytes(bytes, 8, 4, 4, 2)),
+      JSON.parse(process_audio([0.5, -0.5], 16000, 8, 4, 4, 2)));
+  }
+});
 test('arbitrary FFTs retain their frequency grid and endpoint previews', () => {
   for (const fft of [5, 255, 400, 512, 1024]) {
     const result = JSON.parse(process_audio(Array.from({ length: 1200 }, (_, i) => Math.sin(i * 0.17)), 16000, fft, 64, 24, 13));

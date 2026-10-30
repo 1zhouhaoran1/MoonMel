@@ -20,25 +20,27 @@ import {
 // Values
 pub fn analyze(Array[Double], config? : @types.FeatureConfig) -> Result[@analysis.AnalysisResult, @types.MelError]
 
-pub fn apply_k_weighting(Array[Double], Int) -> Array[Double]
+pub fn apply_k_weighting(Array[Double], Int32) -> Array[Double]
 
-pub fn autocorrelation(Array[Double], Int) -> Array[Double]
+pub fn autocorrelation(Array[Double], Int32) -> Array[Double]
 
 pub fn bluestein_fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn bluestein_ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
-pub fn chroma_filterbank(Int, Int, tuning? : Double, f_min? : Double) -> @types.FeatureMatrix
+pub fn chroma_filterbank(Int32, Int32, tuning? : Double, f_min? : Double) -> @types.FeatureMatrix
 
-pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int, Int, norm? : @chroma.ChromaNorm, tuning? : Double, f_min? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int32, Int32, norm? : @chroma.ChromaNorm, tuning? : Double, f_min? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn chroma_stft(Array[Double], config? : @types.FeatureConfig, norm? : @chroma.ChromaNorm) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn compute_delta(@types.FeatureMatrix, width? : Int, order? : Int) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn cmvn(@types.FeatureMatrix, normalize_variance? : Bool, variance_floor? : Double) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn compute_energy(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn compute_delta(@types.FeatureMatrix, width? : Int32, order? : Int32) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn compute_rms(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn compute_energy(@types.AudioBuffer, frame_length? : Int32, hop_length? : Int32, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+
+pub fn compute_rms(@types.AudioBuffer, frame_length? : Int32, hop_length? : Int32, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn cqt(Array[Double], config? : @cqt.CqtConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -46,31 +48,33 @@ pub fn cqt_frequencies(@cqt.CqtConfig) -> Array[Double]
 
 pub fn create_streaming_extractor(config? : @types.FeatureConfig) -> Result[@streaming.StreamingExtractor, @types.MelError]
 
-pub fn create_window(@types.WindowType, Int) -> Array[Double]
+pub fn create_window(@types.WindowType, Int32) -> Array[Double]
 
 pub fn cumulative_mean_normalized_difference(Array[Double]) -> Array[Double]
 
-pub fn dct_ii(Array[Double], Int, Bool) -> Array[Double]
+pub fn dct_ii(Array[Double], Int32, Bool) -> Array[Double]
 
 pub fn decode_wav(Array[Byte]) -> Result[@types.AudioBuffer, @types.MelError]
+
+pub fn decode_wav_multichannel(Array[Byte]) -> Result[@types.MultiChannelAudioBuffer, @types.MelError]
 
 pub fn deemphasis(Array[Double], alpha? : Double) -> Array[Double]
 
 pub fn dft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
-pub fn difference_function(Array[Double], Int) -> Array[Double]
+pub fn difference_function(Array[Double], Int32) -> Array[Double]
 
-pub fn durand_kerner(Array[Double], max_iters? : Int, tol? : Double) -> Array[@types.Complex]
+pub fn durand_kerner(Array[Double], max_iters? : Int32, tol? : Double) -> Array[@types.Complex]
 
 pub fn fft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
 pub fn fft_padded(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
-pub fn formant_frequencies(Array[@formant.FormantFrame], Int, fallback? : Double) -> Array[Double]
+pub fn formant_frequencies(Array[@formant.FormantFrame], Int32, fallback? : Double) -> Array[Double]
 
-pub fn formant_track(Array[Double], sample_rate? : Int, config? : @formant.FormantConfig) -> Result[Array[@formant.FormantFrame], @types.MelError]
+pub fn formant_track(Array[Double], sample_rate? : Int32, config? : @formant.FormantConfig) -> Result[Array[@formant.FormantFrame], @types.MelError]
 
-pub fn formants_frame(Array[Double], Int, config? : @formant.FormantConfig) -> Result[@formant.FormantFrame, @types.MelError]
+pub fn formants_frame(Array[Double], Int32, config? : @formant.FormantConfig) -> Result[@formant.FormantFrame, @types.MelError]
 
 pub fn harmonic_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
@@ -82,33 +86,33 @@ pub fn idft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelEr
 
 pub fn ifft(Array[@types.Complex]) -> Result[Array[@types.Complex], @types.MelError]
 
-pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int32, Int32, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int32, Int32, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn istft(Array[Array[@types.Complex]], config? : @types.FeatureConfig, length? : Int) -> Result[Array[Double], @types.MelError]
+pub fn istft(Array[Array[@types.Complex]], config? : @types.FeatureConfig, length? : Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn levinson_durbin(Array[Double], Int) -> Result[@lpc.LpcResult, @types.MelError]
+pub fn levinson_durbin(Array[Double], Int32) -> Result[@lpc.LpcResult, @types.MelError]
 
 pub fn log_mel_spectrogram(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn loudness_meter(Array[Double], sample_rate? : Int) -> Result[@loudness.LoudnessResult, @types.MelError]
+pub fn loudness_meter(Array[Double], sample_rate? : Int32) -> Result[@loudness.LoudnessResult, @types.MelError]
 
-pub fn lpc(Array[Double], Int) -> Result[@lpc.LpcResult, @types.MelError]
+pub fn lpc(Array[Double], Int32) -> Result[@lpc.LpcResult, @types.MelError]
 
-pub fn lpc_features(Array[Double], Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn lpc_features(Array[Double], Int32, Int32, Int32) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn lpc_residual(Array[Double], Array[Double]) -> Array[Double]
 
-pub fn lpc_to_lpcc(Array[Double], Double, Int) -> Array[Double]
+pub fn lpc_to_lpcc(Array[Double], Double, Int32) -> Array[Double]
 
-pub fn lpcc_features(Array[Double], Int, Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn lpcc_features(Array[Double], Int32, Int32, Int32, Int32) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn median_filter_1d(Array[Double], Int) -> Array[Double]
+pub fn median_filter_1d(Array[Double], Int32) -> Array[Double]
 
-pub fn median_filter_freq(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
+pub fn median_filter_freq(@types.FeatureMatrix, Int32) -> @types.FeatureMatrix
 
-pub fn median_filter_time(@types.FeatureMatrix, Int) -> @types.FeatureMatrix
+pub fn median_filter_time(@types.FeatureMatrix, Int32) -> @types.FeatureMatrix
 
 pub fn mel_filterbank(@types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -122,45 +126,45 @@ pub fn multichannel_mfcc(@types.MultiChannelAudioBuffer, config? : @types.Featur
 
 pub fn multichannel_stft(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
 
-pub fn onset_detect_audio(Array[Double], config? : @types.FeatureConfig, onset_config? : @onset.OnsetConfig, delta? : Double, wait? : Int) -> Result[Array[Int], @types.MelError]
+pub fn onset_detect_audio(Array[Double], config? : @types.FeatureConfig, onset_config? : @onset.OnsetConfig, delta? : Double, wait? : Int32) -> Result[Array[Int32], @types.MelError]
 
 pub fn onset_strength(@types.FeatureMatrix, config? : @onset.OnsetConfig) -> Array[Double]
 
 pub fn onset_strength_audio(Array[Double], config? : @types.FeatureConfig, onset_config? : @onset.OnsetConfig) -> Result[Array[Double], @types.MelError]
 
-pub fn pad_reflect(Array[Double], Int) -> Array[Double]
+pub fn pad_reflect(Array[Double], Int32) -> Array[Double]
 
-pub fn peak_pick(Array[Double], pre_max? : Int, post_max? : Int, pre_avg? : Int, post_avg? : Int, delta? : Double, wait? : Int) -> Array[Int]
+pub fn peak_pick(Array[Double], pre_max? : Int32, post_max? : Int32, pre_avg? : Int32, post_avg? : Int32, delta? : Double, wait? : Int32) -> Array[Int32]
 
 pub fn percussive_energy_ratio(@hpss.HpssResult) -> Array[Double]
 
-pub fn phase_vocoder(Array[Array[@types.Complex]], Double, Int, Int) -> Result[Array[Array[@types.Complex]], @types.MelError]
+pub fn phase_vocoder(Array[Array[@types.Complex]], Double, Int32, Int32) -> Result[Array[Array[@types.Complex]], @types.MelError]
 
-pub fn pitch_class_name(Int) -> String
+pub fn pitch_class_name(Int32) -> String
 
-pub fn pitch_shift(Array[Double], sample_rate? : Int, n_steps? : Double, config? : @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
+pub fn pitch_shift(Array[Double], sample_rate? : Int32, n_steps? : Double, config? : @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 
-pub fn pitch_yin(Array[Double], sample_rate? : Int, config? : @pitch.YinConfig) -> Result[@pitch.PitchTrack, @types.MelError]
+pub fn pitch_yin(Array[Double], sample_rate? : Int32, config? : @pitch.YinConfig) -> Result[@pitch.PitchTrack, @types.MelError]
 
 pub fn power_to_db(@types.FeatureMatrix, Double, Double, Double) -> @types.FeatureMatrix
 
 pub fn preemphasis(Array[Double], alpha? : Double) -> Array[Double]
 
-pub fn resample(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+pub fn resample(Array[Double], Int32, Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_linear(Array[Double], Int32, Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_polyphase(Array[Double], Int, Int, half_len? : Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_polyphase(Array[Double], Int32, Int32, half_len? : Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_sinc(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_sinc(Array[Double], Int32, Int32, filter_size? : Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_to_length(Array[Double], Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_to_length(Array[Double], Int32, filter_size? : Int32) -> Result[Array[Double], @types.MelError]
 
 pub fn rfft_padded(Array[Double], power? : Double) -> Result[Array[Double], @types.MelError]
 
 pub fn spectral_centroid(Array[Double], config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn spectral_contrast(@types.FeatureMatrix, Int, Int, config? : @contrast.ContrastConfig) -> @types.FeatureMatrix
+pub fn spectral_contrast(@types.FeatureMatrix, Int32, Int32, config? : @contrast.ContrastConfig) -> @types.FeatureMatrix
 
 pub fn spectral_contrast_audio(Array[Double], feature_config? : @types.FeatureConfig, contrast_config? : @contrast.ContrastConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
@@ -174,19 +178,19 @@ pub fn stft(Array[Double], config? : @types.FeatureConfig) -> Result[@types.Feat
 
 pub fn stft_complex(Array[Double], @types.FeatureConfig) -> Result[Array[Array[@types.Complex]], @types.MelError]
 
-pub fn super_flux(@types.FeatureMatrix, Int) -> Array[Double]
+pub fn super_flux(@types.FeatureMatrix, Int32) -> Array[Double]
 
 pub fn tempogram(Array[Double], feature_config? : @types.FeatureConfig, tempo_config? : @tempo.TempoConfig) -> Result[@tempo.TempogramResult, @types.MelError]
 
-pub fn tempogram_from_onset(Array[Double], Int, Int, config? : @tempo.TempoConfig) -> @tempo.TempogramResult
+pub fn tempogram_from_onset(Array[Double], Int32, Int32, config? : @tempo.TempoConfig) -> @tempo.TempogramResult
 
 pub fn time_stretch(Array[Double], Double, config? : @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 
-pub fn true_peak_db(Array[Double], Int) -> Result[Double, @types.MelError]
+pub fn true_peak_db(Array[Double], Int32) -> Result[Double, @types.MelError]
 
-pub fn yin_frame(Array[Double], Int, f_min? : Double, f_max? : Double, threshold? : Double) -> (Double, Double, Double)
+pub fn yin_frame(Array[Double], Int32, f_min? : Double, f_max? : Double, threshold? : Double) -> (Double, Double, Double)
 
-pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int, hop_length? : Int, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn zero_crossing_rate(@types.AudioBuffer, frame_length? : Int32, hop_length? : Int32, center? : Bool) -> Result[@types.FeatureMatrix, @types.MelError]
 
 // Errors
 
@@ -246,6 +250,8 @@ pub using @onset {type OnsetMethod}
 pub using @pitch {type PitchTrack}
 
 pub using @streaming {type StreamingExtractor}
+
+pub using @streaming {type StreamingFeatures}
 
 pub using @tempo {type TempoConfig}
 

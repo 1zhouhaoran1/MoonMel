@@ -7,19 +7,19 @@ import {
 }
 
 // Values
-pub fn autocorrelation(Array[Double], Int) -> Array[Double]
+pub fn autocorrelation(Array[Double], Int32) -> Array[Double]
 
-pub fn levinson_durbin(Array[Double], Int) -> Result[LpcResult, @types.MelError]
+pub fn levinson_durbin(Array[Double], Int32) -> Result[LpcResult, @types.MelError]
 
-pub fn lpc(Array[Double], Int) -> Result[LpcResult, @types.MelError]
+pub fn lpc(Array[Double], Int32) -> Result[LpcResult, @types.MelError]
 
-pub fn lpc_features(Array[Double], Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn lpc_features(Array[Double], Int32, Int32, Int32) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn lpc_residual(Array[Double], Array[Double]) -> Array[Double]
 
-pub fn lpc_to_lpcc(Array[Double], Double, Int) -> Array[Double]
+pub fn lpc_to_lpcc(Array[Double], Double, Int32) -> Array[Double]
 
-pub fn lpcc_features(Array[Double], Int, Int, Int, Int) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn lpcc_features(Array[Double], Int32, Int32, Int32, Int32) -> Result[@types.FeatureMatrix, @types.MelError]
 
 // Errors
 

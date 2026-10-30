@@ -6,7 +6,9 @@
 
 The project has a useful research implementation and a now-verified core pipeline, rather than broad external numerical certification. The initial source checkout had 105 passing tests on WASM and JS, but short-window alignment, arbitrary complex FFTs, streaming windows/hops and error envelopes were not covered. Five failing regressions were reproduced; the arbitrary complex path could hang, and was interrupted before repair. The default Windows MSVC installation could not compile because its configured headers were missing. That environmental failure is distinct from a source defect.
 
-Current evidence includes four-target tests, a reproducible one-second example, 31 source/runtime packages plus the example package, dependency direction checks, fresh generated browser bindings, scoped eight-case external numerical validation and browser flow verification. CI configuration now covers compiler minimum, check, build, tests, example and demo; remote completion must be checked on GitHub, not inferred from this document.
+The 0.1.6 release source was checked on moonc 0.10.18 on 2026-10-30: 159 tests each on WASM/WASM-GC/JS, 157 on Windows Native, 11 Node cases and two examples on all four targets pass. The MSVC/SDK environment is repaired. Architecture checking previously missed imports after the namespace migration; it now reads the module name, checks 34 packages/88 internal imports and tests invalid graphs. The playground build and original eight-case core reference pass. Earlier browser interaction evidence is not a fresh UI audit. Updated CI includes format, architecture regressions and the streaming example; consult the matching GitHub Actions run for remote status.
+
+New 24/32-bit integer PCM, preserved WAV channels, atomic checked streaming input, shared batches, offline CMVN and frame concatenation are recorded in the [development series](DEVELOPMENT_SERIES.md). CMVN uses analytic regressions rather than extending the eight-case external reference scope. These additions require package version 0.1.6.
 
 ## Package review coverage
 

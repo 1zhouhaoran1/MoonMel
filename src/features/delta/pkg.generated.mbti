@@ -6,7 +6,7 @@ import {
 }
 
 // Values
-pub fn compute_delta(@types.FeatureMatrix, width? : Int, order? : Int) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn compute_delta(@types.FeatureMatrix, width? : Int32, order? : Int32) -> Result[@types.FeatureMatrix, @types.MelError]
 
 // Errors
 

@@ -3,7 +3,7 @@
 /// Standard speech processing high-frequency pre-emphasis with default alpha = 0.97.
 pub fn preemphasis(
   samples : Array[Double],
-  alpha? : Double = 0.97,
+  alpha~ : Double = 0.97,
 ) -> Array[Double] {
   let len = samples.length()
   if len == 0 {
@@ -37,7 +37,7 @@ pub fn preemphasis_inplace(samples : Array[Double], alpha : Double) -> Unit {
 /// Reconstructs original spectral balance after speech synthesis or processing.
 pub fn deemphasis(
   samples : Array[Double],
-  alpha? : Double = 0.97,
+  alpha~ : Double = 0.97,
 ) -> Array[Double] {
   let len = samples.length()
   if len == 0 {

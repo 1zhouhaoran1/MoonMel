@@ -2,14 +2,14 @@
 /// AudioBuffer stores single-channel 64-bit float PCM audio samples and metadata.
 pub(all) struct AudioBuffer {
   samples : Array[Double]
-  sample_rate : Int
+  sample_rate : Int32
 } derive(Debug)
 
 ///|
 /// Create an AudioBuffer with validation.
 pub fn AudioBuffer::new(
   samples : Array[Double],
-  sample_rate : Int,
+  sample_rate : Int32,
 ) -> Result[AudioBuffer, MelError] {
   if samples.is_empty() {
     return Err(EmptyAudio)
@@ -26,7 +26,7 @@ pub fn AudioBuffer::new(
 
 ///|
 /// Number of samples in buffer.
-pub fn AudioBuffer::length(self : AudioBuffer) -> Int {
+pub fn AudioBuffer::length(self : AudioBuffer) -> Int32 {
   self.samples.length()
 }
 
@@ -40,14 +40,14 @@ pub fn AudioBuffer::duration(self : AudioBuffer) -> Double {
 /// MultiChannelAudioBuffer stores multi-channel 64-bit float PCM audio samples.
 pub(all) struct MultiChannelAudioBuffer {
   channels : Array[Array[Double]]
-  sample_rate : Int
+  sample_rate : Int32
 } derive(Debug)
 
 ///|
 /// Create a MultiChannelAudioBuffer with validation.
 pub fn MultiChannelAudioBuffer::new(
   channels : Array[Array[Double]],
-  sample_rate : Int,
+  sample_rate : Int32,
 ) -> Result[MultiChannelAudioBuffer, MelError] {
   if channels.is_empty() {
     return Err(EmptyAudio)
@@ -78,13 +78,13 @@ pub fn MultiChannelAudioBuffer::new(
 /// Number of channels.
 pub fn MultiChannelAudioBuffer::num_channels(
   self : MultiChannelAudioBuffer,
-) -> Int {
+) -> Int32 {
   self.channels.length()
 }
 
 ///|
 /// Number of samples per channel.
-pub fn MultiChannelAudioBuffer::length(self : MultiChannelAudioBuffer) -> Int {
+pub fn MultiChannelAudioBuffer::length(self : MultiChannelAudioBuffer) -> Int32 {
   if self.channels.is_empty() {
     0
   } else {
@@ -123,7 +123,7 @@ pub fn MultiChannelAudioBuffer::to_mono(
 /// Extract a specific channel as a single-channel AudioBuffer.
 pub fn MultiChannelAudioBuffer::channel(
   self : MultiChannelAudioBuffer,
-  ch_idx : Int,
+  ch_idx : Int32,
 ) -> Result[AudioBuffer, MelError] {
   if ch_idx < 0 || ch_idx >= self.channels.length() {
     return Err(DimensionMismatch("Channel index out of bounds: \{ch_idx}"))

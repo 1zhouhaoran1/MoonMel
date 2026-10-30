@@ -16,9 +16,14 @@ moon test --target wasm-gc --deny-warn
 moon test --target js --deny-warn
 moon test --target native --deny-warn
 moon run examples/basic --target js
+moon run examples/streaming --target js
 ```
 
-On this Windows workstation, use `pwsh -File tools/quality/test-native.ps1` for native tests. It adapts the available MinGW GCC runtime declaration without editing SDK sources and restores `MOON_CC`/`MOON_AR`. The default MSVC installation has missing headers. Linux/macOS CI uses its normal native compiler.
+On Windows, the MoonBit 0.10.18 runtime requires complete Visual Studio C++ tools and Windows SDK headers/libraries. Use the Native commands above, or `pwsh -File tools/quality/test-native.ps1` for tests and add `-Build` for a release build. The helper now lets Moon select its supported compiler rather than forcing MinGW, and preserves explicit caller compiler settings. The [acceptance record](ACCEPTANCE.md) records local and remote results separately.
+
+The source and generated interfaces have been normalized with the 0.10.18 formatter: `Int32` type spelling, current optional-parameter syntax and layout. `moon fmt --check` passes. Run it after formatting and regenerating interfaces to verify consistency.
+
+The [0.1.6 development series](DEVELOPMENT_SERIES.md) documents the new WAV, streaming, CMVN and frame-batch APIs. CI also runs `node --test tools/quality/check-architecture.test.mjs`; architecture checks read the current module namespace and count actual internal imports.
 
 ## Browser
 
@@ -45,9 +50,9 @@ If this environment already exists, skip creation and use it. On Linux/macOS cho
 
 ## CI and publishing
 
-`.github/workflows/ci.yml` performs check, build, test and example execution for all four targets, then builds the demo and tests its bindings. The minimum compiler gate runs in each job. See GitHub Actions for actual remote results. Version 0.1.0 is published on mooncakes.io as `1zhouhaoran1/moonmel`; `moon publish` releases subsequent versions.
+`.github/workflows/ci.yml` performs check, build, test and example execution for all four targets, then builds the demo and tests its bindings. The minimum compiler gate runs in each job. See GitHub Actions for actual remote results. Version 0.1.6 is released on mooncakes.io as `1zhouhaoran1/moonmel`; `moon publish` releases subsequent versions.
 
-To build release Native artifacts with the same Windows adapter: `pwsh -File tools/quality/test-native.ps1 -Build`.
+For Windows Native release artifacts on 0.10.18, use `moon build --target native --release` in a complete MSVC developer environment; do not use the legacy MinGW adapter.
 
 ## GitHub Pages
 

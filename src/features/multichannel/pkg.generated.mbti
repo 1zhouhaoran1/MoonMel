@@ -6,9 +6,9 @@ import {
 }
 
 // Values
-pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn interchannel_level_difference(@types.MultiChannelAudioBuffer, Int32, Int32, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int, Int, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn interchannel_phase_difference(@types.MultiChannelAudioBuffer, Int32, Int32, config? : @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn multichannel_mel(@types.MultiChannelAudioBuffer, config? : @types.FeatureConfig) -> Result[Array[@types.FeatureMatrix], @types.MelError]
 

@@ -15,17 +15,26 @@ pub(all) struct StreamingExtractor {
   window : Array[Double]
   filterbank : @types.FeatureMatrix
   mut buffer : Array[Double]
-  mut buffer_start : Int
+  mut buffer_start : Int32
   fft_re : Array[Double]
   fft_im : Array[Double]
   spec_buffer : Array[Double]
 }
-pub fn StreamingExtractor::available_frames(Self) -> Int
+pub fn StreamingExtractor::available_frames(Self) -> Int32
+pub fn StreamingExtractor::buffered_samples(Self) -> Int32
 pub fn StreamingExtractor::new(config? : @types.FeatureConfig) -> Result[Self, @types.MelError]
+pub fn StreamingExtractor::pop_features(Self) -> Result[StreamingFeatures, @types.MelError]
 pub fn StreamingExtractor::pop_mel_frames(Self) -> @types.FeatureMatrix
 pub fn StreamingExtractor::pop_mfcc_frames(Self) -> @types.FeatureMatrix
 pub fn StreamingExtractor::push_samples(Self, Array[Double]) -> Unit
 pub fn StreamingExtractor::reset(Self) -> Unit
+pub fn StreamingExtractor::try_push_samples(Self, Array[Double]) -> Result[Unit, @types.MelError]
+
+pub(all) struct StreamingFeatures {
+  mel : @types.FeatureMatrix
+  log_mel : @types.FeatureMatrix
+  mfcc : @types.FeatureMatrix
+}
 
 // Type aliases
 

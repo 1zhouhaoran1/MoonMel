@@ -34,7 +34,7 @@ fn validate_buffer(
 /// Extract STFT power spectrograms for all channels in buffer.
 pub fn multichannel_stft(
   buffer : @types.MultiChannelAudioBuffer,
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
   match validate_buffer(buffer, config) {
     Ok(_) => ()
@@ -57,7 +57,7 @@ pub fn multichannel_stft(
 /// Extract Mel spectrograms for all channels in buffer.
 pub fn multichannel_mel(
   buffer : @types.MultiChannelAudioBuffer,
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
   match validate_buffer(buffer, config) {
     Ok(_) => ()
@@ -80,7 +80,7 @@ pub fn multichannel_mel(
 /// Extract MFCC coefficients for all channels in buffer.
 pub fn multichannel_mfcc(
   buffer : @types.MultiChannelAudioBuffer,
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[Array[@types.FeatureMatrix], @types.MelError] {
   match validate_buffer(buffer, config) {
     Ok(_) => ()
@@ -104,9 +104,9 @@ pub fn multichannel_mfcc(
 /// ILD[k, t] = 10 * log10((P_ch1[k, t] + eps) / (P_ch2[k, t] + eps)).
 pub fn interchannel_level_difference(
   buffer : @types.MultiChannelAudioBuffer,
-  ch1 : Int,
-  ch2 : Int,
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  ch1 : Int32,
+  ch2 : Int32,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   match validate_buffer(buffer, config) {
     Ok(_) => ()
@@ -153,9 +153,9 @@ pub fn interchannel_level_difference(
 /// Computed from the angle of the complex cross-spectrum S_ch1 * conj(S_ch2).
 pub fn interchannel_phase_difference(
   buffer : @types.MultiChannelAudioBuffer,
-  ch1 : Int,
-  ch2 : Int,
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  ch1 : Int32,
+  ch2 : Int32,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   match validate_buffer(buffer, config) {
     Ok(_) => ()

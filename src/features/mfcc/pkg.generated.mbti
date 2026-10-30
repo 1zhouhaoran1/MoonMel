@@ -6,7 +6,7 @@ import {
 }
 
 // Values
-pub fn dct_ii(Array[Double], Int, Bool) -> Array[Double]
+pub fn dct_ii(Array[Double], Int32, Bool) -> Array[Double]
 
 pub fn log_mel_from_mel(@types.FeatureMatrix, @types.FeatureConfig) -> Result[@types.FeatureMatrix, @types.MelError]
 

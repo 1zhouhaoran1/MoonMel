@@ -1,7 +1,7 @@
 ///|
 /// Configuration for Octave Spectral Contrast feature extraction.
 pub(all) struct ContrastConfig {
-  n_bands : Int // Number of frequency octave sub-bands (default 6)
+  n_bands : Int32 // Number of frequency octave sub-bands (default 6)
   f_min : Double // Minimum base frequency boundary in Hz (default 200.0)
   quantile : Double // Quantile fraction for valley and peak (default 0.02)
   linear : Bool // Output peak-minus-valley instead of dB difference
@@ -61,9 +61,9 @@ pub fn quantile_sorted(sorted : Array[Double], q : Double) -> Double {
 /// Compute Octave Spectral Contrast matrix from magnitude spectrogram.
 pub fn spectral_contrast(
   spec : @types.FeatureMatrix,
-  sample_rate : Int,
-  n_fft : Int,
-  config? : ContrastConfig = ContrastConfig::default(),
+  sample_rate : Int32,
+  n_fft : Int32,
+  config~ : ContrastConfig = ContrastConfig::default(),
 ) -> @types.FeatureMatrix {
   let n_rows = spec.n_rows
   let n_cols = spec.n_cols
@@ -88,7 +88,7 @@ pub fn spectral_contrast(
   let bin_hz = sample_rate.to_double() / n_fft.to_double()
 
   // Calculate octave frequency band edges
-  let band_edges : Array[Int] = Array::make(num_features + 1, 0)
+  let band_edges : Array[Int32] = Array::make(num_features + 1, 0)
   band_edges[0] = 0
 
   let mut curr_f = config.f_min
@@ -145,7 +145,7 @@ pub fn spectral_contrast(
 pub fn spectral_contrast_audio(
   audio : @types.AudioBuffer,
   feature_config : @types.FeatureConfig,
-  contrast_config? : ContrastConfig = ContrastConfig::default(),
+  contrast_config~ : ContrastConfig = ContrastConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   match @stft.stft_spectrogram(audio.samples, feature_config) {
     Ok(spec) =>

@@ -5,8 +5,8 @@ pub(all) struct TempoConfig {
   max_bpm : Double // Maximum BPM bound (default 300.0)
   start_bpm : Double // Prior mean tempo in BPM (default 120.0)
   std_bpm : Double // Prior standard deviation in log2-BPM space (default 1.0)
-  win_length : Int // Analysis window in onset frames (default 192)
-  hop_length : Int // Hop length in onset frames (default 1)
+  win_length : Int32 // Analysis window in onset frames (default 192)
+  hop_length : Int32 // Hop length in onset frames (default 1)
 } derive(Debug)
 
 ///|
@@ -47,9 +47,9 @@ fn empty_tempogram() -> TempogramResult {
 /// Returns an empty result with bpm=0 when no such lag exists.
 pub fn tempogram_from_onset(
   onset_env : Array[Double],
-  sample_rate : Int,
-  hop_length : Int,
-  config? : TempoConfig = TempoConfig::default(),
+  sample_rate : Int32,
+  hop_length : Int32,
+  config~ : TempoConfig = TempoConfig::default(),
 ) -> TempogramResult {
   let len = onset_env.length()
   if len < 2 ||
@@ -160,7 +160,7 @@ pub fn tempogram_from_onset(
 pub fn tempogram(
   audio : @types.AudioBuffer,
   feature_config : @types.FeatureConfig,
-  tempo_config? : TempoConfig = TempoConfig::default(),
+  tempo_config~ : TempoConfig = TempoConfig::default(),
 ) -> Result[TempogramResult, @types.MelError] {
   match @onset.onset_strength_audio(audio, feature_config) {
     Ok(env) =>

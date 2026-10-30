@@ -33,20 +33,20 @@ pub(all) enum LogScale {
 ///|
 /// FeatureConfig stores parameters for STFT, Mel, and MFCC computation.
 pub(all) struct FeatureConfig {
-  sample_rate : Int
-  n_fft : Int
-  hop_length : Int
-  win_length : Int
+  sample_rate : Int32
+  n_fft : Int32
+  hop_length : Int32
+  win_length : Int32
   window : WindowType
   center : Bool
   power : Double
-  n_mels : Int
+  n_mels : Int32
   f_min : Double
   f_max : Double
   mel_scale : MelScale
   mel_norm : MelNorm
   log_scale : LogScale
-  n_mfcc : Int
+  n_mfcc : Int32
   norm_ortho : Bool
   ref_value : Double
   amin : Double

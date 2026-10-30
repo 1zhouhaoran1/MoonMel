@@ -7,17 +7,17 @@ import {
 }
 
 // Values
-pub fn onset_detect_audio(@types.AudioBuffer, @types.FeatureConfig, onset_config? : OnsetConfig, delta? : Double, wait? : Int) -> Result[Array[Int], @types.MelError]
+pub fn onset_detect_audio(@types.AudioBuffer, @types.FeatureConfig, onset_config? : OnsetConfig, delta? : Double, wait? : Int32) -> Result[Array[Int32], @types.MelError]
 
 pub fn onset_strength(@types.FeatureMatrix, OnsetConfig) -> Array[Double]
 
 pub fn onset_strength_audio(@types.AudioBuffer, @types.FeatureConfig, onset_config? : OnsetConfig) -> Result[Array[Double], @types.MelError]
 
-pub fn peak_pick(Array[Double], pre_max? : Int, post_max? : Int, pre_avg? : Int, post_avg? : Int, delta? : Double, wait? : Int) -> Array[Int]
+pub fn peak_pick(Array[Double], pre_max? : Int32, post_max? : Int32, pre_avg? : Int32, post_avg? : Int32, delta? : Double, wait? : Int32) -> Array[Int32]
 
 pub fn spectral_flux(@types.FeatureMatrix) -> Array[Double]
 
-pub fn super_flux(@types.FeatureMatrix, Int) -> Array[Double]
+pub fn super_flux(@types.FeatureMatrix, Int32) -> Array[Double]
 
 // Errors
 
@@ -33,7 +33,7 @@ pub fn OnsetConfig::to_repr(Self) -> @debug.Repr
 
 pub(all) enum OnsetMethod {
   SpectralFlux
-  SuperFlux(Int)
+  SuperFlux(Int32)
   Energy
 } derive(Eq, @debug.Debug)
 pub fn OnsetMethod::equal(Self, Self) -> Bool

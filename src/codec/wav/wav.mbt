@@ -1,6 +1,6 @@
 ///|
 /// Decode 16-bit little endian signed integer from byte array.
-fn read_i16_le(bytes : Array[Byte], offset : Int) -> Int {
+fn read_i16_le(bytes : Array[Byte], offset : Int32) -> Int32 {
   let b0 = bytes[offset].to_int()
   let b1 = bytes[offset + 1].to_int()
   let unsigned = b0 | (b1 << 8)
@@ -13,7 +13,7 @@ fn read_i16_le(bytes : Array[Byte], offset : Int) -> Int {
 
 ///|
 /// Decode 32-bit little endian unsigned integer from byte array.
-fn read_u32_le(bytes : Array[Byte], offset : Int) -> Int {
+fn read_u32_le(bytes : Array[Byte], offset : Int32) -> Int32 {
   let b0 = bytes[offset].to_int()
   let b1 = bytes[offset + 1].to_int()
   let b2 = bytes[offset + 2].to_int()
@@ -23,7 +23,7 @@ fn read_u32_le(bytes : Array[Byte], offset : Int) -> Int {
 
 ///|
 /// Check 4-byte ASCII tag.
-fn match_tag(bytes : Array[Byte], offset : Int, tag : String) -> Bool {
+fn match_tag(bytes : Array[Byte], offset : Int32, tag : String) -> Bool {
   if offset + 4 > bytes.length() {
     return false
   }
@@ -36,10 +36,18 @@ fn match_tag(bytes : Array[Byte], offset : Int, tag : String) -> Bool {
 }
 
 ///|
-/// Parse bounded RIFF chunks, then decode supported PCM to mono.
-pub fn decode_wav(
-  bytes : Array[Byte],
-) -> Result[@types.AudioBuffer, @types.MelError] {
+/// A validated view into a RIFF byte buffer; shared by mono and channel decoders.
+priv struct WavLayout {
+  channels : Int32
+  sample_rate : Int32
+  bits_per_sample : Int32
+  block_align : Int32
+  data_offset : Int32
+  num_frames : Int32
+}
+
+///|
+fn parse_layout(bytes : Array[Byte]) -> Result[WavLayout, @types.MelError] {
   let len = bytes.length()
   if len < 12 || !match_tag(bytes, 0, "RIFF") || !match_tag(bytes, 8, "WAVE") {
     return Err(WavParseError("Missing RIFF or WAVE signature"))
@@ -80,7 +88,12 @@ pub fn decode_wav(
       bits_per_sample = read_i16_le(bytes, payload + 14)
       if channels <= 0 ||
         sample_rate <= 0 ||
-        (bits_per_sample != 8 && bits_per_sample != 16) {
+        (
+          bits_per_sample != 8 &&
+          bits_per_sample != 16 &&
+          bits_per_sample != 24 &&
+          bits_per_sample != 32
+        ) {
         return Err(
           WavParseError("Invalid PCM format, sample rate or channel count"),
         )
@@ -109,21 +122,78 @@ pub fn decode_wav(
   if data_size % block_align != 0 {
     return Err(WavParseError("Incomplete PCM frame"))
   }
-  let bytes_per_sample = bits_per_sample / 8
-  let num_frames = data_size / block_align
-  let samples = Array::make(num_frames, 0.0)
-  for f in 0..<num_frames {
-    let mut sum = 0.0
-    for ch in 0..<channels {
-      let pos = data_offset + f * block_align + ch * bytes_per_sample
-      let value = if bits_per_sample == 16 {
-        read_i16_le(bytes, pos).to_double() / 32768.0
-      } else {
-        (bytes[pos].to_int().to_double() - 128.0) / 128.0
-      }
-      sum = sum + value
+  Ok({
+    channels,
+    sample_rate,
+    bits_per_sample,
+    block_align,
+    data_offset,
+    num_frames: data_size / block_align,
+  })
+}
+
+///|
+/// Integer PCM is unsigned at 8 bits and signed little endian at 16/24/32 bits.
+fn read_pcm(bytes : Array[Byte], pos : Int32, bits : Int32) -> Double {
+  match bits {
+    8 => (bytes[pos].to_int().to_double() - 128.0) / 128.0
+    16 => read_i16_le(bytes, pos).to_double() / 32768.0
+    24 => {
+      let value = bytes[pos].to_int() |
+        (bytes[pos + 1].to_int() << 8) |
+        (bytes[pos + 2].to_int() << 16)
+      let signed = if value >= 8388608 { value - 16777216 } else { value }
+      signed.to_double() / 8388608.0
     }
-    samples[f] = sum / channels.to_double()
+    _ => read_u32_le(bytes, pos).to_double() / 2147483648.0
   }
-  @types.AudioBuffer::new(samples, sample_rate)
+}
+
+///|
+/// Decode RIFF format-tag 1 integer PCM (8/16/24/32 bits), averaging channels.
+/// Float, compressed and WAVE_FORMAT_EXTENSIBLE files return WavParseError.
+pub fn decode_wav(
+  bytes : Array[Byte],
+) -> Result[@types.AudioBuffer, @types.MelError] {
+  let layout = match parse_layout(bytes) {
+    Ok(value) => value
+    Err(error) => return Err(error)
+  }
+  let samples = Array::make(layout.num_frames, 0.0)
+  let bytes_per_sample = layout.bits_per_sample / 8
+  for f in 0..<layout.num_frames {
+    let mut sum = 0.0
+    for ch in 0..<layout.channels {
+      let pos = layout.data_offset +
+        f * layout.block_align +
+        ch * bytes_per_sample
+      sum = sum + read_pcm(bytes, pos, layout.bits_per_sample)
+    }
+    samples[f] = sum / layout.channels.to_double()
+  }
+  @types.AudioBuffer::new(samples, layout.sample_rate)
+}
+
+///|
+/// Decode integer PCM without downmixing; channels retain their file order.
+pub fn decode_wav_multichannel(
+  bytes : Array[Byte],
+) -> Result[@types.MultiChannelAudioBuffer, @types.MelError] {
+  let layout = match parse_layout(bytes) {
+    Ok(value) => value
+    Err(error) => return Err(error)
+  }
+  let channels : Array[Array[Double]] = Array::make(layout.channels, [])
+  let bytes_per_sample = layout.bits_per_sample / 8
+  for ch in 0..<layout.channels {
+    let samples = Array::make(layout.num_frames, 0.0)
+    for frame in 0..<layout.num_frames {
+      let pos = layout.data_offset +
+        frame * layout.block_align +
+        ch * bytes_per_sample
+      samples[frame] = read_pcm(bytes, pos, layout.bits_per_sample)
+    }
+    channels[ch] = samples
+  }
+  @types.MultiChannelAudioBuffer::new(channels, layout.sample_rate)
 }

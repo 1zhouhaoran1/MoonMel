@@ -5,7 +5,7 @@
 /// Represents the "center of mass" of the spectrum, strongly correlated with perceived brightness.
 pub fn spectral_centroid(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   let stft_mat = match @stft.stft_spectrogram(samples, config) {
     Ok(m) => m
@@ -41,8 +41,8 @@ pub fn spectral_centroid(
 /// roll_percent must be finite and in [0, 1], including both endpoints.
 pub fn spectral_rolloff(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  roll_percent? : Double = 0.85,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  roll_percent~ : Double = 0.85,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   if !@types.is_finite(roll_percent) || roll_percent < 0.0 || roll_percent > 1.0 {
     return Err(DimensionMismatch("roll_percent must be finite and in [0, 1]"))
@@ -89,8 +89,8 @@ pub fn spectral_rolloff(
 /// amin must be finite and positive.
 pub fn spectral_flatness(
   samples : Array[Double],
-  config? : @types.FeatureConfig = @types.FeatureConfig::default(),
-  amin? : Double = 1.0e-10,
+  config~ : @types.FeatureConfig = @types.FeatureConfig::default(),
+  amin~ : Double = 1.0e-10,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   if !@types.is_finite(amin) || amin <= 0.0 {
     return Err(DimensionMismatch("amin must be finite and positive"))
@@ -130,9 +130,9 @@ pub fn spectral_flatness(
 /// The rate of sign-changes along the signal within each sliding window.
 pub fn zero_crossing_rate(
   audio : @types.AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true,
+  frame_length~ : Int32 = 2048,
+  hop_length~ : Int32 = 512,
+  center~ : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   if frame_length <= 0 || hop_length <= 0 {
     return Err(@types.MelError::InvalidHopLength(hop_length))

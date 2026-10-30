@@ -5,7 +5,9 @@
 
 ## Run from source
 
-Install [MoonBit](https://www.moonbitlang.com/download/) with `moonc >= 0.10.16`. Node.js 22.12+ or 24+ and pnpm 11 are needed only for the browser demo. Version 0.1.0 is published on mooncakes.io: `moon add 1zhouhaoran1/moonmel` adds it to an existing project.
+Install [MoonBit](https://www.moonbitlang.com/download/) with `moonc >= 0.10.16`. Node.js 22.12+ or 24+ and pnpm 11 are needed only for the browser demo. Install version 0.1.6 from mooncakes.io with `moon add 1zhouhaoran1/moonmel@0.1.6`.
+
+Version **0.1.6** combines six increments since 0.1.0, recorded in the [development series](docs/en/DEVELOPMENT_SERIES.md). New APIs below require 0.1.6 or this checkout.
 
 ```sh
 git clone https://github.com/1zhouhaoran1/MoonMel.git
@@ -40,7 +42,7 @@ Open `http://localhost:5173`. `predev` and `prebuild` regenerate the browser bin
 | Action | Result |
 | --- | --- |
 | Select a synthetic tone, sweep, mixture or silence | See an actual MoonBit spectrogram and waveform |
-| Upload an 8/16-bit PCM WAV | Decode with MoonMel, downmix channels and preview up to ten seconds |
+| Upload an 8/16/24/32-bit integer PCM WAV | Decode with MoonMel, downmix channels and preview up to ten seconds |
 | Change FFT/hop/Mel/MFCC parameters | Recompute the currently selected audio |
 | Select Log-Mel, STFT or MFCC | Inspect values by pointer or left/right keys on the plot |
 | Play, capture a microphone, export | Hear input, analyze a rolling one-second window, download JSON/CSV |
@@ -58,6 +60,14 @@ println(result.mfcc.n_cols)
 `analyze` computes one shared STFT and filterbank, then derives Mel, Log-Mel and MFCC in order. Standalone `stft`, `mel_spectrogram`, `log_mel_spectrogram`, `mfcc` and the existing feature APIs remain available. WAV input uses `@moonmel.decode_wav(bytes)`; then analyze `audio.samples` with a config whose `sample_rate` and `f_max` match the decoded rate.
 
 All feature matrices use `[feature row][time frame]`. The complex STFT uses `[time frame][frequency bin]`. Results use `Result[T, MelError]`; handle errors for user-controlled input rather than unwrapping. Public raw matrices and low-level kernels retain documented preconditions.
+
+For channel-preserving file input, use `decode_wav_multichannel(bytes)`. Streaming callers can validate chunks with `try_push_samples`, obtain aligned Mel/Log-Mel/MFCC with one `pop_features`, join successive batches using `FeatureMatrix::concat_frames`, and normalize features with `cmvn`. These APIs preserve the existing mono and individual-pop entry points. Run the complete reproducible example:
+
+```sh
+moon run examples/streaming --target js
+```
+
+It generates a stereo PCM16 fixture, verifies streamed MFCC against offline MFCC and applies utterance-level CMVN. See [API conventions](docs/en/API_SPECIFICATION.md) for batch-local dB clipping and unpadded tails. Float WAV and WAVE_FORMAT_EXTENSIBLE remain unsupported.
 
 ## Numerical evidence and limitations
 
@@ -86,7 +96,7 @@ pnpm --dir playground test
 
 [Project CI](.github/workflows/ci.yml) runs check/build/test and the basic example for WASM, WASM-GC, JS and Native, plus a fresh playground build and binding integration tests. CI validates compiler minimum version. A configured workflow is not evidence that a remote run has passed; consult GitHub Actions for that state.
 
-For Windows native validation, run `pwsh -File tools/quality/test-native.ps1`; it uses an available MinGW GCC when no compiler override is set and restores its environment afterward. The local MSVC discovery points to missing headers, so it cannot be used as-is.
+MoonBit 0.10.18 requires MSVC for its Windows Native runtime. Install complete Visual Studio C++ tools and Windows SDK headers/libraries. Run `pwsh -File tools/quality/test-native.ps1` for tests, or add `-Build` for a release build. The helper uses Moon's compiler selection; it no longer forces the incompatible MinGW fallback. See the acceptance record for local and CI results.
 
 Optional independent Python validation, using the prepared project environment:
 
@@ -94,7 +104,7 @@ Optional independent Python validation, using the prepared project environment:
 & A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
-See [Development](docs/en/DEVELOPMENT.md) for a portable `uv` setup, [Acceptance](docs/en/ACCEPTANCE.md) for the nine-item acceptance guide, and [Health](docs/en/HEALTH.md) for reviewed packages and remaining limits. The module is published on mooncakes.io as `1zhouhaoran1/moonmel` 0.1.0.
+See [Development](docs/en/DEVELOPMENT.md) for a portable `uv` setup, [Acceptance](docs/en/ACCEPTANCE.md) for the nine-item acceptance guide, and [Health](docs/en/HEALTH.md) for reviewed packages and remaining limits. Release: `1zhouhaoran1/moonmel` 0.1.6.
 
 ## License
 

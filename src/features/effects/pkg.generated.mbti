@@ -6,9 +6,9 @@ import {
 }
 
 // Values
-pub fn phase_vocoder(Array[Array[@types.Complex]], Double, Int, Int) -> Result[Array[Array[@types.Complex]], @types.MelError]
+pub fn phase_vocoder(Array[Array[@types.Complex]], Double, Int32, Int32) -> Result[Array[Array[@types.Complex]], @types.MelError]
 
-pub fn pitch_shift(Array[Double], Int, Double, @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
+pub fn pitch_shift(Array[Double], Int32, Double, @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 
 pub fn time_stretch(Array[Double], Double, @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 

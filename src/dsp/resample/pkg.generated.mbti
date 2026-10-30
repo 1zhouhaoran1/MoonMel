@@ -6,15 +6,15 @@ import {
 }
 
 // Values
-pub fn resample(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+pub fn resample(Array[Double], Int32, Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_linear(Array[Double], Int, Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_linear(Array[Double], Int32, Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_polyphase(Array[Double], Int, Int, half_len? : Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_polyphase(Array[Double], Int32, Int32, half_len? : Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_sinc(Array[Double], Int, Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_sinc(Array[Double], Int32, Int32, filter_size? : Int32) -> Result[Array[Double], @types.MelError]
 
-pub fn resample_to_length(Array[Double], Int, filter_size? : Int) -> Result[Array[Double], @types.MelError]
+pub fn resample_to_length(Array[Double], Int32, filter_size? : Int32) -> Result[Array[Double], @types.MelError]
 
 // Errors
 

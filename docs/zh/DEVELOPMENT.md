@@ -16,9 +16,14 @@ moon test --target wasm-gc --deny-warn
 moon test --target js --deny-warn
 moon test --target native --deny-warn
 moon run examples/basic --target js
+moon run examples/streaming --target js
 ```
 
-本机 Windows Native 使用 `pwsh -File tools/quality/test-native.ps1`。脚本为现有 MinGW GCC 补运行时声明，不修改 SDK 源码，退出时恢复 `MOON_CC`/`MOON_AR`。默认 MSVC 缺失头文件。Linux/macOS CI 使用正常本机编译器。
+Windows 上 MoonBit 0.10.18 运行时要求完整的 Visual Studio C++ 工具和 Windows SDK 头文件/库。使用上述 Native 命令，或运行 `pwsh -File tools/quality/test-native.ps1` 测试，添加 `-Build` 进行发行构建。脚本改为由 Moon 选择支持的编译器，不再强制 MinGW，并保留调用方显式指定的编译器设置。[验收记录](ACCEPTANCE.md)分别记录本地及远端结果。
+
+源码及生成接口已按 0.10.18 格式器规范化，包括 `Int32` 类型拼写、当前可选参数语法及排版；`moon fmt --check` 通过。格式化及重新生成接口后运行该命令，检查一致性。
+
+[0.1.6 开发记录](DEVELOPMENT_SERIES.md)说明新增 WAV、流式、CMVN 与帧拼接 API。CI 另执行 `node --test tools/quality/check-architecture.test.mjs`，架构检查读取当前模块命名空间并统计真实内部依赖。
 
 ## 演示页
 
@@ -45,9 +50,9 @@ uv pip install --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe -r tools/re
 
 ## CI 与发布
 
-`.github/workflows/ci.yml` 覆盖四目标检查、构建、测试与示例，再构建演示页和测试绑定。每个任务检查编译器门槛。远端通过状态看 GitHub Actions。0.1.0 已以 `1zhouhaoran1/moonmel` 发布到 mooncakes.io，后续版本用 `moon publish` 发布。
+`.github/workflows/ci.yml` 覆盖四目标检查、构建、测试与示例，再构建演示页和测试绑定。每个任务检查编译器门槛。远端通过状态看 GitHub Actions。0.1.6 以 `1zhouhaoran1/moonmel` 发布到 mooncakes.io，后续版本用 `moon publish` 发布。
 
-使用同一 Windows 适配器构建 Native 发行产物：`pwsh -File tools/quality/test-native.ps1 -Build`。
+Windows Native 的 0.10.18 发行构建应在完整 MSVC 开发者环境运行 `moon build --target native --release`，不要使用旧 MinGW 适配器。
 
 ## GitHub Pages
 

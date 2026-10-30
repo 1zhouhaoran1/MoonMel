@@ -6,13 +6,13 @@ import {
 }
 
 // Values
-pub fn create_window(@types.WindowType, Int) -> Array[Double]
+pub fn create_window(@types.WindowType, Int32) -> Array[Double]
 
-pub fn pad_reflect(Array[Double], Int) -> Array[Double]
+pub fn pad_reflect(Array[Double], Int32) -> Array[Double]
 
 pub let pi : Double
 
-pub fn reflect_index(Int, Int) -> Int
+pub fn reflect_index(Int32, Int32) -> Int32
 
 // Errors
 

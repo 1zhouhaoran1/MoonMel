@@ -3,9 +3,9 @@
 /// Uses reflect padding when centered; librosa's default RMS padding is constant.
 pub fn compute_rms(
   audio : @types.AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true,
+  frame_length~ : Int32 = 2048,
+  hop_length~ : Int32 = 512,
+  center~ : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   let energy = match
     compute_energy(audio, frame_length~, hop_length~, center~) {
@@ -22,9 +22,9 @@ pub fn compute_rms(
 /// Extract total sum-of-squares frame energy from AudioBuffer.
 pub fn compute_energy(
   audio : @types.AudioBuffer,
-  frame_length? : Int = 2048,
-  hop_length? : Int = 512,
-  center? : Bool = true,
+  frame_length~ : Int32 = 2048,
+  hop_length~ : Int32 = 512,
+  center~ : Bool = true,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   if frame_length <= 0 {
     return Err(InvalidFftSize(frame_length))

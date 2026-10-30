@@ -4,7 +4,7 @@ let test_pi : Double = 3.14159265358979323846
 ///|
 fn generate_sine_wave(
   freq : Double,
-  sample_rate : Int,
+  sample_rate : Int32,
   duration : Double,
 ) -> Array[Double] {
   let num_samples = (duration * sample_rate.to_double()).to_int()

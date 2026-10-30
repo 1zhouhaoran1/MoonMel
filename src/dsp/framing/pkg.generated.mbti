@@ -8,7 +8,7 @@ import {
 // Values
 pub fn prepare(Array[Double], @types.FeatureConfig) -> Result[Array[Double], @types.MelError]
 
-pub fn window_frame(Array[Double], Int, Array[Double], Array[Double]) -> Unit
+pub fn window_frame(Array[Double], Int32, Array[Double], Array[Double]) -> Unit
 
 // Errors
 

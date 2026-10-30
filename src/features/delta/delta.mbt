@@ -1,6 +1,6 @@
 ///|
 /// Helper to clamp frame index to boundary [0, len - 1] (mode='nearest').
-fn clamp_index(idx : Int, len : Int) -> Int {
+fn clamp_index(idx : Int32, len : Int32) -> Int32 {
   if idx < 0 {
     0
   } else if idx >= len {
@@ -12,7 +12,7 @@ fn clamp_index(idx : Int, len : Int) -> Int {
 
 ///|
 /// Compute 1D delta along time frames for a single row.
-fn delta_1d(row : Array[Double], width : Int) -> Array[Double] {
+fn delta_1d(row : Array[Double], width : Int32) -> Array[Double] {
   let len = row.length()
   if len == 0 {
     return []
@@ -42,8 +42,8 @@ fn delta_1d(row : Array[Double], width : Int) -> Array[Double] {
 /// this operator; this is not librosa's default Savitzky-Golay/interp behavior.
 pub fn compute_delta(
   matrix : @types.FeatureMatrix,
-  width? : Int = 9,
-  order? : Int = 1,
+  width~ : Int32 = 9,
+  order~ : Int32 = 1,
 ) -> Result[@types.FeatureMatrix, @types.MelError] {
   match matrix.validate() {
     Ok(_) => ()

@@ -2,10 +2,10 @@
 /// MelError represents potential failure states in audio feature extraction.
 pub(all) enum MelError {
   EmptyAudio
-  InvalidSampleRate(Int)
-  InvalidFftSize(Int)
-  InvalidHopLength(Int)
-  InvalidMelBands(Int)
+  InvalidSampleRate(Int32)
+  InvalidFftSize(Int32)
+  InvalidHopLength(Int32)
+  InvalidMelBands(Int32)
   InvalidFrequencyRange(Double, Double)
   DimensionMismatch(String)
   WavParseError(String)

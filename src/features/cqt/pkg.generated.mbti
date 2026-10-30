@@ -15,11 +15,11 @@ pub fn cqt_frequencies(CqtConfig) -> Array[Double]
 
 // Types and methods
 pub(all) struct CqtConfig {
-  sample_rate : Int
-  hop_length : Int
+  sample_rate : Int32
+  hop_length : Int32
   f_min : Double
-  n_bins : Int
-  bins_per_octave : Int
+  n_bins : Int32
+  bins_per_octave : Int32
   tuning : Double
   power : Double
 } derive(Eq, @debug.Debug)

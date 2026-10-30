@@ -21,13 +21,13 @@ pub(all) struct FormantFrame {
 ///|
 /// Configuration parameters for formant extraction.
 pub(all) struct FormantConfig {
-  lpc_order : Int // Order of LPC all-pole model (default: 12)
+  lpc_order : Int32 // Order of LPC all-pole model (default: 12)
   min_frequency : Double // Minimum valid formant frequency in Hz (default: 50.0)
   max_frequency : Double // Maximum valid formant frequency in Hz (default: 5000.0)
   max_bandwidth : Double // Maximum valid bandwidth in Hz (default: 2500.0)
   pre_emphasis : Double // First-order high-frequency pre-emphasis factor (default: 0.97)
-  frame_length : Int // Analysis frame length in samples (default: 400, 25ms @ 16kHz)
-  hop_length : Int // Frame step in samples (default: 160, 10ms @ 16kHz)
+  frame_length : Int32 // Analysis frame length in samples (default: 400, 25ms @ 16kHz)
+  hop_length : Int32 // Frame step in samples (default: 160, 10ms @ 16kHz)
 } derive(Debug)
 
 ///|
@@ -49,8 +49,8 @@ pub fn FormantConfig::default() -> FormantConfig {
 /// P(z) = z^p + coeffs[0] * z^(p-1) + coeffs[1] * z^(p-2) + ... + coeffs[p-1] = 0.
 pub fn durand_kerner(
   coeffs : Array[Double],
-  max_iters? : Int = 80,
-  tol? : Double = 1.0e-9,
+  max_iters~ : Int32 = 80,
+  tol~ : Double = 1.0e-9,
 ) -> Array[@types.Complex] {
   let p = coeffs.length()
   if p == 0 {
@@ -125,7 +125,7 @@ pub fn durand_kerner(
 /// Extract FormantFrame from LPC prediction coefficients.
 pub fn formants_from_lpc(
   lpc_coeffs : Array[Double],
-  sample_rate : Int,
+  sample_rate : Int32,
   config : FormantConfig,
 ) -> FormantFrame {
   // Positive predictor coefficients map to the denominator 1 - sum(a*z^-k).
@@ -175,8 +175,8 @@ pub fn formants_from_lpc(
 /// Estimate FormantFrame on a single audio window.
 pub fn formants_frame(
   frame : Array[Double],
-  sample_rate : Int,
-  config? : FormantConfig = FormantConfig::default(),
+  sample_rate : Int32,
+  config~ : FormantConfig = FormantConfig::default(),
 ) -> Result[FormantFrame, @types.MelError] {
   let flen = frame.length()
   if flen == 0 {
@@ -228,8 +228,8 @@ pub fn formants_frame(
 /// Extract time-varying formant tracks across an entire audio signal.
 pub fn formant_track(
   samples : Array[Double],
-  sample_rate : Int,
-  config? : FormantConfig = FormantConfig::default(),
+  sample_rate : Int32,
+  config~ : FormantConfig = FormantConfig::default(),
 ) -> Result[Array[FormantFrame], @types.MelError] {
   let len = samples.length()
   if len == 0 {
@@ -272,8 +272,8 @@ pub fn formant_track(
 /// Extract a specific formant frequency track across frames (e.g. 0 for F1, 1 for F2, 2 for F3).
 pub fn formant_frequencies(
   frames : Array[FormantFrame],
-  formant_idx : Int,
-  fallback? : Double = 0.0,
+  formant_idx : Int32,
+  fallback~ : Double = 0.0,
 ) -> Array[Double] {
   let n = frames.length()
   let out : Array[Double] = Array::make(n, fallback)

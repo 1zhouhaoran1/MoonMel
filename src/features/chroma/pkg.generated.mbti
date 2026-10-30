@@ -7,13 +7,13 @@ import {
 }
 
 // Values
-pub fn chroma_filterbank(Int, Int, Double, Double) -> @types.FeatureMatrix
+pub fn chroma_filterbank(Int32, Int32, Double, Double) -> @types.FeatureMatrix
 
-pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int, Int, ChromaNorm, Double, Double) -> Result[@types.FeatureMatrix, @types.MelError]
+pub fn chroma_from_spectrogram(@types.FeatureMatrix, Int32, Int32, ChromaNorm, Double, Double) -> Result[@types.FeatureMatrix, @types.MelError]
 
 pub fn chroma_stft(Array[Double], @types.FeatureConfig, ChromaNorm) -> Result[@types.FeatureMatrix, @types.MelError]
 
-pub fn pitch_class_name(Int) -> String
+pub fn pitch_class_name(Int32) -> String
 
 // Errors
 

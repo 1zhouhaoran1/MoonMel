@@ -4,8 +4,8 @@ pub(all) struct YinConfig {
   f_min : Double
   f_max : Double
   threshold : Double
-  frame_length : Int
-  hop_length : Int
+  frame_length : Int32
+  hop_length : Int32
 } derive(Debug)
 
 ///|
@@ -32,7 +32,7 @@ pub(all) struct PitchTrack {
 /// Compute difference function d_t(tau) for a frame of samples.
 pub fn difference_function(
   frame : Array[Double],
-  tau_max : Int,
+  tau_max : Int32,
 ) -> Array[Double] {
   let len = frame.length()
   if tau_max < 0 {
@@ -89,7 +89,7 @@ pub fn cumulative_mean_normalized_difference(
 /// Analyze F0 pitch and voicing confidence for a single frame.
 pub fn yin_frame(
   frame : Array[Double],
-  sample_rate : Int,
+  sample_rate : Int32,
   f_min : Double,
   f_max : Double,
   threshold : Double,
@@ -190,7 +190,7 @@ pub fn yin_frame(
 /// Extract frame-wise pitch track from single-channel AudioBuffer using YIN.
 pub fn pitch_yin(
   audio : @types.AudioBuffer,
-  config? : YinConfig = YinConfig::default(),
+  config~ : YinConfig = YinConfig::default(),
 ) -> Result[PitchTrack, @types.MelError] {
   let len = audio.length()
   if len == 0 {
