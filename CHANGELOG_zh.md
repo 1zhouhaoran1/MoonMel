@@ -4,6 +4,10 @@
 
 ## 未发布
 
+### 变更
+
+- 声明的最低编译器版本提升到 `moonc 0.10.16`，并在 `moonc v0.10.18+6c83a7f62` 上完成验证：`moon check --deny-warn`、`moon build --release`、`moon test --deny-warn` 在 wasm、wasm-gc、js、native 四个目标通过，源码无需改动。`tools/dev/activate.ps1` 改为选择 `latest-20261030` SDK，发布凭据改由环境变量提供，不再内嵌令牌。
+
 ### 文档
 
 - 重写中英文复审申报书，承认与 moon-certified 的基础重叠，以固定版本源码及限定测试证据说明已有增量提取、帧级重建、抗混叠重采样和多声道分析范围。

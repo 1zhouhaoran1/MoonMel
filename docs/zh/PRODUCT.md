@@ -52,4 +52,4 @@ MoonMel 是 MoonBit 原生音频特征提取库，提供可验证的 STFT、Mel�
 - 不包含完整 ASR/模型推理；Whisper 尺寸分帧预设不代表完整模型兼容前端。
 - 不实现 MP3、AAC、Opus 等有损编解码器；重采样已经实现。
 - 不提供云端 AI 服务，也不宣称替代整个 librosa/Meyda/Essentia.js 生态。
-- Mooncakes 发布按维护者要求暂缓；可从源码使用，已有 GitHub Release 与 Pages 演示。
+- 分发渠道为 mooncakes.io、源码、GitHub Release 与 Pages 演示。

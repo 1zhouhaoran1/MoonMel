@@ -4,7 +4,7 @@
 
 ## Toolchain
 
-Require `moonc >= 0.10.14`, Node.js 22.12+ or 24+, pnpm 11.14.0. Verify with `node tools/quality/check-toolchain.mjs`. The acceptance workstation's isolated SDK is `A:/DevEnv/SDKs/MoonBit/moonmel-current`; select it with `. ./tools/dev/activate.ps1`. This does not change the system installation.
+Require `moonc >= 0.10.16`, Node.js 22.12+ or 24+, pnpm 11.14.0. Verify with `node tools/quality/check-toolchain.mjs`. The acceptance workstation's isolated SDK is `A:/DevEnv/SDKs/MoonBit/latest-20261030` (moonc 0.10.18); select it with `. ./tools/dev/activate.ps1`, or point `MOONMEL_MOON_HOME` at another toolchain. This does not change the system installation.
 
 ```sh
 moon info
@@ -45,7 +45,7 @@ If this environment already exists, skip creation and use it. On Linux/macOS cho
 
 ## CI and publishing
 
-`.github/workflows/ci.yml` performs check, build, test and example execution for all four targets, then builds the demo and tests its bindings. The minimum compiler gate runs in each job. See GitHub Actions for actual remote results. Mooncakes publication is intentionally deferred; source checkout is the reproducible distribution path for now.
+`.github/workflows/ci.yml` performs check, build, test and example execution for all four targets, then builds the demo and tests its bindings. The minimum compiler gate runs in each job. See GitHub Actions for actual remote results. Version 0.1.0 is published on mooncakes.io as `1zhouhaoran1/moonmel`; `moon publish` releases subsequent versions.
 
 To build release Native artifacts with the same Windows adapter: `pwsh -File tools/quality/test-native.ps1 -Build`.
 

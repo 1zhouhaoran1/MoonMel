@@ -4,7 +4,7 @@
 
 ## 工具链
 
-要求 `moonc >= 0.10.14`、Node.js 22.12+ 或 24+、pnpm 11.14.0。`node tools/quality/check-toolchain.mjs` 检查版本。本机隔离 SDK 位于 `A:/DevEnv/SDKs/MoonBit/moonmel-current`，用 `. ./tools/dev/activate.ps1` 选择，不修改系统安装。
+要求 `moonc >= 0.10.16`、Node.js 22.12+ 或 24+、pnpm 11.14.0。`node tools/quality/check-toolchain.mjs` 检查版本。本机隔离 SDK 位于 `A:/DevEnv/SDKs/MoonBit/latest-20261030`（moonc 0.10.18），用 `. ./tools/dev/activate.ps1` 选择，或用 `MOONMEL_MOON_HOME` 指向其他工具链，不修改系统安装。
 
 ```sh
 moon info
@@ -45,7 +45,7 @@ uv pip install --python A:\DevEnv\Envs\moonmel_py\Scripts\python.exe -r tools/re
 
 ## CI 与发布
 
-`.github/workflows/ci.yml` 覆盖四目标检查、构建、测试与示例，再构建演示页和测试绑定。每个任务检查编译器门槛。远端通过状态看 GitHub Actions。Mooncakes 发布暂缓，当前以源码检出提供可复现运行路径。
+`.github/workflows/ci.yml` 覆盖四目标检查、构建、测试与示例，再构建演示页和测试绑定。每个任务检查编译器门槛。远端通过状态看 GitHub Actions。0.1.0 已以 `1zhouhaoran1/moonmel` 发布到 mooncakes.io，后续版本用 `moon publish` 发布。
 
 使用同一 Windows 适配器构建 Native 发行产物：`pwsh -File tools/quality/test-native.ps1 -Build`。
 

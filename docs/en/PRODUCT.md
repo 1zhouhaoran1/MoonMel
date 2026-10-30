@@ -52,4 +52,4 @@ The core deliverable is a reusable extraction API, a working example/demo and re
 - Full ASR/model inference or a model-compatible frontend inferred solely from the Whisper-size framing preset.
 - Lossy codec implementations such as MP3, AAC or Opus; resampling is already implemented.
 - Cloud AI services or a claim to replace the entire librosa/Meyda/Essentia.js ecosystem.
-- Mooncakes publication is deferred at the maintainer's request; source installation, GitHub releases and Pages hosting are available.
+- Distribution runs through mooncakes.io, source checkout, GitHub releases and Pages hosting.

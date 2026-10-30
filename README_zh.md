@@ -1,11 +1,11 @@
 <p align="center"><img src="docs/banner.png" alt="MoonMel — Audio Into Features" width="960" /></p>
-<p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.14+" src="https://img.shields.io/badge/moonc-0.10.14+-24211d?style=flat-square" /> <img alt="编译目标" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
+<p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.16+" src="https://img.shields.io/badge/moonc-0.10.16+-24211d?style=flat-square" /> <img alt="编译目标" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
 <p align="center">纯 MoonBit 音频特征引擎，复用 STFT、Mel、Log-Mel 与 MFCC 流水线。</p>
 <p align="center"><a href="README.md">English</a> · <a href="https://1zhouhaoran1.github.io/MoonMel/">在线演示</a> · <a href="CHANGELOG_zh.md">更新日志</a> · <a href="#从源码运行">运行</a> · <a href="docs/zh/API_SPECIFICATION.md">API</a> · <a href="docs/zh/ARCHITECTURE.md">架构</a> · <a href="docs/zh/HEALTH.md">健康报告</a></p>
 
 ## 从源码运行
 
-安装 [MoonBit](https://www.moonbitlang.com/download/)，要求 `moonc >= 0.10.14`。浏览器演示另需 Node.js 22.12+ 或 24+、pnpm 11。源码运行不依赖 Mooncakes 发布。
+安装 [MoonBit](https://www.moonbitlang.com/download/)，要求 `moonc >= 0.10.16`。浏览器演示另需 Node.js 22.12+ 或 24+、pnpm 11。0.1.0 已发布到 mooncakes.io：`moon add 1zhouhaoran1/moonmel` 可加入现有项目。
 
 ```sh
 git clone https://github.com/1zhouhaoran1/MoonMel.git
@@ -94,7 +94,7 @@ Windows Native 可执行 `pwsh -File tools/quality/test-native.ps1`；没有显�
 & A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
-[开发指南](docs/zh/DEVELOPMENT.md) 提供可移植 uv 设置，[验收清单](docs/zh/ACCEPTANCE.md) 对应九项指南，[健康报告](docs/zh/HEALTH.md) 列出审查范围和剩余限制。Mooncakes 发布按负责人要求暂缓。
+[开发指南](docs/zh/DEVELOPMENT.md) 提供可移植 uv 设置，[验收清单](docs/zh/ACCEPTANCE.md) 对应九项指南，[健康报告](docs/zh/HEALTH.md) 列出审查范围和剩余限制。模块已以 `1zhouhaoran1/moonmel` 0.1.0 发布到 mooncakes.io。
 
 ## 许可证
 

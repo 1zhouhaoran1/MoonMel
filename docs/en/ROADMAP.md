@@ -39,7 +39,7 @@ These implementations have unit/regression coverage but not the same external re
 
 ## Deferred or exploratory work
 
-- [ ] Publish to Mooncakes when the maintainer resumes registry publication.
+- [x] Publish to Mooncakes: version 0.1.0 released on 2026-10-28.
 - [ ] Evaluate WASM browser execution and SIMD using measurements; retain the current JS engine until an alternative is implemented and verified.
 - [ ] Evaluate model-specific frontends/adapters only against an explicit model contract and end-to-end checks. Whisper-size framing alone is insufficient.
 

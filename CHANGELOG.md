@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Raise the declared compiler floor to `moonc 0.10.16` and verify the project on `moonc v0.10.18+6c83a7f62`: `moon check --deny-warn`, `moon build --release` and `moon test --deny-warn` pass on wasm, wasm-gc, js and native with no source changes. `tools/dev/activate.ps1` now selects the `latest-20261030` SDK and reads publishing credentials from the environment instead of embedding a token.
+
 ### Documentation
 
 - Rewrite the bilingual project proposal for reassessment, acknowledging the shared moon-certified baseline and documenting existing incremental extraction, frame synthesis, antialias resampling and multichannel analysis with pinned comparison sources and scoped test evidence.

@@ -60,6 +60,6 @@ FFT/Bluestein、STFT/ISTFT、Mel、DCT-II、窗化 sinc、多相滤波和相位�
 - **限定数值对齐**：[八组报告](../../tools/reference/parity_report.json)由[检查脚本](../../tools/reference/check_parity.py)生成，对齐周期 Hann、reflect、float64 Slaney 及正交 DCT-II；比较全部 Mel/Log-Mel/MFCC 单元及每帧最多 64 个明确索引的 STFT 频点，`atol=rtol=1e-7`，已记录最大绝对误差约 `2.3e-12`。该报告不覆盖流式、效果、多声道或重采样的完整外部对照；
 - **直接运行与展示**：`moon run examples/basic --target js` 输出 `STFT 513×63 / Mel 80×63 / Log-Mel 80×63 / MFCC 13×63`；[在线演示](https://1zhouhaoran1.github.io/MoonMel/)使用 MoonBit 生成的 JS，在 Worker 中分析合成信号或上传的 PCM WAV，支持检查数值及导出。当前网页不演示所有扩展，不将 JS 执行说成 WASM 执行；
 - **仍待补充**：未提供与 `moon-certified` 的直接性能比较、真实独立下游采用或完整高级算法外部认证。流式只输出左对齐完整帧，不自动刷新不足一帧的尾部，不附带时间戳；分批 dB 截断与全局离线截断可能不同，未证明所有随机分块的 MFCC 全矩阵等价；
-- **申报边界**：不承诺固定毫秒延迟、零分配、硬实时、完整 Whisper 前端或广播响度规范合规；Mooncakes 发布按维护者计划暂缓。源码、示例、接口及测试可独立检查，许可证为 MIT。
+- **申报边界**：不承诺固定毫秒延迟、零分配、硬实时、完整 Whisper 前端或广播响度规范合规；模块已发布到 mooncakes.io。源码、示例、接口及测试可独立检查，许可证为 MIT。
 
 本次复审申请依据以上已经实现的增量分析、帧级重建、抗混叠重采样和多声道分析范围，请求结合具体源码及验证重新评估项目的独立交付内容。未实现或尚未充分验证的能力不列为已完成成果。

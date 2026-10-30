@@ -6,19 +6,19 @@
 
 | 要求 | 证据与动作 | 状态 |
 | --- | --- | --- |
-| 1. MoonBit 主实现，moonc >= 0.10.14 | src 内 MoonBit 算法、版本门槛、本机隔离 0.10.14 | 已实现并本地验证 |
+| 1. MoonBit 主实现，moonc >= 0.10.16 | src 内 MoonBit 算法、版本门槛、本机隔离 0.10.18 | 已实现；0.10.18 下检查、构建、测试均通过 |
 | 2. 公开 GitHub、清晰提交 | https://github.com/1zhouhaoran1/MoonMel，规范提交记录 | 仓库公开已核实；实现提交已通过 1zhouhaoran1 推送 |
 | 3. 结构清晰、完成核心功能 | 分层包、依赖检查、核心回归与参考 | 已在声明数值范围内验证 |
 | 4. 可复现 README | 英文/中文独立文件、源码安装、明确示例输出 | 已提供 |
 | 5. CI 检查/构建/测试 | 四目标矩阵及演示页任务 | 已在推送的实现提交通过；运行依据见下文 |
 | 6. 可运行示例 | moon run examples/basic --target js | 本地及四个 CI 目标均已验证 |
 | 7. 核心路径测试 | MoonBit 回归、Node 绑定、八组 Python 参考 | 已提供，命令见开发指南 |
-| 8. 发布 Mooncakes | 仓库与 MIT 模块元数据 | 按负责人要求暂缓 |
+| 8. 发布 Mooncakes | `1zhouhaoran1/moonmel` 0.1.0，含仓库与 MIT 元数据 | 2026-10-28 已发布 |
 | 9. OSI 许可及来源合规 | MIT、第三方声明、完整 Manrope OFL | 已提供，不打包竞品运行代码 |
 
 ## 远端验证依据
 
-[Project CI 运行 38193835642](https://github.com/1zhouhaoran1/MoonMel/actions/runs/38193835642) 在实现提交 `225342be37f0620735a4c7c2024f6ed73691029d` 上通过。WASM、WASM-GC、JS、Native 分别完成检查、构建、测试与示例，演示页完成重新构建和绑定测试。仓库认证读取专用账号环境变量，远端 URL 不嵌入密钥。
+[Project CI 运行 40652475112](https://github.com/1zhouhaoran1/MoonMel/actions/runs/40652475112) 在发布提交 `1c710303e463a8b8b7b83e0fe745c5a99b722b60` 上通过。WASM、WASM-GC、JS、Native 分别完成检查、构建、测试与示例，演示页完成重新构建和绑定测试。发布凭据通过环境变量提供。
 
 ## 评委演示流程
 

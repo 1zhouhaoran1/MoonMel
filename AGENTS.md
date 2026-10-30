@@ -9,7 +9,7 @@ Follows global directives from `C:/Users/www17/AGENT.md`.
 - **Author**: zhr (3449002191@qq.com)
 - **Target Platforms**: WebAssembly (WASM), JavaScript (JS), Native
 - **Primary Toolchain**:
-  - MoonBit: minimum `moonc 0.10.14`; locally verified `moon 0.1.20260920`, `moonc v0.10.14+7d59c7ec9`. Isolated SDK: `A:\DevEnv\SDKs\MoonBit\moonmel-current`; activate with `. ./tools/dev/activate.ps1`.
+  - MoonBit: minimum `moonc 0.10.16`; locally verified `moon 0.1.20261028`, `moonc v0.10.18+6c83a7f62`. Isolated SDK: `A:\DevEnv\SDKs\MoonBit\latest-20261030`; activate with `. ./tools/dev/activate.ps1`.
   - Node / Web: `pnpm` exclusively (`A:\DevEnv\PackageManagers\pnpm\bin`), Vite + TailwindCSS
   - Python (Reference): `A:\DevEnv\Envs\moonmel_py` via `uv` (`numpy 2.5.3`, `scipy 1.18.1`, `librosa 1.0.0`)
 

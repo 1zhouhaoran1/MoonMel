@@ -1,11 +1,11 @@
 <p align="center"><img src="docs/banner.png" alt="MoonMel — Audio Into Features" width="960" /></p>
-<p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.14+" src="https://img.shields.io/badge/moonc-0.10.14+-24211d?style=flat-square" /> <img alt="Targets" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
+<p align="center"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-b63a25?style=flat-square" /> <img alt="MoonBit 0.10.16+" src="https://img.shields.io/badge/moonc-0.10.16+-24211d?style=flat-square" /> <img alt="Targets" src="https://img.shields.io/badge/targets-JS%20%7C%20WASM%20%7C%20Native-24211d?style=flat-square" /></p>
 <p align="center">Pure MoonBit audio feature extraction with reusable STFT, Mel, Log-Mel and MFCC stages.</p>
 <p align="center"><a href="README_zh.md">中文</a> · <a href="https://1zhouhaoran1.github.io/MoonMel/">Live demo</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="#run-from-source">Run</a> · <a href="docs/en/API_SPECIFICATION.md">API</a> · <a href="docs/en/ARCHITECTURE.md">Architecture</a> · <a href="docs/en/HEALTH.md">Health report</a></p>
 
 ## Run from source
 
-Install [MoonBit](https://www.moonbitlang.com/download/) with `moonc >= 0.10.14`. Node.js 22.12+ or 24+ and pnpm 11 are needed only for the browser demo. Source installation does not depend on registry publication.
+Install [MoonBit](https://www.moonbitlang.com/download/) with `moonc >= 0.10.16`. Node.js 22.12+ or 24+ and pnpm 11 are needed only for the browser demo. Version 0.1.0 is published on mooncakes.io: `moon add 1zhouhaoran1/moonmel` adds it to an existing project.
 
 ```sh
 git clone https://github.com/1zhouhaoran1/MoonMel.git
@@ -94,7 +94,7 @@ Optional independent Python validation, using the prepared project environment:
 & A:\DevEnv\Envs\moonmel_py\Scripts\python.exe tools/reference/check_parity.py
 ```
 
-See [Development](docs/en/DEVELOPMENT.md) for a portable `uv` setup, [Acceptance](docs/en/ACCEPTANCE.md) for the nine-item acceptance guide, and [Health](docs/en/HEALTH.md) for reviewed packages and remaining limits. Mooncakes publication is deferred at the owner's request.
+See [Development](docs/en/DEVELOPMENT.md) for a portable `uv` setup, [Acceptance](docs/en/ACCEPTANCE.md) for the nine-item acceptance guide, and [Health](docs/en/HEALTH.md) for reviewed packages and remaining limits. The module is published on mooncakes.io as `1zhouhaoran1/moonmel` 0.1.0.
 
 ## License
 

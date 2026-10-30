@@ -24,6 +24,6 @@ Warm ivory ground, charcoal foreground and vermilion accent; the dark spectrum i
 
 ## Acceptance risks
 
-The browser executes generated JS in a Web Worker; WASM is a library build target. Reference evidence covers eight deterministic core-pipeline cases with explicitly aligned conventions. Full Mel/Log-Mel/MFCC matrices are compared; STFT covers up to 64 explicitly indexed bins per frame. Research features remain broader than their external parity coverage. No measured competitor speed/size ranking is available. Publishing to Mooncakes is deferred by the owner.
+The browser executes generated JS in a Web Worker; WASM is a library build target. Reference evidence covers eight deterministic core-pipeline cases with explicitly aligned conventions. Full Mel/Log-Mel/MFCC matrices are compared; STFT covers up to 64 explicitly indexed bins per frame. Research features remain broader than their external parity coverage. No measured competitor speed/size ranking is available. The package is published on Mooncakes.
 
 Final desktop and mobile captures are .impeccable/review/desktop-final.png and mobile-final.png. The review handoff reports five resolved findings: separate WAV load identity, dark silence, mobile result order, visible table scroll cue and selected-view text contrast (5.64:1). Its scoped verdict is ship; it does not certify whole-library parity or all browser/device combinations.
